@@ -49,6 +49,10 @@ maintainers:
     email: kin@apievangelist.com
 specificationVersion: '0.19'
 common:
+  - type: GitHubOrganization
+    url: https://github.com/deutschebank
+  - type: LinkedIn
+    url: https://www.linkedin.com/company/deutsche-bank
   - name: Developer Portal
     url: https://developer.db.com/
     type: Documentation
