@@ -49,6 +49,10 @@ maintainers:
     email: kin@apievangelist.com
 specificationVersion: '0.19'
 common:
+  - type: VulnerabilityDisclosure
+    url: security/deutsche-bank-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/deutsche-bank-domain-security.yml
   - type: GitHubOrganization
     url: https://github.com/deutschebank
   - type: LinkedIn
