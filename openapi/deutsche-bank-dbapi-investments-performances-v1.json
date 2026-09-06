@@ -1,0 +1,473 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-investments-performances",
+    "description" : "Calculates performance figures of a security account or an entire portfolio.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/investments/performances/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Performances",
+    "description" : "Calculates performance figures of a security account or an entire portfolio."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Performances" ],
+        "summary" : "Calculates performance of a security account or portfolio.",
+        "description" : "Calculates performance of a given security account or portfolio based on the supplied dates. Periodical raw performance data included.",
+        "operationId" : "getPerformance",
+        "parameters" : [ {
+          "name" : "portfolioId",
+          "in" : "query",
+          "description" : "The portfolio id; Default portfolio (ends with 'ST') includes all security and available cash accounts; Either portfolioId or securityAccountID to be provided!",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "pattern" : "[0-9]{10}[A-Z0-9]{2}",
+            "type" : "string"
+          }
+        }, {
+          "name" : "securityAccountId",
+          "in" : "query",
+          "description" : "The security account id; Either portfolioId or securityAccountID to be provided!",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string"
+          }
+        }, {
+          "name" : "startDate",
+          "in" : "query",
+          "description" : "The date of execution of the performance to be calculated. Date in ISO 8601 format YYYY-MM-DD.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "name" : "endDate",
+          "in" : "query",
+          "description" : "Defines the latter date of the time span to calculate the performance. Date in ISO 8601 format YYYY-MM-DD.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Performance"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 101,
+                  "message" : "Invalid value for parameter portfolioId or securityAccountId."
+                }, {
+                  "code" : 103,
+                  "message" : "Not authorized to access PortfolioId or securityAccountId."
+                }, {
+                  "code" : 104,
+                  "message" : "No valid PortfolioId or securityAccountId."
+                }, {
+                  "code" : 105,
+                  "message" : "startDate is greater than or equal to endDate."
+                }, {
+                  "code" : 106,
+                  "message" : "endDate is a future date - must be less or equal to current date."
+                }, {
+                  "code" : 107,
+                  "message" : "startDate is a future date - must be less or equal to current date."
+                }, {
+                  "code" : 108,
+                  "message" : "Performance calculation not possible due to an average capital of zero."
+                }, {
+                  "code" : 110,
+                  "message" : "clientID not authorized."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 130,
+                  "message" : "Please choose a date range according to the lifetime of the account where assets exist"
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "read_performances" ]
+        }, {
+          "api_client_credential" : [ "read_performances" ]
+        }, {
+          "api_db_smart_access" : [ "read_performances" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AdditionalProfit" : {
+        "required" : [ "expenses", "revenues", "total" ],
+        "type" : "object",
+        "properties" : {
+          "expenses" : {
+            "type" : "number",
+            "description" : "Other outgoings.",
+            "format" : "double"
+          },
+          "revenues" : {
+            "type" : "number",
+            "description" : "Other income.",
+            "format" : "double"
+          },
+          "total" : {
+            "type" : "number",
+            "description" : "Sum of other outgoings and income.",
+            "format" : "double"
+          }
+        }
+      },
+      "Earnings" : {
+        "required" : [ "realizedSum", "total", "unrealizedSum" ],
+        "type" : "object",
+        "properties" : {
+          "realizedSum" : {
+            "type" : "number",
+            "description" : "Sum of realised interests and dividends",
+            "format" : "double"
+          },
+          "unrealizedSum" : {
+            "type" : "number",
+            "description" : "Change in broken-period interests, that means, broken-period interests at the start of the reporting period are subtracted from the broken-period interests in the end of the reporting period.",
+            "format" : "double"
+          },
+          "total" : {
+            "type" : "number",
+            "description" : "Sum of income related success factors.",
+            "format" : "double"
+          }
+        }
+      },
+      "Evolution" : {
+        "required" : [ "period", "periodType" ],
+        "type" : "object",
+        "properties" : {
+          "periodType" : {
+            "type" : "string",
+            "description" : "Type of period (depending on selected date range): month, quarter, year",
+            "enum" : [ "MONTH", "QUARTER", "YEAR" ]
+          },
+          "period" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Period"
+            }
+          }
+        }
+      },
+      "Period" : {
+        "required" : [ "date", "percentage" ],
+        "type" : "object",
+        "properties" : {
+          "date" : {
+            "type" : "string",
+            "description" : "Single date depending on 'periodType'.",
+            "format" : "date"
+          },
+          "percentage" : {
+            "type" : "number",
+            "description" : "Single percentage depending on 'method'.",
+            "format" : "double"
+          }
+        }
+      },
+      "RateProfit" : {
+        "required" : [ "realizedFxLoss", "realizedFxPL", "realizedFxProfit", "realizedMarketLoss", "realizedMarketPL", "realizedMarketProfit", "total", "unrealizedFxPL", "unrealizedMarketPL" ],
+        "type" : "object",
+        "properties" : {
+          "realizedMarketProfit" : {
+            "type" : "number",
+            "description" : "Realized profits for securities.",
+            "format" : "double"
+          },
+          "realizedMarketLoss" : {
+            "type" : "number",
+            "description" : "Realized losses for securities.",
+            "format" : "double"
+          },
+          "realizedMarketPL" : {
+            "type" : "number",
+            "description" : "RealisedMarketPL means realized security related income, that cumulates the balance of realised incomes and cumulated losses.",
+            "format" : "double"
+          },
+          "unrealizedMarketPL" : {
+            "type" : "number",
+            "description" : "Income, that results from change of the rate.",
+            "format" : "double"
+          },
+          "totalMarketPL" : {
+            "type" : "number",
+            "description" : "The sum of realised and unrealised security income.",
+            "format" : "double"
+          },
+          "realizedFxProfit" : {
+            "type" : "number",
+            "description" : "Realised exchange income.",
+            "format" : "double"
+          },
+          "realizedFxLoss" : {
+            "type" : "number",
+            "description" : "Realised exchange loss.",
+            "format" : "double"
+          },
+          "realizedFxPL" : {
+            "type" : "number",
+            "description" : "The balance of realised exchange rate income and realised exchange rate loss.",
+            "format" : "double"
+          },
+          "unrealizedFxPL" : {
+            "type" : "number",
+            "description" : "Income that results from change of the exchange rate.",
+            "format" : "double"
+          },
+          "totalFxPL" : {
+            "type" : "number",
+            "description" : "The sum of realised and non realised exchange rate income.",
+            "format" : "double"
+          },
+          "securityProfit" : {
+            "type" : "number",
+            "description" : "Income that has been added directly (not by account) from an existing security paper position (e.g. stock dividends, bonus shares), are in realised and/or non realised security income included. Because that type of income in income related profit components must be shown, they must be subtracted at this position from rate related profit components.",
+            "format" : "double"
+          },
+          "transactionFee" : {
+            "type" : "number",
+            "description" : "Transaction fees are exclusively related to costs about security related trades, corporate actions etc. They are read exclusively from security transactions. Transaction fees are: provisions, own allowable expenses, foreign allowable expenses, costs for broker, costs for depository, exchange fees, exchange transactions taxes, stamp duty, transaction taxes, value added taxes",
+            "format" : "double"
+          },
+          "total" : {
+            "type" : "number",
+            "description" : "Sum of exchange rate conditioned success factors.",
+            "format" : "double"
+          }
+        }
+      },
+      "Performance" : {
+        "required" : [ "additionalProfit", "avgInvestCapital", "basicEvolution", "cumulatedEvolution", "earnings", "endValue", "inFlow", "outFlow", "percentage", "rateProfit", "startValue", "totalTax", "valueChange", "variation" ],
+        "type" : "object",
+        "properties" : {
+          "startValue" : {
+            "type" : "number",
+            "description" : "Inventory value of a single selected account inclusive broken-period interest at start of the selected time span.",
+            "format" : "double"
+          },
+          "endValue" : {
+            "type" : "number",
+            "description" : "Inventory value of a single selected account inclusive broken-period interest at the end of the selected time span.",
+            "format" : "double"
+          },
+          "valueChange" : {
+            "type" : "number",
+            "description" : "The difference between asset value at start date and asset value at end date.",
+            "format" : "double"
+          },
+          "inFlow" : {
+            "type" : "number",
+            "description" : "Sum of all accrual of funds. Deposits and deliveries comprise adjusted profits for all selected accounts and portfolios.",
+            "format" : "double"
+          },
+          "outFlow" : {
+            "type" : "number",
+            "description" : "Sum of all flows of funds. Transfers from reserves and deliveries comprise adjusted withdrawals (flow of funds) of the selected accounts and portfolios.",
+            "format" : "double"
+          },
+          "balancedFlow" : {
+            "type" : "number",
+            "description" : "Accounting balance as sum of all deliveries and withdrawals (InFlow-OutFlow).",
+            "format" : "double"
+          },
+          "variation" : {
+            "type" : "number",
+            "description" : "Variation means the absolute performance of a portfolio. For this purpose an accounting balance of asset values and selected accounts is built for the selected time span. In addition the variation is adjusted with deliveries, withdrawals as well as taxes, fees and income that are booked on another account.",
+            "format" : "double"
+          },
+          "totalTax" : {
+            "type" : "number",
+            "description" : "Paid taxes/fees.",
+            "format" : "double"
+          },
+          "totalNeutralFlow" : {
+            "type" : "number",
+            "description" : "The sum of performance neutral flows.",
+            "format" : "double"
+          },
+          "avgInvestCapital" : {
+            "type" : "number",
+            "description" : "For time weighted performance measurement an average invested capital is used. That key figure is calculated with the aggregation of respective average invests of available capital values in sub time spans of the selected time period.",
+            "format" : "double"
+          },
+          "percentage" : {
+            "type" : "number",
+            "description" : "Percentage value for description of the relative value development of a portfolio.",
+            "format" : "double"
+          },
+          "rateProfit" : {
+            "$ref" : "#/components/schemas/RateProfit"
+          },
+          "earnings" : {
+            "$ref" : "#/components/schemas/Earnings"
+          },
+          "additionalProfit" : {
+            "$ref" : "#/components/schemas/AdditionalProfit"
+          },
+          "basicEvolution" : {
+            "$ref" : "#/components/schemas/Evolution"
+          },
+          "cumulatedEvolution" : {
+            "$ref" : "#/components/schemas/Evolution"
+          },
+          "startValueDate" : {
+            "type" : "string",
+            "description" : "Start date of the performance calculation - can differ (later) from start date of the selected time span.",
+            "format" : "date"
+          },
+          "endValueDate" : {
+            "type" : "string",
+            "description" : "End date of the performance calculation - can differ (earlier) from end date of the selected time span.",
+            "format" : "date"
+          },
+          "portfolioId" : {
+            "pattern" : "[0-9]{10}[A-Z0-9]{2}",
+            "type" : "string",
+            "description" : "Portfolio id to which a security account belongs"
+          }
+        },
+        "description" : "Performance of a security account/portfolio."
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_performances" : "Grants read access to performance overview of a portfolio.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_client_credential" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_performances" : "Grants read access to performance overview of a portfolio."
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_performances" : "Grants read access to performance overview of a portfolio."
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

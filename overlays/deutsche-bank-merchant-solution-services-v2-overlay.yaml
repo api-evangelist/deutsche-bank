@@ -1,0 +1,190 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Merchant-Server II REST Services API
+  version: 1.0.0
+extends: ../openapi/deutsche-bank-merchant-solution-services-v2.json
+x-generated: '2026-09-06'
+x-method: generated
+x-source: openapi/deutsche-bank-merchant-solution-services-v2.json + this repository's derived artifacts
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      provider: deutsche-bank
+      harvested: '2026-09-06'
+      harvested-from: https://simulator-api.db.com/gw/public/dbapi/swaggers/v1/merchant-solution-services-v2/swagger
+      artifacts:
+        authentication: authentication/deutsche-bank-authentication.yml
+        scopes: scopes/deutsche-bank-scopes.yml
+        conventions: conventions/deutsche-bank-conventions.yml
+        errors: errors/deutsche-bank-error-codes.yml
+        lifecycle: lifecycle/deutsche-bank-lifecycle.yml
+        sandbox: sandbox/deutsche-bank-sandbox.yml
+- target: $.paths['/alias/bankaccount/{alias}'].delete
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/alias/bankaccount/{alias}'].patch
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/alias/bankaccount'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/alias/bankaccount/get'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/alias/creditcard'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/alias/creditcard/{alias}'].delete
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/alias/creditcard/get'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/alias/{alias}'].delete
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/alias/bankaccount'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/alias/creditcard'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/event/{event_id}/checkout/{tx_action}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/event/{event_id}/creditcard/{tx_action}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/event/{event_id}/directdebit/{tx_action}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/event/{event_id}/paypal/{tx_action}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/event/{event_id}/psd2/account_info'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/event/{event_id}/credittransfer'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/form/event/{event_id}/sofort'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/headless3DSecure/event/{event_id}/final'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/headless3DSecure/event/{event_id}/{tx_action}/initialize'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/headless3DSecure/event/{event_id}/method_completed/{completed}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/iframe/initialize'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/payment/event/{event_id}/creditcard/{tx_action}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/payment/event/{event_id}/directdebit/{tx_action}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/payment/event/{event_id}/tx/{tx_id}/{tx_action}'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.

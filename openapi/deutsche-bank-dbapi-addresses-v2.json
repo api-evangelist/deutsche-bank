@@ -1,0 +1,153 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-addresses",
+    "description" : "Get information on all addresses of a customer.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v2"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/referenceData/addresses/v2"
+  } ],
+  "tags" : [ {
+    "name" : "Addresses",
+    "description" : "Get information on all addresses of a customer."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Addresses" ],
+        "summary" : "Reads all addresses of the current user.",
+        "description" : "Reads all addresses of the current user. There might be several private and business addresses.",
+        "operationId" : "getAddresses",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AddressesResponse"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "read_addresses" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AddressesResponse" : {
+        "required" : [ "addresses" ],
+        "type" : "object",
+        "properties" : {
+          "addresses" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Address"
+            }
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "Address" : {
+        "required" : [ "city", "country", "houseNumber", "street", "zip" ],
+        "type" : "object",
+        "properties" : {
+          "street" : {
+            "type" : "string",
+            "description" : "Street"
+          },
+          "houseNumber" : {
+            "type" : "string",
+            "description" : "House number"
+          },
+          "zip" : {
+            "type" : "string",
+            "description" : "Zip code"
+          },
+          "city" : {
+            "type" : "string",
+            "description" : "City"
+          },
+          "country" : {
+            "type" : "string",
+            "description" : "Country (ISO code)"
+          },
+          "registeredResidence" : {
+            "type" : "boolean",
+            "description" : "Registered residence flag"
+          },
+          "addressType" : {
+            "type" : "string",
+            "description" : "Type of address",
+            "enum" : [ "PRIVATE_ADDRESS", "BUSINESS_ADDRESS" ]
+          }
+        },
+        "description" : "Address belonging to a user."
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_addresses" : "Grants read access to address data for the given customer. Two address types are currently supported: business address and private address.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

@@ -1,0 +1,487 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-investments-reports",
+    "description" : "Create PDF reports for a security account or portfolio, using various filters to select the reported data.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/investments/reports/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Investments Reports",
+    "description" : "Create PDF reports for a given security account or portfolio, using various filters to select the reported data."
+  } ],
+  "paths" : {
+    "/" : {
+      "post" : {
+        "tags" : [ "Investments Reports" ],
+        "summary" : "Creates a PDF report based on the request filters.",
+        "description" : "Creates a PDF report as Base64-encoded string based on the request filters.",
+        "operationId" : "report",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "The ReportRequest object.",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ReportRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Successful operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReportResponse"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "Unsuccessful operation.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 100,
+                  "message" : "Can't use securityAccountId for performance, cashFlowProjection and portfolioOverview."
+                }, {
+                  "code" : 101,
+                  "message" : "Invalid value for parameter portfolioId or securityAccountId."
+                }, {
+                  "code" : 103,
+                  "message" : "Not authorized to access PortfolioId or securityAccountId."
+                }, {
+                  "code" : 104,
+                  "message" : "No valid PortfolioId or securityAccountId."
+                }, {
+                  "code" : 105,
+                  "message" : "startDate is greater than or equal to endDate."
+                }, {
+                  "code" : 106,
+                  "message" : "endDate is a future date - must be less or equal to current date."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 117,
+                  "message" : "Date range (period) has to be in same calendar year."
+                }, {
+                  "code" : 118,
+                  "message" : "Body contains no report - at least one report required."
+                }, {
+                  "code" : 119,
+                  "message" : "AggregatedCost/DetailedCost report: earliest year available is 2018."
+                }, {
+                  "code" : 120,
+                  "message" : "CashFlowProjection report: date must be in future."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 130,
+                  "message" : "Please choose a date range according to the lifetime of the account where assets exist"
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_client_credential" : [ "investments_report" ]
+        }, {
+          "api_auth_code" : [ "investments_report" ]
+        }, {
+          "api_db_smart_access" : [ "investments_report" ]
+        } ],
+        "x-codegen-request-body-name" : "ReportRequest"
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "ReportRequest" : {
+        "required" : [ "language", "use" ],
+        "type" : "object",
+        "properties" : {
+          "use" : {
+            "type" : "string",
+            "description" : "The report use. If INTERNAL is set then all reports will be marked for internal use and the report will not be archived. Else if EXTERNAL is set, the report is for external use and should generally include a disclaimer. External reporting must be archived.",
+            "example" : "EXTERNAL",
+            "enum" : [ "INTERNAL", "EXTERNAL" ]
+          },
+          "language" : {
+            "type" : "string",
+            "description" : "The language of the report. Some reports support only GERMAN.",
+            "example" : "GERMAN",
+            "enum" : [ "GERMAN", "ENGLISH" ]
+          },
+          "portfolioId" : {
+            "pattern" : "[0-9]{10}[A-Z0-9]{2}",
+            "type" : "string",
+            "description" : "The portfolio id; Default portfolio (ends with 'ST') includes all security and available cash accounts; Either portfolioId or securityAccountID to be provided!"
+          },
+          "securityAccountId" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string",
+            "description" : "The security account id; Either portfolioId or securityAccountID to be provided!"
+          },
+          "aggregatedCost" : {
+            "$ref" : "#/components/schemas/AggregatedCost"
+          },
+          "performance" : {
+            "maxItems" : 2,
+            "type" : "array",
+            "description" : "Include one or maximum two performance report(s) of the portfolio.",
+            "items" : {
+              "$ref" : "#/components/schemas/Performance"
+            }
+          },
+          "detailedCost" : {
+            "$ref" : "#/components/schemas/DetailedCost"
+          },
+          "assetOverviewStandard" : {
+            "$ref" : "#/components/schemas/AssetOverviewStandard"
+          },
+          "assetOverviewPurchasePrice" : {
+            "$ref" : "#/components/schemas/AssetOverviewPurchasePrice"
+          },
+          "portfolioOverview" : {
+            "$ref" : "#/components/schemas/PortfolioOverview"
+          },
+          "cashFlowProjection" : {
+            "$ref" : "#/components/schemas/CashFlowProjection"
+          },
+          "transactionListing" : {
+            "$ref" : "#/components/schemas/TransactionListing"
+          }
+        },
+        "description" : "Report description."
+      },
+      "ReportResponse" : {
+        "required" : [ "document" ],
+        "type" : "object",
+        "properties" : {
+          "document" : {
+            "pattern" : "^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$",
+            "type" : "string",
+            "description" : "The investments report as Base64 encoded PDF document.",
+            "format" : "byte"
+          }
+        }
+      },
+      "TransactionListing" : {
+        "required" : [ "fromDate", "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "fromDate" : {
+            "type" : "string",
+            "description" : "The report start date. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          },
+          "toDate" : {
+            "type" : "string",
+            "description" : "The report end date. The date cannot be greater than the current date. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          },
+          "selection" : {
+            "type" : "string",
+            "description" : "The selection criteria of the transaction list.",
+            "example" : "SECURITY_TRANSACTIONS_ALL",
+            "default" : "SECURITY_TRANSACTIONS_ALL",
+            "enum" : [ "SECURITY_TRANSACTIONS_ALL", "SECURITY_TRANSACTIONS_EXCL_NON_TRADES", "SECURITY_TRANSACTIONS_INCL_NON_TRADES", "EARNING_TRANSACTIONS" ]
+          },
+          "sorting" : {
+            "type" : "string",
+            "description" : "The order of the transaction list.",
+            "example" : "WKN_DESC",
+            "enum" : [ "WKN_DESC", "WKN_ASC", "BOOKDATE_WKN_DESC", "BOOKDATE_WKN_ASC" ]
+          },
+          "wkn" : {
+            "$ref" : "#/components/schemas/WKN"
+          }
+        },
+        "description" : "The transaction listing report."
+      },
+      "CashFlowProjection" : {
+        "required" : [ "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "toDate" : {
+            "type" : "string",
+            "description" : "The report end date. The date must be in the future but no more than two years. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          },
+          "cashFlowType" : {
+            "type" : "string",
+            "description" : "The type of cash-flow projection to be generated.",
+            "example" : "ALL",
+            "enum" : [ "CASH", "INTEREST", "ALL" ]
+          }
+        },
+        "description" : "The cash-flow projection report."
+      },
+      "PortfolioOverview" : {
+        "required" : [ "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "toDate" : {
+            "type" : "string",
+            "description" : "The report end date. The date cannot be greater than the current date. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          }
+        },
+        "description" : "The portfolio overview report."
+      },
+      "AssetOverviewPurchasePrice" : {
+        "required" : [ "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "toDate" : {
+            "type" : "string",
+            "description" : "The report end date. The date cannot be greater than the current date. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          },
+          "structure" : {
+            "type" : "string",
+            "description" : "The structure of the report.",
+            "example" : "STRUCTURE",
+            "enum" : [ "COUNTRY", "SECTOR", "CURRENCY", "SECCATEGORY", "RISKCLASS", "REALESTATE", "INDUSTRY", "ACCOUNTSTRUCTURECLASS" ]
+          },
+          "sorting" : {
+            "type" : "string",
+            "description" : "The sorting order.",
+            "example" : "PROFITS_IN_PERCENT_ASC",
+            "enum" : [ "LAST_NEW_QUANTITY_DESC", "LAST_NEW_QUANTITY_ASC", "SORT_ORDER_WKN_DESC", "SORT_ORDER_WKN_ASC", "PERCENTAGE_DESC", "PERCENTAGE_ASC", "PROFITS_IN_PERCENT_DESC", "PROFITS_IN_PERCENT_ASC" ]
+          }
+        },
+        "description" : "The asset overview incl. purchase prices report."
+      },
+      "AssetOverviewStandard" : {
+        "required" : [ "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "includeRestricted" : {
+            "type" : "boolean",
+            "description" : "If true, the report will include restricted securites positions. Date in ISO 8601 format YYYY-MM-DD.",
+            "example" : false
+          },
+          "toDate" : {
+            "type" : "string",
+            "description" : "The report end date. The date cannot be greater than the current date. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          },
+          "structure" : {
+            "type" : "string",
+            "description" : "The structure of the report.",
+            "example" : "STRUCTURE",
+            "enum" : [ "COUNTRY", "SECTOR", "CURRENCY", "SECCATEGORY", "RISKCLASS", "REALESTATE", "INDUSTRY", "ACCOUNTSTRUCTURECLASS" ]
+          },
+          "sorting" : {
+            "type" : "string",
+            "description" : "The sorting order.",
+            "example" : "PROFITS_IN_PERCENT_ASC",
+            "enum" : [ "LAST_NEW_QUANTITY_DESC", "LAST_NEW_QUANTITY_ASC", "SORT_ORDER_WKN_DESC", "SORT_ORDER_WKN_ASC", "PERCENTAGE_DESC", "PERCENTAGE_ASC", "PROFITS_IN_PERCENT_DESC", "PROFITS_IN_PERCENT_ASC" ]
+          }
+        },
+        "description" : "The asset overview standard report."
+      },
+      "DetailedCost" : {
+        "required" : [ "fromDate", "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "fromDate" : {
+            "type" : "string",
+            "description" : "The start date of the report. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-01-01"
+          },
+          "toDate" : {
+            "type" : "string",
+            "description" : "The end date of the report. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          },
+          "wkn" : {
+            "type" : "array",
+            "description" : "A list of WKN id(s) that should only be included in the report.",
+            "example" : [ "519000" ],
+            "items" : {
+              "$ref" : "#/components/schemas/WKN"
+            }
+          }
+        },
+        "description" : "The detailed cost report. The report can never be created for a period which crosses the calendar year. If the from date is in 2018, also the to date has to be in 2018."
+      },
+      "AggregatedCost" : {
+        "required" : [ "fromDate", "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "fromDate" : {
+            "type" : "string",
+            "description" : "The start date of the aggregated cost report. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-01-01"
+          },
+          "toDate" : {
+            "type" : "string",
+            "description" : "The end date of the aggregated cost report. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          }
+        },
+        "description" : "The securities account aggregate cost report. The report can never be created for a period which crosses the calendar year. If the from date is in 2018, also the to date has to be in 2018."
+      },
+      "Performance" : {
+        "required" : [ "fromDate", "toDate" ],
+        "type" : "object",
+        "properties" : {
+          "fromDate" : {
+            "type" : "string",
+            "description" : "The start date of the performance report. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-01-01"
+          },
+          "toDate" : {
+            "type" : "string",
+            "description" : "The end date of the performance report. Date in ISO 8601 format YYYY-MM-DD.",
+            "format" : "date",
+            "example" : "2019-12-31"
+          },
+          "lifetimePerformance" : {
+            "type" : "boolean",
+            "description" : "When true the report will display the performance figure of the entire time period on the report.",
+            "example" : false
+          }
+        },
+        "description" : "The performance report of the portfolio."
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "WKN" : {
+        "pattern" : "[A-Z0-9]{6}",
+        "type" : "string",
+        "description" : "German securities identification code (Wertpapierkennnumer)",
+        "example" : "710000"
+      }
+    },
+    "securitySchemes" : {
+      "api_client_credential" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "investments_report" : "Generate investments report for the given customer."
+            }
+          }
+        }
+      },
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "investments_report" : "Generate investments report for the given customer.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "investments_report" : "Generate investments report for the given customer."
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

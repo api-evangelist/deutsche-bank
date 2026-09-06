@@ -1,0 +1,1956 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-loanOffers-privatebanking",
+    "description" : "Easily request loan offers on behalf of your customer.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/lending/consumerLoanOffers/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Loan Offers"
+  } ],
+  "paths" : {
+    "/offers" : {
+      "post" : {
+        "tags" : [ "Loan Offers" ],
+        "summary" : "Request an offer for a loan.",
+        "description" : "By providing data about the prospect and needed loan one can request a loan offer. The result is a unique offer id which can be used with the other endpoints for status retrieval or additional processing.",
+        "parameters" : [ {
+          "name" : "idempotency-id",
+          "in" : "header",
+          "description" : "Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Request an offer for a loan",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RequestForOffer"
+              },
+              "examples" : {
+                "requestForOfferWithOneDebtor" : {
+                  "$ref" : "#/components/examples/RequestForOfferOneDebtorExample"
+                },
+                "requestForOfferWithTwoDebtors" : {
+                  "$ref" : "#/components/examples/RequestForOfferTwoDebtorsExample"
+                },
+                "requestForOfferWithOneDebtorWithOptionalFieldsFilledOut" : {
+                  "$ref" : "#/components/examples/RequestForOfferWithOneDebtorWithOptionalFieldsFilledOutExample"
+                }
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "An offer proposal was created.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RequestForOfferResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 100,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 101,
+                  "message" : "The start date of residence address is required for one of the two addresses when the debtor has two of them. Please try again."
+                }, {
+                  "code" : 102,
+                  "message" : "Insurance percentage should be multiple of 10. Please try again."
+                }, {
+                  "code" : 104,
+                  "message" : "The PDF document you are trying to upload exceeds the maximum allowed limit of 20 MB. Please reduce the file size and try again"
+                }, {
+                  "code" : 105,
+                  "message" : "The document you are trying to upload exceeds the maximum allowed limit of 10 MB for image formats (\"BMP\" \"JPG\" \"PNG\" \"TIFF\"). Please reduce the file size and try again"
+                }, {
+                  "code" : 107,
+                  "message" : "The Document Validation Failed as it is not a Valid Image Data"
+                }, {
+                  "code" : 108,
+                  "message" : "The uploaded document does not meet requirements. Please check and try again."
+                }, {
+                  "code" : 109,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 110,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                }, {
+                  "code" : 111,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 112,
+                  "message" : "The uploaded document does not meet file size requirements. Please check and try again."
+                }, {
+                  "code" : 113,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 114,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 9010,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "403" : {
+            "description" : "Unsuccessful operation, returns http status 403. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 103,
+                  "message" : "You do not have permission to access this resource."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_client_credential" : [ "request_private_loans" ]
+        } ]
+      }
+    },
+    "/offers/{offerId}/status" : {
+      "get" : {
+        "tags" : [ "Loan Offers" ],
+        "summary" : "Get status of the offer with given offer id",
+        "operationId" : "getOfferStatus",
+        "parameters" : [ {
+          "name" : "offerId",
+          "in" : "path",
+          "description" : "Unique identifier of an offer.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The status of the offer with offerId.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OfferStatus"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 100,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 101,
+                  "message" : "The start date of residence address is required for one of the two addresses when the debtor has two of them. Please try again."
+                }, {
+                  "code" : 102,
+                  "message" : "Insurance percentage should be multiple of 10. Please try again."
+                }, {
+                  "code" : 104,
+                  "message" : "The PDF document you are trying to upload exceeds the maximum allowed limit of 20 MB. Please reduce the file size and try again"
+                }, {
+                  "code" : 105,
+                  "message" : "The document you are trying to upload exceeds the maximum allowed limit of 10 MB for image formats (\"BMP\" \"JPG\" \"PNG\" \"TIFF\"). Please reduce the file size and try again"
+                }, {
+                  "code" : 107,
+                  "message" : "The Document Validation Failed as it is not a Valid Image Data"
+                }, {
+                  "code" : 108,
+                  "message" : "The uploaded document does not meet requirements. Please check and try again."
+                }, {
+                  "code" : 109,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 110,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                }, {
+                  "code" : 111,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 112,
+                  "message" : "The uploaded document does not meet file size requirements. Please check and try again."
+                }, {
+                  "code" : 113,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 114,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 9010,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "403" : {
+            "description" : "Unsuccessful operation, returns http status 403. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 103,
+                  "message" : "You do not have permission to access this resource."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_client_credential" : [ "request_private_loans" ]
+        } ]
+      }
+    },
+    "/offers/{offerId}/documents" : {
+      "post" : {
+        "tags" : [ "Loan Offers" ],
+        "summary" : "Upload a document for a specified already opened loan offer. ",
+        "description" : "The operation is used to upload a single PDF, BMP, JPG, PNG or TIFF document. PDFs may be up to 20 MB and all other file types documents may have a max size of 10 MB.",
+        "operationId" : "uploadDocumentUsingDocumentInfo",
+        "parameters" : [ {
+          "name" : "offerId",
+          "in" : "path",
+          "description" : "Unique identifier of an offer.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "idempotency-id",
+          "in" : "header",
+          "description" : "Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "The document info and document content.",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UploadDocumentRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Successful creation of document",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/DocumentStatusInfo"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 100,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 101,
+                  "message" : "The start date of residence address is required for one of the two addresses when the debtor has two of them. Please try again."
+                }, {
+                  "code" : 102,
+                  "message" : "Insurance percentage should be multiple of 10. Please try again."
+                }, {
+                  "code" : 104,
+                  "message" : "The PDF document you are trying to upload exceeds the maximum allowed limit of 20 MB. Please reduce the file size and try again"
+                }, {
+                  "code" : 105,
+                  "message" : "The document you are trying to upload exceeds the maximum allowed limit of 10 MB for image formats (\"BMP\" \"JPG\" \"PNG\" \"TIFF\"). Please reduce the file size and try again"
+                }, {
+                  "code" : 107,
+                  "message" : "The Document Validation Failed as it is not a Valid Image Data"
+                }, {
+                  "code" : 108,
+                  "message" : "The uploaded document does not meet requirements. Please check and try again."
+                }, {
+                  "code" : 109,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 110,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                }, {
+                  "code" : 111,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 112,
+                  "message" : "The uploaded document does not meet file size requirements. Please check and try again."
+                }, {
+                  "code" : 113,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 114,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 9010,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "403" : {
+            "description" : "Unsuccessful operation, returns http status 403. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 103,
+                  "message" : "You do not have permission to access this resource."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_client_credential" : [ "request_private_loans" ]
+        } ]
+      }
+    },
+    "/offers/{offerId}/documents/startCase" : {
+      "post" : {
+        "tags" : [ "Loan Offers" ],
+        "summary" : "Commit uploaded documents and start processing the loan offer case.",
+        "description" : "This operation finalizes the document upload process for the specified loan offer by confirming that all required documents have been successfully submitted. \nOnce triggered, the system initiates the internal processing of the case based on the uploaded documents. This endpoint should be called only after all intended documents for the case have been uploaded via the corresponding upload endpoint.",
+        "operationId" : "notifyDocumentsUpload",
+        "parameters" : [ {
+          "name" : "offerId",
+          "in" : "path",
+          "description" : "Unique identifier of an offer.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "idempotency-id",
+          "in" : "header",
+          "description" : "Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "description" : "Payload carrying transactionId for this upload session.",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NotifyDocumentsUploadRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "202" : {
+            "description" : "Successful operation, case processing has been initiated. "
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 100,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 101,
+                  "message" : "The start date of residence address is required for one of the two addresses when the debtor has two of them. Please try again."
+                }, {
+                  "code" : 102,
+                  "message" : "Insurance percentage should be multiple of 10. Please try again."
+                }, {
+                  "code" : 104,
+                  "message" : "The PDF document you are trying to upload exceeds the maximum allowed limit of 20 MB. Please reduce the file size and try again"
+                }, {
+                  "code" : 105,
+                  "message" : "The document you are trying to upload exceeds the maximum allowed limit of 10 MB for image formats (\"BMP\" \"JPG\" \"PNG\" \"TIFF\"). Please reduce the file size and try again"
+                }, {
+                  "code" : 107,
+                  "message" : "The Document Validation Failed as it is not a Valid Image Data"
+                }, {
+                  "code" : 108,
+                  "message" : "The uploaded document does not meet requirements. Please check and try again."
+                }, {
+                  "code" : 109,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 110,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                }, {
+                  "code" : 111,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 112,
+                  "message" : "The uploaded document does not meet file size requirements. Please check and try again."
+                }, {
+                  "code" : 113,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 114,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 9010,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "403" : {
+            "description" : "Unsuccessful operation, returns http status 403. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 103,
+                  "message" : "You do not have permission to access this resource."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_client_credential" : [ "request_private_loans" ]
+        } ]
+      }
+    },
+    "/offers/{offerId}/documents/transaction" : {
+      "post" : {
+        "tags" : [ "Loan Offers" ],
+        "summary" : "Generate a new transactionId for a document upload session.",
+        "description" : "Generates a unique transactionId to be used for a new upload session. Each upload session (one or more document uploads followed by a single startCase call) requires a fresh transactionId. The generated transactionId must be used in subsequent document upload and startCase calls for this session.",
+        "operationId" : "generateTransactionId",
+        "parameters" : [ {
+          "name" : "offerId",
+          "in" : "path",
+          "description" : "Unique identifier of an offer.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "nullable" : false
+          }
+        }, {
+          "name" : "idempotency-id",
+          "in" : "header",
+          "description" : "Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully generated transactionId.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/GenerateTransactionIdResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 100,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 101,
+                  "message" : "The start date of residence address is required for one of the two addresses when the debtor has two of them. Please try again."
+                }, {
+                  "code" : 102,
+                  "message" : "Insurance percentage should be multiple of 10. Please try again."
+                }, {
+                  "code" : 104,
+                  "message" : "The PDF document you are trying to upload exceeds the maximum allowed limit of 20 MB. Please reduce the file size and try again"
+                }, {
+                  "code" : 105,
+                  "message" : "The document you are trying to upload exceeds the maximum allowed limit of 10 MB for image formats (\"BMP\" \"JPG\" \"PNG\" \"TIFF\"). Please reduce the file size and try again"
+                }, {
+                  "code" : 107,
+                  "message" : "The Document Validation Failed as it is not a Valid Image Data"
+                }, {
+                  "code" : 108,
+                  "message" : "The uploaded document does not meet requirements. Please check and try again."
+                }, {
+                  "code" : 109,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 110,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                }, {
+                  "code" : 111,
+                  "message" : "The uploaded document does not meet format requirements. Please check and try again."
+                }, {
+                  "code" : 112,
+                  "message" : "The uploaded document does not meet file size requirements. Please check and try again."
+                }, {
+                  "code" : 113,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 114,
+                  "message" : "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 9010,
+                  "message" : "The uploaded document does not meet pdf-format requirements. Please check and try again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "403" : {
+            "description" : "Unsuccessful operation, returns http status 403. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 103,
+                  "message" : "You do not have permission to access this resource."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_client_credential" : [ "request_private_loans" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "RequestForOffer" : {
+        "required" : [ "listAccount", "listDebtor", "loanAmount", "paymentDay", "productType" ],
+        "type" : "object",
+        "properties" : {
+          "environment" : {
+            "type" : "string",
+            "description" : "Identifies the environment in which the request should be processed."
+          },
+          "callbackUrl" : {
+            "type" : "string",
+            "description" : "Callback URL provided for asynchronous notifications and document delivery related to the loan offers request. If missing, the default configuration will be applied."
+          },
+          "productType" : {
+            "$ref" : "#/components/schemas/ProductType"
+          },
+          "productName" : {
+            "type" : "string",
+            "description" : "Name of the product/conditions, to be agreed on between consumer/bank"
+          },
+          "externalClientId" : {
+            "type" : "string",
+            "description" : "Application/process ID in the system"
+          },
+          "durationInMonths" : {
+            "type" : "integer",
+            "description" : "Number of requested installment rates",
+            "format" : "int32"
+          },
+          "installment" : {
+            "type" : "number",
+            "description" : "Requested amount per installment"
+          },
+          "loanAmount" : {
+            "type" : "number",
+            "description" : "Loan amount in euro"
+          },
+          "purpose" : {
+            "type" : "string",
+            "description" : "Purpose of the loan"
+          },
+          "requestedVersion" : {
+            "type" : "string",
+            "description" : "Application version to handle the request"
+          },
+          "paymentDay" : {
+            "$ref" : "#/components/schemas/PaymentDay"
+          },
+          "paymentHoliday" : {
+            "$ref" : "#/components/schemas/PaymentHoliday"
+          },
+          "carLoan" : {
+            "$ref" : "#/components/schemas/CarLoan"
+          },
+          "commission" : {
+            "type" : "number"
+          },
+          "listAccountStatement" : {
+            "maxItems" : 10,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AccountStatement"
+            }
+          },
+          "listAccount" : {
+            "maxItems" : 2,
+            "minItems" : 2,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Account"
+            }
+          },
+          "listDebtRestructuring" : {
+            "maxItems" : 5,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/DebtRestructuring"
+            }
+          },
+          "listDebtor" : {
+            "maxItems" : 2,
+            "minItems" : 1,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Debtor"
+            }
+          },
+          "listAgent" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Agent"
+            }
+          }
+        }
+      },
+      "ProductType" : {
+        "type" : "string",
+        "description" : "Type of the product",
+        "enum" : [ "CAR_LOAN_PRIVATE", "CAR_LOAN_DEALER", "PRIVATE_LOAN", "MODERNISATION_LOAN" ]
+      },
+      "PaymentDay" : {
+        "type" : "string",
+        "description" : "Schedule of the loan repayment",
+        "enum" : [ "MONTH_START", "MONTH_MIDDLE" ]
+      },
+      "PaymentHoliday" : {
+        "type" : "string",
+        "description" : "Payment holiday month",
+        "enum" : [ "JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER" ]
+      },
+      "CarLoan" : {
+        "required" : [ "isNewCar" ],
+        "type" : "object",
+        "properties" : {
+          "carMaker" : {
+            "type" : "string",
+            "description" : "The maker of the car"
+          },
+          "carModel" : {
+            "type" : "string",
+            "description" : "The model of the car"
+          },
+          "deposit" : {
+            "type" : "number",
+            "description" : "The deposit made for the car"
+          },
+          "firstRegistrationDate" : {
+            "type" : "string",
+            "description" : "The first registration date of the car. [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          },
+          "isNewCar" : {
+            "type" : "boolean",
+            "description" : "Whether a new or used car is being purchased"
+          },
+          "mileage" : {
+            "type" : "integer",
+            "description" : "Current mileage of the car",
+            "format" : "int32"
+          },
+          "purchasePrice" : {
+            "type" : "number",
+            "description" : "Purchase price of the car"
+          }
+        }
+      },
+      "AccountStatement" : {
+        "required" : [ "document", "documentName", "documentType", "iban", "source", "target" ],
+        "type" : "object",
+        "properties" : {
+          "document" : {
+            "type" : "string",
+            "description" : "Base64 encoded transaction data"
+          },
+          "documentName" : {
+            "type" : "string",
+            "description" : "Name of the delivered document (i.e. account statement)"
+          },
+          "iban" : {
+            "type" : "string",
+            "description" : "International Bank Account Number"
+          },
+          "documentType" : {
+            "$ref" : "#/components/schemas/DocumentType"
+          },
+          "rankPosition" : {
+            "$ref" : "#/components/schemas/RankPosition"
+          },
+          "source" : {
+            "$ref" : "#/components/schemas/Source"
+          },
+          "target" : {
+            "$ref" : "#/components/schemas/Target"
+          }
+        }
+      },
+      "DocumentType" : {
+        "type" : "string",
+        "description" : "Structure of the transaction data",
+        "enum" : [ "JSON" ]
+      },
+      "RankPosition" : {
+        "type" : "string",
+        "description" : "Debtor the transaction data belongs to. First or second debtor",
+        "enum" : [ "FIRST", "SECOND" ]
+      },
+      "Source" : {
+        "type" : "string",
+        "description" : "Source format of the transaction data",
+        "enum" : [ "FINTEC", "OTHER" ]
+      },
+      "Target" : {
+        "type" : "string",
+        "description" : "Target format of the transaction data",
+        "enum" : [ "FINTEC", "CHECK24" ]
+      },
+      "Account" : {
+        "required" : [ "bankName", "ownerName", "paymentType" ],
+        "type" : "object",
+        "properties" : {
+          "bankName" : {
+            "type" : "string",
+            "description" : "Bank name of the account"
+          },
+          "bic" : {
+            "type" : "string",
+            "description" : "BIC ( Bank Identifier Code) of the account"
+          },
+          "iban" : {
+            "pattern" : "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
+            "type" : "string",
+            "description" : "IBAN of the account"
+          },
+          "ownerName" : {
+            "type" : "string",
+            "description" : "Full name of the account owner"
+          },
+          "paymentType" : {
+            "$ref" : "#/components/schemas/PaymentType"
+          }
+        }
+      },
+      "PaymentType" : {
+        "type" : "string",
+        "description" : "Exactly one disbursement and direct debit account are always required",
+        "enum" : [ "DISBURSEMENT", "DIRECT_DEBIT", "DEBT_RESTRUCTURING" ]
+      },
+      "DebtRestructuring" : {
+        "required" : [ "amount", "bankName", "ownerName", "paymentType" ],
+        "type" : "object",
+        "properties" : {
+          "bankName" : {
+            "type" : "string"
+          },
+          "bic" : {
+            "type" : "string"
+          },
+          "iban" : {
+            "type" : "string"
+          },
+          "ownerName" : {
+            "type" : "string"
+          },
+          "paymentType" : {
+            "$ref" : "#/components/schemas/PaymentType"
+          },
+          "amount" : {
+            "type" : "number",
+            "description" : "Account balance of the loan to be restructured"
+          }
+        }
+      },
+      "Debtor" : {
+        "required" : [ "dateOfBirth", "emailAddress", "employment", "expense", "firstName", "income", "lastName", "listAddress", "nationality", "placeOfBirth", "rankPosition", "telephoneNumber" ],
+        "type" : "object",
+        "properties" : {
+          "firstName" : {
+            "type" : "string"
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "description" : "Date of birth of the debtor. [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          },
+          "emailAddress" : {
+            "type" : "string"
+          },
+          "lastName" : {
+            "type" : "string"
+          },
+          "inGermanySince" : {
+            "type" : "string",
+            "description" : "Residence in Germany since [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          },
+          "nationality" : {
+            "type" : "string",
+            "description" : "ISO 3166-1 alpha-3 code of the country belonging to the nationality"
+          },
+          "listAdditionalNationalities" : {
+            "type" : "array",
+            "description" : "Additional nationalities of the debtor. Use this field if the debtor holds more than one nationality. Provide one or more ISO 3166-1 alpha-3 country codes.",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "numberOfChildren" : {
+            "type" : "integer",
+            "description" : "Number of (dependent) children of the debtor",
+            "format" : "int32"
+          },
+          "optInEmail" : {
+            "type" : "boolean",
+            "description" : "Advertisement optin via email"
+          },
+          "optInTelephone" : {
+            "type" : "boolean",
+            "description" : "Advertisement optin via phone"
+          },
+          "placeOfBirth" : {
+            "type" : "string"
+          },
+          "telephoneNumber" : {
+            "type" : "string"
+          },
+          "tin" : {
+            "type" : "string",
+            "description" : "Taxpayer identification number of the debtor"
+          },
+          "workPermitValidUntil" : {
+            "type" : "string",
+            "description" : "Date by when the working permit ends. [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          },
+          "residencyPermitValidUntil" : {
+            "type" : "string",
+            "description" : "Date by when the residence permit ends. [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          },
+          "rankPosition" : {
+            "$ref" : "#/components/schemas/RankPosition"
+          },
+          "academicTitle" : {
+            "$ref" : "#/components/schemas/AcademicTitle"
+          },
+          "maritalStatus" : {
+            "$ref" : "#/components/schemas/MaritalStatus"
+          },
+          "sex" : {
+            "$ref" : "#/components/schemas/Sex"
+          },
+          "existingInsurance" : {
+            "$ref" : "#/components/schemas/ExistingInsurance"
+          },
+          "listAddress" : {
+            "maxItems" : 2,
+            "minItems" : 1,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Address"
+            }
+          },
+          "employment" : {
+            "$ref" : "#/components/schemas/Employment"
+          },
+          "expense" : {
+            "$ref" : "#/components/schemas/Expense"
+          },
+          "income" : {
+            "$ref" : "#/components/schemas/Income"
+          },
+          "listRequestedInsurance" : {
+            "maxItems" : 3,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RequestedInsurance"
+            }
+          }
+        }
+      },
+      "AcademicTitle" : {
+        "type" : "string",
+        "description" : "Academic title of the debtor",
+        "enum" : [ "NONE", "DR", "PROF", "PROF_DIR" ]
+      },
+      "MaritalStatus" : {
+        "type" : "string",
+        "description" : "Marital status of the debtor",
+        "enum" : [ "SINGLE", "DIVORCED", "CIVIL_UNION_SEPARATE_TAX_ASSESSMENT", "MARRIED_SEPARATED", "WIDOWED", "CIVIL_UNION_SEPARATED", "SINGLE_LIVING_IN_COHABITATION", "MARRIED_JOINT_TAX_ASSESSMENT", "MARRIED_SEPARATE_TAX_ASSESSMENT", "CIVIL_UNION_JOINT_TAX_ASSESSMENT" ]
+      },
+      "Sex" : {
+        "type" : "string",
+        "description" : "Sex of the debtor, also determines salutation",
+        "enum" : [ "MALE", "FEMALE" ]
+      },
+      "Address" : {
+        "required" : [ "city", "country", "houseNumber", "street", "zipCode" ],
+        "type" : "object",
+        "properties" : {
+          "city" : {
+            "type" : "string",
+            "description" : "city name"
+          },
+          "country" : {
+            "type" : "string",
+            "description" : "Country the address is located in [ISO 3166-1 alpha-3 code of the country]"
+          },
+          "houseNumber" : {
+            "type" : "string",
+            "description" : "house number"
+          },
+          "ownProperty" : {
+            "type" : "boolean",
+            "description" : "True if living in a self owned property"
+          },
+          "street" : {
+            "type" : "string",
+            "description" : "Street name"
+          },
+          "zipCode" : {
+            "type" : "string",
+            "description" : "Zip code"
+          },
+          "residenceAddressSince" : {
+            "type" : "string",
+            "description" : "Start date of living at the current address, only needed if there was a move in the last 2 years and predecessor address is also available. [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          }
+        }
+      },
+      "ExistingInsurance" : {
+        "type" : "object",
+        "properties" : {
+          "disability" : {
+            "type" : "boolean",
+            "description" : "Whether the customer has an existing disability insurance"
+          },
+          "residualDebt" : {
+            "type" : "boolean",
+            "description" : "Whether the customer has an existing residual debt insurance"
+          },
+          "unemployment" : {
+            "type" : "boolean",
+            "description" : "Whether the customer has an existing unemployment insurance"
+          }
+        }
+      },
+      "Employment" : {
+        "required" : [ "disclosedProfession", "employer", "employmentLevel", "employmentStart" ],
+        "type" : "object",
+        "properties" : {
+          "disclosedProfession" : {
+            "type" : "string",
+            "description" : "Profession of the debtor"
+          },
+          "employer" : {
+            "type" : "string",
+            "description" : "Current employer of the debtor"
+          },
+          "employmentLevel" : {
+            "$ref" : "#/components/schemas/EmploymentLevel"
+          },
+          "employmentStart" : {
+            "type" : "string",
+            "description" : "Start date of current employment. [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          },
+          "shortTermEmploymentEndDate" : {
+            "type" : "string",
+            "description" : "Short term employment end date. [ISO Date. I.e. YYYY-MM-DD]",
+            "format" : "date"
+          }
+        }
+      },
+      "EmploymentLevel" : {
+        "type" : "string",
+        "enum" : [ "EMPLOYEE", "CIVIL_SERVANT", "WORKER", "OTHER", "RETIRED_PENSIONER", "INDEPENDENT", "STUDENT", "CHIEF_EXECUTIVE", "MASTER", "QUALIFIED_EXECUTIVE", "HOMEMAKER", "MIDDLE_GRADE_SERVANT", "HIGH_GRADE_SERVANT", "RAISED_GRADE_SERVANT", "UNEMPLOYED", "CHAIRMAN_MANAGING_DIRECTOR", "TRAINEE", "TECHNICIAN", "VOLUNTARIST" ]
+      },
+      "Expense" : {
+        "type" : "object",
+        "properties" : {
+          "alimony" : {
+            "type" : "number",
+            "description" : "Monthly alimony payments",
+            "format" : "double"
+          },
+          "leasingRates" : {
+            "type" : "number",
+            "description" : "Monthly leasing rate payments"
+          },
+          "otherExpenses" : {
+            "type" : "number",
+            "description" : "Other monthly expenses"
+          },
+          "privateHealthInsurance" : {
+            "type" : "number",
+            "description" : "Monthly private health insurance payments",
+            "format" : "double"
+          },
+          "realEstateLoanRates" : {
+            "type" : "number",
+            "description" : "Monthly real estate loan payments",
+            "format" : "double"
+          },
+          "redemptionPayments" : {
+            "type" : "number",
+            "description" : "Monthly redemption payments for existing loans",
+            "format" : "double"
+          },
+          "utilities" : {
+            "type" : "number",
+            "description" : "Monthly utility payments",
+            "format" : "double"
+          },
+          "warmRent" : {
+            "type" : "number",
+            "description" : "Monthly warm rent payments",
+            "format" : "double"
+          }
+        }
+      },
+      "Income" : {
+        "type" : "object",
+        "properties" : {
+          "nonSelfEmployment" : {
+            "type" : "number",
+            "description" : "Monthly non self employment net income"
+          },
+          "otherIncome" : {
+            "type" : "number",
+            "description" : "Monthly other net income"
+          }
+        }
+      },
+      "RequestedInsurance" : {
+        "required" : [ "insurancePercentage", "type" ],
+        "type" : "object",
+        "properties" : {
+          "insurancePercentage" : {
+            "type" : "number",
+            "description" : "Insurance percentage, only multiples of 10 are valid"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/RequestedInsuranceType"
+          }
+        }
+      },
+      "RequestedInsuranceType" : {
+        "type" : "string",
+        "description" : "Insurance type, residual debt is mandatory if any other insurances are requested",
+        "enum" : [ "RESIDUAL_DEBT_INSURANCE", "DISABILITY_INSURANCE", "UNEMPLOYMENT_INSURANCE" ]
+      },
+      "Agent" : {
+        "required" : [ "city", "houseNumber", "name", "street", "type", "zipCode" ],
+        "type" : "object",
+        "properties" : {
+          "agentId" : {
+            "type" : "string",
+            "description" : "ID of the agent"
+          },
+          "city" : {
+            "type" : "string",
+            "description" : "City of the agent"
+          },
+          "cooperationId" : {
+            "type" : "string",
+            "description" : "CooperationID of the agent"
+          },
+          "directorate" : {
+            "type" : "string",
+            "description" : "Directorate of the agent"
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "Email address of the agent"
+          },
+          "emailNotification" : {
+            "type" : "boolean",
+            "description" : "Select if status updates of the loan should be sent to the agent instead of the customer"
+          },
+          "fax" : {
+            "type" : "string",
+            "description" : "Fax number of the agent"
+          },
+          "firstName" : {
+            "type" : "string",
+            "description" : "First name of the agent"
+          },
+          "homepage" : {
+            "type" : "string",
+            "description" : "URL to the homepage of the agent"
+          },
+          "houseNumber" : {
+            "type" : "string",
+            "description" : "House number of the agent"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Last name of the agent"
+          },
+          "salesKey" : {
+            "type" : "string",
+            "description" : "Sales key of the agent"
+          },
+          "street" : {
+            "type" : "string",
+            "description" : "Street of the agent"
+          },
+          "telephone" : {
+            "type" : "string",
+            "description" : "Phone number of the agent"
+          },
+          "type" : {
+            "type" : "integer",
+            "description" : "Agent type, to be agreed on with the bank",
+            "format" : "int32"
+          },
+          "zipCode" : {
+            "type" : "string",
+            "description" : "Zip code of the agent"
+          }
+        }
+      },
+      "RequestForOfferResponse" : {
+        "required" : [ "offerId" ],
+        "type" : "object",
+        "properties" : {
+          "offerId" : {
+            "type" : "string",
+            "description" : "Unique identifier of an offer."
+          }
+        }
+      },
+      "GenerateTransactionIdResponse" : {
+        "required" : [ "transactionId" ],
+        "type" : "object",
+        "properties" : {
+          "transactionId" : {
+            "type" : "string",
+            "description" : "A unique transactionId to be used for one upload session (n document uploads + 1 startCase)."
+          }
+        }
+      },
+      "OfferStatus" : {
+        "required" : [ "status" ],
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "$ref" : "#/components/schemas/StatusEnum"
+          }
+        }
+      },
+      "StatusEnum" : {
+        "type" : "string",
+        "enum" : [ "CREATED", "IN_PROGRESS", "ACCEPTED", "REJECTED", "ERROR" ]
+      },
+      "UploadDocumentRequest" : {
+        "required" : [ "data", "fileName", "mimeType", "requirementType", "transactionId" ],
+        "type" : "object",
+        "properties" : {
+          "transactionId" : {
+            "type" : "string",
+            "description" : "Unique transaction id of the upload session."
+          },
+          "requirementType" : {
+            "type" : "string",
+            "description" : "Type of document required for processing the loan application (e.g. SALARY_CERTIFICATE, LOAN_CONTRACT,RESIDENCE_PERMIT)",
+            "enum" : [ "SALARY_CERTIFICATE", "CIVIL_SERVANT_NOTICE", "PENSION_NOTICE", "ACCOUNT_STATEMENT", "ACCOUNT_OWNER_DISBURSEMENT", "OTHER_INCOME_STATEMENT", "ACCOUNT_OWNER_PROOF", "LOAN_CONTRACT_FOR_REPAYMENT", "LAND_REGISTER_UTILITY_BILLING", "RESIDENCE_PERMIT", "LOAN_CONTRACT", "SEPA_MANDATE", "ENROLMENT_CERTIFICATE", "CAR_SALE_CONTRACT", "CHATTEL_MORTGAGE_PRIVATE", "INSURANCE_CONTRACT", "ADVICE_RECORD", "LEGITIMATION_CERTIFICATE", "OTHER", "FRAUD_EMPLOYMENT_CONTRACT", "FRAUD_SOCIAL_INSURANCE", "FRAUD_SIGN_UP_MINIJOB", "FRAUD_VALUE_EXPLANATION", "FRAUD_INCOME_TAX_ASSESSMENT", "FRAUD_ELECTRONIC_INCOME_TAX_CERTIFICATE", "LETTER_OF_ATTORNEY" ]
+          },
+          "fileName" : {
+            "type" : "string",
+            "description" : "Immutable name of the document file as given by the creator of the document."
+          },
+          "data" : {
+            "type" : "string",
+            "description" : "Document content as Base64 encoded string.",
+            "format" : "byte"
+          },
+          "mimeType" : {
+            "type" : "string",
+            "description" : "Media type of the document (e.g. application/pdf, image/tiff.).",
+            "enum" : [ "application/pdf", "image/png", "image/jpeg", "image/tiff", "image/bmp" ]
+          }
+        }
+      },
+      "DocumentStatusInfo" : {
+        "required" : [ "requirementType" ],
+        "type" : "object",
+        "properties" : {
+          "requirementType" : {
+            "type" : "string",
+            "description" : "Requirement Type",
+            "enum" : [ "SALARY_CERTIFICATE", "CIVIL_SERVANT_NOTICE", "PENSION_NOTICE", "ACCOUNT_STATEMENT", "ACCOUNT_OWNER_DISBURSEMENT", "OTHER_INCOME_STATEMENT", "ACCOUNT_OWNER_PROOF", "LOAN_CONTRACT_FOR_REPAYMENT", "LAND_REGISTER_UTILITY_BILLING", "RESIDENCE_PERMIT", "LOAN_CONTRACT", "SEPA_MANDATE", "ENROLMENT_CERTIFICATE", "CAR_SALE_CONTRACT", "CHATTEL_MORTGAGE_PRIVATE", "INSURANCE_CONTRACT", "ADVICE_RECORD", "LEGITIMATION_CERTIFICATE", "OTHER", "FRAUD_EMPLOYMENT_CONTRACT", "FRAUD_SOCIAL_INSURANCE", "FRAUD_SIGN_UP_MINIJOB", "FRAUD_VALUE_EXPLANATION", "FRAUD_INCOME_TAX_ASSESSMENT", "FRAUD_ELECTRONIC_INCOME_TAX_CERTIFICATE", "LETTER_OF_ATTORNEY" ]
+          },
+          "description" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "NotifyDocumentsUploadRequest" : {
+        "required" : [ "transactionId" ],
+        "type" : "object",
+        "properties" : {
+          "transactionId" : {
+            "type" : "string",
+            "description" : "Unique transaction id for this upload session."
+          }
+        }
+      }
+    },
+    "parameters" : {
+      "OfferIdParam" : {
+        "name" : "offerId",
+        "in" : "path",
+        "description" : "Unique identifier of an offer.",
+        "required" : true,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "type" : "string",
+          "nullable" : false
+        }
+      }
+    },
+    "examples" : {
+      "RequestForOfferOneDebtorExample" : {
+        "summary" : "A request for an offer proposal for one debtor.",
+        "value" : {
+          "durationInMonths" : 24,
+          "externalClientId" : "SIT",
+          "installment" : null,
+          "loanAmount" : 9000,
+          "productType" : "PRIVATE_LOAN",
+          "purpose" : "Purchase of a luxury item",
+          "requestedVersion" : null,
+          "paymentDay" : "MONTH_START",
+          "listAccountStatement" : [ ],
+          "listAccount" : [ {
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013000",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DISBURSEMENT"
+          }, {
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013000",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DIRECT_DEBIT"
+          } ],
+          "listDebtRestructuring" : [ ],
+          "listDebtor" : [ {
+            "dateOfBirth" : "1990-04-12",
+            "emailAddress" : "ernst.fischer@db.com",
+            "firstName" : "Ernst",
+            "lastName" : "Fischer",
+            "inGermanySince" : "1990-04-12",
+            "nationality" : "DEU",
+            "numberOfChildren" : 2,
+            "optInEmail" : true,
+            "optInTelephone" : true,
+            "placeOfBirth" : "Frankfurt",
+            "residencyPermitValidUntil" : null,
+            "telephoneNumber" : "+492563179954",
+            "tin" : null,
+            "workPermitValidUntil" : null,
+            "rankPosition" : "FIRST",
+            "academicTitle" : "NONE",
+            "maritalStatus" : "SINGLE",
+            "sex" : "MALE",
+            "listRequestedInsurance" : [ {
+              "insurancePercentage" : 100,
+              "type" : "RESIDUAL_DEBT_INSURANCE"
+            } ],
+            "listAddress" : [ {
+              "city" : "Frankfurt",
+              "country" : "Germany",
+              "houseNumber" : "72",
+              "ownProperty" : true,
+              "street" : "Nordend",
+              "zipCode" : "60486",
+              "residenceAddressSince" : null
+            } ],
+            "existingInsurance" : {
+              "disability" : false,
+              "residualDebt" : true,
+              "unemployment" : true
+            },
+            "employment" : {
+              "disclosedProfession" : "Business Analyst",
+              "employer" : "DB",
+              "employmentLevel" : "EMPLOYEE",
+              "employmentStart" : "2010-04-12",
+              "shortTermEmploymentEndDate" : null
+            },
+            "expense" : {
+              "alimony" : 0,
+              "leasingRates" : 0,
+              "otherExpenses" : 0,
+              "privateHealthInsurance" : 0,
+              "realEstateLoanRates" : 0,
+              "redemptionPayments" : 0,
+              "utilities" : 0,
+              "warmRent" : 500
+            },
+            "income" : {
+              "nonSelfEmployment" : 10000,
+              "otherIncome" : 0
+            }
+          } ],
+          "listAgent" : [ ],
+          "carLoan" : { }
+        }
+      },
+      "RequestForOfferTwoDebtorsExample" : {
+        "summary" : "A request for an offer proposal for two debtors.",
+        "value" : {
+          "durationInMonths" : 24,
+          "externalClientId" : "SIT",
+          "installment" : null,
+          "loanAmount" : 11000,
+          "productType" : "PRIVATE_LOAN",
+          "purpose" : "Purchase of a luxury item",
+          "requestedVersion" : null,
+          "paymentDay" : "MONTH_START",
+          "listAccountStatement" : [ ],
+          "listAccount" : [ {
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013000",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DISBURSEMENT"
+          }, {
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013000",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DIRECT_DEBIT"
+          } ],
+          "listDebtRestructuring" : [ ],
+          "listDebtor" : [ {
+            "dateOfBirth" : "1990-04-12",
+            "emailAddress" : "ernst.fischer@db.com",
+            "firstName" : "Ernst",
+            "lastName" : "Fischer",
+            "inGermanySince" : "1990-04-12",
+            "nationality" : "DEU",
+            "numberOfChildren" : 2,
+            "optInEmail" : true,
+            "optInTelephone" : true,
+            "placeOfBirth" : "Frankfurt",
+            "residencyPermitValidUntil" : null,
+            "telephoneNumber" : "+492563178954",
+            "tin" : null,
+            "workPermitValidUntil" : null,
+            "rankPosition" : "FIRST",
+            "academicTitle" : "NONE",
+            "maritalStatus" : "SINGLE",
+            "sex" : "MALE",
+            "listRequestedInsurance" : [ {
+              "insurancePercentage" : 100,
+              "type" : "RESIDUAL_DEBT_INSURANCE"
+            } ],
+            "listAddress" : [ {
+              "city" : "Frankfurt",
+              "country" : "Germany",
+              "houseNumber" : "72",
+              "ownProperty" : true,
+              "street" : "Nordend",
+              "zipCode" : "60486",
+              "residenceAddressSince" : null
+            } ],
+            "existingInsurance" : {
+              "disability" : false,
+              "residualDebt" : true,
+              "unemployment" : true
+            },
+            "employment" : {
+              "disclosedProfession" : "Business Analyst",
+              "employer" : "DB",
+              "employmentLevel" : "EMPLOYEE",
+              "employmentStart" : "2010-04-12",
+              "shortTermEmploymentEndDate" : null
+            },
+            "expense" : {
+              "alimony" : 0,
+              "leasingRates" : 0,
+              "otherExpenses" : 0,
+              "privateHealthInsurance" : 0,
+              "realEstateLoanRates" : 0,
+              "redemptionPayments" : 0,
+              "utilities" : 0,
+              "warmRent" : 500
+            },
+            "income" : {
+              "nonSelfEmployment" : 2000,
+              "otherIncome" : 0
+            }
+          }, {
+            "dateOfBirth" : "1990-04-12",
+            "emailAddress" : "laura.fischer@db.com",
+            "firstName" : "Laura",
+            "lastName" : "Fischer",
+            "inGermanySince" : null,
+            "nationality" : "DEU",
+            "numberOfChildren" : 2,
+            "optInEmail" : true,
+            "optInTelephone" : true,
+            "placeOfBirth" : "Frankfurt",
+            "residencyPermitValidUntil" : null,
+            "telephoneNumber" : "+492563178954",
+            "tin" : null,
+            "workPermitValidUntil" : null,
+            "rankPosition" : "SECOND",
+            "academicTitle" : "NONE",
+            "maritalStatus" : "SINGLE",
+            "sex" : "FEMALE",
+            "listRequestedInsurance" : [ {
+              "insurancePercentage" : 100,
+              "type" : "RESIDUAL_DEBT_INSURANCE"
+            }, {
+              "insurancePercentage" : 50,
+              "type" : "DISABILITY_INSURANCE"
+            }, {
+              "insurancePercentage" : 100,
+              "type" : "UNEMPLOYMENT_INSURANCE"
+            } ],
+            "listAddress" : [ {
+              "city" : "Frankfurt",
+              "country" : "Germany",
+              "houseNumber" : "72",
+              "ownProperty" : true,
+              "street" : "Nordend",
+              "zipCode" : "60486",
+              "residenceAddressSince" : null
+            } ],
+            "existingInsurance" : {
+              "disability" : false,
+              "residualDebt" : true,
+              "unemployment" : true
+            },
+            "employment" : {
+              "disclosedProfession" : "Business Analyst",
+              "employer" : "DB",
+              "employmentLevel" : "EMPLOYEE",
+              "employmentStart" : "2010-04-12",
+              "shortTermEmploymentEndDate" : null
+            },
+            "expense" : {
+              "alimony" : 0,
+              "leasingRates" : 0,
+              "otherExpenses" : 0,
+              "privateHealthInsurance" : 0,
+              "realEstateLoanRates" : 0,
+              "redemptionPayments" : 0,
+              "utilities" : 0,
+              "warmRent" : 500
+            },
+            "income" : {
+              "nonSelfEmployment" : 2000,
+              "otherIncome" : 0
+            }
+          } ],
+          "listAgent" : [ ],
+          "carLoan" : { }
+        }
+      },
+      "RequestForOfferWithOneDebtorWithOptionalFieldsFilledOutExample" : {
+        "summary" : "A request for an offer proposal for one debtor having the optional fields filled out.",
+        "value" : {
+          "durationInMonths" : 24,
+          "externalClientId" : "SIT12334567",
+          "installment" : null,
+          "loanAmount" : 50000,
+          "productType" : "CAR_LOAN_DEALER",
+          "purpose" : "Purchase of a luxury item",
+          "requestedVersion" : null,
+          "paymentDay" : "MONTH_START",
+          "listAccountStatement" : [ {
+            "document" : "<List of Transactions as JSON>",
+            "documentName" : "Account Statement",
+            "iban" : "DE89370400440532013000",
+            "documentType" : "JSON",
+            "rankPosition" : "FIRST",
+            "source" : "FINTEC",
+            "target" : "FINTEC"
+          } ],
+          "listAccount" : [ {
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013000",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DISBURSEMENT"
+          }, {
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013000",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DIRECT_DEBIT"
+          } ],
+          "listDebtRestructuring" : [ {
+            "amount" : 5000,
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013001",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DEBT_RESTRUCTURING"
+          }, {
+            "amount" : 2000,
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013002",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DEBT_RESTRUCTURING"
+          }, {
+            "amount" : 1000,
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013003",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DEBT_RESTRUCTURING"
+          }, {
+            "amount" : 3000,
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013004",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DEBT_RESTRUCTURING"
+          }, {
+            "amount" : 7000,
+            "bankName" : "DB",
+            "bic" : "BELADEBE",
+            "iban" : "DE89370400440532013005",
+            "ownerName" : "Ernst Fischer",
+            "paymentType" : "DEBT_RESTRUCTURING"
+          } ],
+          "listDebtor" : [ {
+            "dateOfBirth" : "1990-04-12",
+            "emailAddress" : "ernst.fischer@db.com",
+            "firstName" : "Ernst",
+            "lastName" : "Fischer",
+            "inGermanySince" : "1990-04-12",
+            "nationality" : "BRA",
+            "numberOfChildren" : 2,
+            "optInEmail" : true,
+            "optInTelephone" : true,
+            "placeOfBirth" : "Frankfurt",
+            "residencyPermitValidUntil" : "2030-04-12",
+            "telephoneNumber" : "+492563179954",
+            "tin" : "1234567890",
+            "workPermitValidUntil" : "2030-04-12",
+            "rankPosition" : "FIRST",
+            "academicTitle" : "PROF",
+            "maritalStatus" : "SINGLE",
+            "sex" : "MALE",
+            "listRequestedInsurance" : [ {
+              "insurancePercentage" : 100,
+              "type" : "RESIDUAL_DEBT_INSURANCE"
+            }, {
+              "insurancePercentage" : 100,
+              "type" : "DISABILITY_INSURANCE"
+            }, {
+              "insurancePercentage" : 100,
+              "type" : "UNEMPLOYMENT_INSURANCE"
+            } ],
+            "listAddress" : [ {
+              "city" : "Frankfurt",
+              "country" : "DEU",
+              "houseNumber" : "72",
+              "ownProperty" : false,
+              "street" : "Nordend",
+              "zipCode" : "60486"
+            }, {
+              "city" : "Frankfurt",
+              "country" : "DEU",
+              "houseNumber" : "74",
+              "ownProperty" : true,
+              "street" : "Nordend",
+              "zipCode" : "60486",
+              "residenceAddressSince" : "2000-04-12"
+            } ],
+            "existingInsurance" : {
+              "disability" : false,
+              "residualDebt" : true,
+              "unemployment" : true
+            },
+            "employment" : {
+              "disclosedProfession" : "Business Analyst",
+              "employer" : "DB",
+              "employmentLevel" : "EMPLOYEE",
+              "employmentStart" : "2010-04-12",
+              "shortTermEmploymentEndDate" : "2030-04-12"
+            },
+            "expense" : {
+              "alimony" : 0,
+              "leasingRates" : 0,
+              "otherExpenses" : 0,
+              "privateHealthInsurance" : 0,
+              "realEstateLoanRates" : 0,
+              "redemptionPayments" : 0,
+              "utilities" : 0,
+              "warmRent" : 500
+            },
+            "income" : {
+              "nonSelfEmployment" : 10000,
+              "otherIncome" : 0
+            }
+          } ],
+          "listAgent" : [ {
+            "agentId" : "Finanzagent",
+            "city" : "Frankfurt",
+            "cooperationId" : "123456",
+            "directorate" : "Example",
+            "email" : "finanz@agent.de",
+            "emailNotification" : true,
+            "fax" : "1234365363",
+            "firstName" : "Finanz",
+            "homepage" : "agent.de",
+            "houseNumber" : "76",
+            "name" : "Agent",
+            "salesKey" : "123345754",
+            "street" : "Nordend",
+            "telephone" : "+492563179954",
+            "type" : 3,
+            "zipCode" : "60486"
+          } ],
+          "carLoan" : {
+            "isNewCar" : false,
+            "carMaker" : "Audi",
+            "carModel" : "A3",
+            "deposit" : 5000,
+            "firstRegistrationDate" : "2022-04-12",
+            "mileage" : 10000,
+            "purchasePrice" : 30000
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "api_client_credential" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "request_private_loans" : "Request private loans"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,499 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-swaggers-v1",
+    "description" : "swagger/API definition service",
+    "contact" : { },
+    "license" : { },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/public/dbapi/swaggers/v1"
+  } ],
+  "tags" : [ {
+    "name" : "tenants",
+    "description" : "Tenants"
+  }, {
+    "name" : "swaggers",
+    "description" : "Swaggers/OpenAPI repository"
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "swaggers" ],
+        "summary" : "Returns all known swagger definitions",
+        "description" : "Returns a list of all swagger definitions known.",
+        "operationId" : "rootGet",
+        "parameters" : [ {
+          "name" : "tenant-id",
+          "in" : "query",
+          "description" : "the tenant id",
+          "allowEmptyValue" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "view",
+          "in" : "query",
+          "description" : "view",
+          "allowEmptyValue" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "gateway", "devportal" ]
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiDefinitions"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : { }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : { }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : { }
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/tenants/" : {
+      "get" : {
+        "tags" : [ "tenants" ],
+        "summary" : "Return all tenant definitions",
+        "description" : "Return all tenant definitions",
+        "operationId" : "getAllTenants",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : { }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : { }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : { }
+          },
+          "500" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/tenants/default" : {
+      "get" : {
+        "tags" : [ "tenants" ],
+        "summary" : "Returns the default tenant definition",
+        "description" : "Returns the default tenant definition",
+        "operationId" : "getDefaultTenant",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : { }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : { }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : { }
+          },
+          "500" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/tenants/{tenant-id}" : {
+      "get" : {
+        "tags" : [ "tenants" ],
+        "summary" : "Returns a tenant definition",
+        "description" : "Returns a tenant definition",
+        "operationId" : "getTenantById",
+        "parameters" : [ {
+          "name" : "tenant-id",
+          "in" : "path",
+          "description" : "the unique resource id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : { }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : { }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : { }
+          },
+          "500" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "deprecated" : false
+      }
+    },
+    "/{swaggerid}/swagger" : {
+      "get" : {
+        "tags" : [ "swaggers" ],
+        "summary" : "Returns a swagger definition",
+        "description" : "Returns a swagger definition",
+        "operationId" : "swaggeridSwaggerGet",
+        "parameters" : [ {
+          "name" : "swaggerid",
+          "in" : "path",
+          "description" : "the unique resource id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "tenant-id",
+          "in" : "query",
+          "description" : "the tenant id",
+          "allowEmptyValue" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized",
+            "content" : { }
+          },
+          "403" : {
+            "description" : "Forbidden",
+            "content" : { }
+          },
+          "404" : {
+            "description" : "Not Found",
+            "content" : { }
+          }
+        },
+        "deprecated" : false
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "ApiDefinition" : {
+        "title" : "ApiDefinition",
+        "type" : "object",
+        "properties" : {
+          "api" : {
+            "type" : "string",
+            "description" : "The API name. This is the grouping element of all belonging API/swagger definitions. E.g. dbapi, psd2, etc."
+          },
+          "context" : {
+            "type" : "string",
+            "description" : "the context name of the API definition. The context is used to construct the path of the API base URL"
+          },
+          "gatewayUrl" : {
+            "type" : "string"
+          },
+          "groups" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ApiGroup"
+            }
+          },
+          "introspectionMandatory" : {
+            "type" : "boolean"
+          },
+          "rerouteUrl" : {
+            "type" : "string",
+            "description" : "The backend URL to route this request to."
+          },
+          "swaggerId" : {
+            "type" : "string",
+            "description" : "A unique ID of a swagger resource."
+          },
+          "swaggerUrl" : {
+            "type" : "string"
+          },
+          "tryItOut" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "ApiDefinitions" : {
+        "title" : "ApiDefinitions",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ApiDefinition"
+            }
+          },
+          "totalItems" : {
+            "type" : "number",
+            "description" : "total number of API definitions"
+          }
+        }
+      },
+      "ApiGroup" : {
+        "title" : "ApiGroup",
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "description" : "The group name. I.e. \"Reference Data.addresses\""
+          },
+          "paths" : {
+            "type" : "array",
+            "description" : "The path object in the swagger definition.",
+            "items" : {
+              "$ref" : "#/components/schemas/ApiGroupVersionPath"
+            }
+          }
+        }
+      },
+      "ApiGroupVersionPath" : {
+        "title" : "ApiGroupVersionPath",
+        "type" : "object",
+        "properties" : {
+          "path" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "title" : "ErrorResponse",
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code",
+            "format" : "int32"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "HealthResponse" : {
+        "title" : "HealthResponse",
+        "type" : "object",
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "UP", "DOWN" ]
+          }
+        }
+      },
+      "Tenant" : {
+        "title" : "Tenant",
+        "type" : "object",
+        "properties" : {
+          "authorizationUrl" : {
+            "type" : "string"
+          },
+          "defaultTenant" : {
+            "type" : "boolean"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "gatewayUrl" : {
+            "type" : "string"
+          },
+          "id" : {
+            "type" : "string"
+          },
+          "tokenUrl" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Tenants" : {
+        "title" : "Tenants",
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Tenant"
+            }
+          },
+          "totalItems" : {
+            "type" : "number",
+            "description" : "total number of tenant definitions"
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

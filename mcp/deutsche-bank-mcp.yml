@@ -1,0 +1,182 @@
+specification: API Commons MCP
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: derived
+status: candidate
+source: openapi/ (36 first-party Deutsche Bank OpenAPI 3.0.x documents)
+description: >-
+  Deutsche Bank ships NO Model Context Protocol server. This is a DERIVED candidate tool
+  surface, computed from the read-safe operations in Deutsche Bank's own published OpenAPI
+  contracts so the shape of a future server is on record. Nothing here is callable today and
+  no endpoint below is a real URL.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: oauth
+  verified: derived
+search_evidence:
+  - probe: POST tools/list https://mcp.db.com/mcp
+    result: DNS does not resolve
+  - probe: POST tools/list https://developer.db.com/mcp
+    result: 403 (portal edge), no JSON-RPC response
+  - probe: POST tools/list https://simulator-api.db.com/mcp
+    result: 404
+  - probe: POST tools/list https://api.db.com/mcp
+    result: 404
+  - probe: /.well-known/ai-plugin.json on every known host
+    result: 404 everywhere except the developer.db.com SPA catch-all, which returns the HTML shell
+  - probe: developer.db.com portal bundle and CMS content searched for "mcp"
+    result: no reference
+candidate_tools:
+  - name: list_cash_accounts
+    rest: getCashAccounts
+    spec: openapi/deutsche-bank-dbapi-cashAccounts-v2.json
+    scope: read_accounts_list
+    consequence: read
+  - name: get_account_brand
+    rest: getBrand
+    spec: openapi/deutsche-bank-dbapi-cashAccounts-v2.json
+    scope: read_brand
+    consequence: read
+  - name: list_transactions
+    rest: getCashAccountTransactions
+    spec: openapi/deutsche-bank-dbapi-transactions-v2.json
+    scope: read_transactions
+    consequence: read
+  - name: get_transaction
+    rest: getCashAccountTransactionById
+    spec: openapi/deutsche-bank-dbapi-transactions-v2.json
+    scope: read_transactions
+    consequence: read
+  - name: list_credit_cards
+    rest: getCreditsCards
+    spec: openapi/deutsche-bank-dbapi-creditCards-v1.json
+    scope: read_credit_cards_list_with_details
+    consequence: read
+  - name: list_credit_card_transactions
+    rest: getCreditCardTransactions
+    spec: openapi/deutsche-bank-dbapi-creditCardTransactions-v1.json
+    scope: read_credit_card_transactions
+    consequence: read
+  - name: list_addresses
+    rest: getAddresses
+    spec: openapi/deutsche-bank-dbapi-addresses-v2.json
+    scope: read_addresses
+    consequence: read
+  - name: get_partner
+    rest: getPartners
+    spec: openapi/deutsche-bank-dbapi-partners-v2.json
+    scope: read_partners
+    consequence: read
+  - name: check_age
+    rest: ageCertificate
+    spec: openapi/deutsche-bank-dbapi-ageCertificate-v1.json
+    scope: age_certificate
+    consequence: read
+  - name: check_solvency
+    rest: getSolvency
+    spec: openapi/deutsche-bank-dbapi-customerSolvency-v1.json
+    consequence: read
+  - name: analyse_income
+    rest: getTransactionAnalysisIncome
+    spec: openapi/deutsche-bank-dbapi-transactionAnalysis-v1.json
+    scope: income_analysis
+    consequence: read
+  - name: analyse_rent
+    rest: getTransactionAnalysisRent
+    spec: openapi/deutsche-bank-dbapi-transactionAnalysis-v1.json
+    scope: rent_analysis
+    consequence: read
+  - name: list_security_accounts
+    rest: getSecurityAccounts
+    spec: openapi/deutsche-bank-dbapi-investments-securityAccounts-v1.json
+    scope: read_security_accounts_list
+    consequence: read
+  - name: list_assets
+    rest: getAssetsV1
+    spec: openapi/deutsche-bank-dbapi-investments-assets-v1.json
+    scope: read_assets
+    consequence: read
+  - name: get_portfolio_performance
+    rest: getPerformance
+    spec: openapi/deutsche-bank-dbapi-investments-performances-v1.json
+    scope: read_performances
+    consequence: read
+  - name: list_security_transactions
+    rest: getSecurityTransactionsV1
+    spec: openapi/deutsche-bank-dbapi-investments-securityTransactions-v1.json
+    scope: read_security_transactions
+    consequence: read
+  - name: list_earning_transactions
+    rest: getEarningTransactionsV1
+    spec: openapi/deutsche-bank-dbapi-investments-earningTransactions-v1.json
+    consequence: read
+  - name: list_orders
+    rest: orderBookList
+    spec: openapi/deutsche-bank-dbapi-investments-orders-v1.json
+    scope: order_securities
+    consequence: read
+  - name: get_order
+    rest: orderDetails
+    spec: openapi/deutsche-bank-dbapi-investments-orders-v1.json
+    consequence: read
+  - name: get_order_quotes
+    rest: orderQuotes
+    spec: openapi/deutsche-bank-dbapi-investments-orders-v1.json
+    consequence: read
+  - name: preview_order
+    rest: orderEntryPreview
+    spec: openapi/deutsche-bank-dbapi-investments-orders-v1.json
+    consequence: rehearsal
+    note: Returns previewSignature, which real order entry then requires - a safe dry run.
+  - name: estimate_order_cost
+    rest: costInformation
+    spec: openapi/deutsche-bank-dbapi-investments-orders-v1.json
+    consequence: rehearsal
+  - name: check_iban_reachability
+    rest: getReachabilityStatus
+    spec: openapi/deutsche-bank-dbapi-payments-sepaInstantCreditTransfer-v3.json
+    consequence: read
+  - name: get_payment_status
+    rest: getPaymentStatus
+    spec: openapi/deutsche-bank-dbapi-payments-sepaInstantCreditTransfer-v3.json
+    consequence: read
+  - name: list_swagger_definitions
+    rest: rootGet
+    spec: openapi/deutsche-bank-dbapi-swaggers-v1.json
+    consequence: read
+    note: The only operation in the estate that is callable today with the portal's own public key.
+excluded_from_candidate_surface:
+  reason: >-
+    Every money-moving and account-creating operation is deliberately left out of the candidate
+    tool list. Payment initiation, direct debit, order entry, account opening, loan document
+    commit and subscription creation all require PSD2 strong customer authentication (an OTP
+    header sourced from the Transaction Authorization API) and, in most cases, an
+    idempotency-id. They should not be exposed as autonomous agent tools without an explicit
+    human-in-the-loop escalation contract.
+  operations:
+    - performPaymentInstant
+    - sepaCreditTransfer POST /
+    - sepaDirectDebit POST /
+    - orderEntry
+    - bulkOrderEntry
+    - cashAccountOpenings
+    - espSecuritiesAccountOpening
+    - notifyDocumentsUpload
+    - createProcessingOrders
+    - transactionsPost
+    - investmentsOrdersPost
+auth_model:
+  detail: >-
+    Any real server would have to carry an OAuth 2.0 authorization-code flow per end user
+    against https://api.db.com (or the simulator), request the scope each tool needs, and pass
+    a Correlation-Id per call. Client-credentials scopes exist but only cover the db Smart
+    Access corporate product.
+  scopes: scopes/deutsche-bank-scopes.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

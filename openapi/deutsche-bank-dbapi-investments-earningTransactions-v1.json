@@ -1,0 +1,419 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-investments-earningTransactions",
+    "description" : "Lets you retrieve the earning transaction of a security account or portfolio.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/investments/earningTransactions/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Earning Transactions",
+    "description" : "Lets you retrieve the earning transaction (dividends & interests) of a security account or portfolio."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Earning Transactions" ],
+        "summary" : "Earning transactions of a security account/portfolio.",
+        "description" : "Reads the earning transaction (dividends & interests) of a security account or portfolio for a given date range.",
+        "operationId" : "getEarningTransactionsV1",
+        "parameters" : [ {
+          "name" : "portfolioId",
+          "in" : "query",
+          "description" : "The portfolio id; Default portfolio (ends with 'ST') includes all security and available cash accounts; Either portfolioId or securityAccountID to be provided!",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "pattern" : "[0-9]{10}[A-Z0-9]{2}",
+            "type" : "string"
+          }
+        }, {
+          "name" : "securityAccountId",
+          "in" : "query",
+          "description" : "The security account id; Either portfolioId or securityAccountID to be provided!",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string"
+          }
+        }, {
+          "name" : "bookingDateFrom",
+          "in" : "query",
+          "description" : "Defines the start booking date of the time span. Date in ISO 8601 format YYYY-MM-DD.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "name" : "bookingDateTo",
+          "in" : "query",
+          "description" : "Defines the latter booking date of the time span. Date in ISO 8601 format YYYY-MM-DD. bookingDateTo must be greater than or equal to bookingDateFrom request parameter.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EarningTransactionsResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 101,
+                  "message" : "Invalid value for parameter portfolioId or securityAccountId."
+                }, {
+                  "code" : 103,
+                  "message" : "Not authorized to access PortfolioId or securityAccountId."
+                }, {
+                  "code" : 104,
+                  "message" : "No valid PortfolioId or securityAccountId."
+                }, {
+                  "code" : 105,
+                  "message" : "startDate is greater than or equal to endDate."
+                }, {
+                  "code" : 109,
+                  "message" : "Max number of records exceeded. Please change request parameter."
+                }, {
+                  "code" : 110,
+                  "message" : "clientID not authorized."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_client_credential" : [ "read_security_transactions" ]
+        }, {
+          "api_auth_code" : [ "read_security_transactions" ]
+        }, {
+          "api_db_smart_access" : [ "read_security_transactions" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "EarningTransaction" : {
+        "required" : [ "bookingDate", "cashAccount", "compensationTax", "corporationTax", "exDate", "feesAndCharges", "fxRate", "grossAmountInBaseCurrency", "grossAmountInTradeCurrency", "interestRate", "netAmountInAccountCurrency", "netAmountInBaseCurrency", "netAmountInTradeCurrency", "paidOverTaxes", "paymentDate", "quantity", "security", "securityAccount", "transactionType", "valueDate", "withholdingTax" ],
+        "type" : "object",
+        "properties" : {
+          "transactionType" : {
+            "type" : "string",
+            "description" : "Transaction type"
+          },
+          "cashAccount" : {
+            "$ref" : "#/components/schemas/CashAccount"
+          },
+          "securityAccount" : {
+            "$ref" : "#/components/schemas/SecurityAccount"
+          },
+          "bookingDate" : {
+            "type" : "string",
+            "description" : "Booking date of the transaction. Date in ISO 8601 format YYYY-MM-DD",
+            "format" : "date"
+          },
+          "valueDate" : {
+            "type" : "string",
+            "description" : "Value date of the transaction. Date in ISO 8601 format YYYY-MM-DD",
+            "format" : "date"
+          },
+          "exDate" : {
+            "type" : "string",
+            "description" : "Key date for determining the authorized position. Date in ISO 8601 format YYYY-MM-DD",
+            "format" : "date"
+          },
+          "paymentDate" : {
+            "type" : "string",
+            "description" : "Payment date of the transaction when the dividend/interest is payed. Date in ISO 8601 format YYYY-MM-DD",
+            "format" : "date"
+          },
+          "security" : {
+            "$ref" : "#/components/schemas/Security"
+          },
+          "quantity" : {
+            "type" : "number",
+            "description" : "",
+            "format" : "double"
+          },
+          "grossAmountInBaseCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "grossAmountInTradeCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "netAmountInBaseCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "netAmountInTradeCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "netAmountInAccountCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "fxRate" : {
+            "$ref" : "#/components/schemas/ForeignExchangeRate"
+          },
+          "interestRate" : {
+            "type" : "number",
+            "description" : "Interest rate in base currency (EUR)",
+            "format" : "double"
+          },
+          "compensationTax" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "withholdingTax" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "corporationTax" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "paidOverTaxes" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "feesAndCharges" : {
+            "$ref" : "#/components/schemas/Amount"
+          }
+        }
+      },
+      "EarningTransactionsResponse" : {
+        "required" : [ "baseCurrency", "earningTransactions" ],
+        "type" : "object",
+        "properties" : {
+          "baseCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "earningTransactions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EarningTransaction"
+            }
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "CashAccount" : {
+        "required" : [ "currency", "id" ],
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "id" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string"
+          }
+        },
+        "description" : "The account used for settling an order transaction execution. <br/>The default account will be used if not specified in the order placement request"
+      },
+      "SecurityAccount" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string",
+            "description" : "Security account identifier",
+            "example" : "100100849100"
+          }
+        }
+      },
+      "Security" : {
+        "type" : "object",
+        "properties" : {
+          "isin" : {
+            "$ref" : "#/components/schemas/ISIN"
+          },
+          "wkn" : {
+            "$ref" : "#/components/schemas/WKN"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Name of the security",
+            "example" : "Some Name AG"
+          },
+          "tradeCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        },
+        "description" : "The related security including basic information"
+      },
+      "Amount" : {
+        "required" : [ "amount", "currency" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 58.13
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "ForeignExchangeRate" : {
+        "required" : [ "rate", "sourceCurrency", "targetCurrency" ],
+        "type" : "object",
+        "properties" : {
+          "rate" : {
+            "type" : "number",
+            "description" : "Value of source currency stated in terms of target currency. E.g. if 1 EUR (source) = 0.8 USD (target) would have this property set to 0.8",
+            "format" : "double",
+            "example" : 0.8
+          },
+          "sourceCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "targetCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "CurrencyCode" : {
+        "pattern" : "[A-Z]{3}",
+        "type" : "string",
+        "description" : "ISO 4217 Alpha 3 currency code.",
+        "example" : "EUR"
+      },
+      "ISIN" : {
+        "pattern" : "[A-Z]{2}[0-9A-Z]{9}[0-9]",
+        "type" : "string",
+        "description" : "International Securities Identification Number",
+        "example" : "DE0007100000"
+      },
+      "WKN" : {
+        "pattern" : "[A-Z0-9]{6}",
+        "type" : "string",
+        "description" : "German securities identification code (Wertpapierkennnumer)",
+        "example" : "710000"
+      }
+    },
+    "securitySchemes" : {
+      "api_client_credential" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_security_transactions" : "Grants read access to all security transactions for the given customer."
+            }
+          }
+        }
+      },
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_security_transactions" : "Grants read access to all security transactions for the given customer.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_security_transactions" : "Grants read access to all security transactions for the given customer."
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

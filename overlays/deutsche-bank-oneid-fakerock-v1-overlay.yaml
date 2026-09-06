@@ -1,0 +1,50 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for GPL-SPA Auth & Authorization API Contract
+  version: 1.0.0
+extends: ../openapi/deutsche-bank-oneid-fakerock-v1.json
+x-generated: '2026-09-06'
+x-method: generated
+x-source: openapi/deutsche-bank-oneid-fakerock-v1.json + this repository's derived artifacts
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      provider: deutsche-bank
+      harvested: '2026-09-06'
+      harvested-from: https://simulator-api.db.com/gw/public/dbapi/swaggers/v1/oneid-fakerock-v1/swagger
+      artifacts:
+        authentication: authentication/deutsche-bank-authentication.yml
+        scopes: scopes/deutsche-bank-scopes.yml
+        conventions: conventions/deutsche-bank-conventions.yml
+        errors: errors/deutsche-bank-error-codes.yml
+        lifecycle: lifecycle/deutsche-bank-lifecycle.yml
+        sandbox: sandbox/deutsche-bank-sandbox.yml
+- target: $.paths['/am/json/realms/root/realms/{realm}/authenticate'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/am/oauth2/realms/root/realms/{realm}/access_token'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/am/json/realms/root/realms/{realm}/sessions'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/ciam/entitlements/oneids/branch-customer-numbers/privileges'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.

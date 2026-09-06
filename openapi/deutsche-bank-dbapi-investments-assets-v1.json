@@ -1,0 +1,568 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-investments-assets",
+    "description" : "Gives you an overview of the assets of a securities account.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/investments/assets/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Assets",
+    "description" : "Gives you an overview of the assets of a securities account, including costs, value and gains or losses for a given date. This api is part of Deutsche Bank’s suite of Investments APIs that enable your customers to access their Deutsche Bank portfolio right within your application."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Assets" ],
+        "summary" : "Reads the assets of a securities account/portfolio.",
+        "description" : "Reads the assets of a securities account/portfolio including costs, value and gains or losses for a given date.",
+        "operationId" : "getAssetsV1",
+        "parameters" : [ {
+          "name" : "portfolioId",
+          "in" : "query",
+          "description" : "The portfolio id. Default portfolio (ends with 'ST') includes all security and available cash accounts. Either portfolioId or securityAccountID to be provided!",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "pattern" : "[0-9]{10}[A-Z0-9]{2}",
+            "type" : "string"
+          }
+        }, {
+          "name" : "securityAccountId",
+          "in" : "query",
+          "description" : "The security account id. Either portfolioId or securityAccountID to be provided!",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string"
+          }
+        }, {
+          "name" : "reportDate",
+          "in" : "query",
+          "description" : "The ReportDate (in ISO 8601 format YYYY-MM-DD) is used for historical reports which refer to a special date in the past. For an actual report the current date is expected. If a future date is given, it will be converted into the current date without any notice.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AssetsResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 101,
+                  "message" : "Invalid value for parameter portfolioId or securityAccountId."
+                }, {
+                  "code" : 103,
+                  "message" : "Not authorized to access PortfolioId or securityAccountId."
+                }, {
+                  "code" : 104,
+                  "message" : "No valid PortfolioId or securityAccountId."
+                }, {
+                  "code" : 105,
+                  "message" : "startDate is greater than or equal to endDate."
+                }, {
+                  "code" : 110,
+                  "message" : "clientID not authorized."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "read_assets" ]
+        }, {
+          "api_client_credential" : [ "read_assets" ]
+        }, {
+          "api_db_smart_access" : [ "read_assets" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "ActValue" : {
+        "required" : [ "amount", "currency" ],
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "amount" : {
+            "type" : "number",
+            "description" : "Market value",
+            "format" : "double",
+            "example" : 58.13
+          },
+          "interest" : {
+            "type" : "number",
+            "description" : "Accrued interests",
+            "format" : "double",
+            "example" : 0.0
+          },
+          "total" : {
+            "type" : "number",
+            "description" : "Total value including accrued interests",
+            "format" : "double",
+            "example" : 58.13
+          }
+        }
+      },
+      "AssetDetail" : {
+        "required" : [ "actualValueInReportCurrency", "quantity" ],
+        "type" : "object",
+        "properties" : {
+          "securityAccount" : {
+            "$ref" : "#/components/schemas/SecurityAccount"
+          },
+          "quantity" : {
+            "type" : "number",
+            "description" : "Quantity of the security asset (number of securities in case of shares, nominal amount in case of bonds)",
+            "format" : "double",
+            "example" : 0.0
+          },
+          "actualValueInReportCurrency" : {
+            "$ref" : "#/components/schemas/ActValue"
+          }
+        }
+      },
+      "AssetsResponse" : {
+        "required" : [ "baseCurrency", "securityAssets" ],
+        "type" : "object",
+        "properties" : {
+          "baseCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "cashAssets" : {
+            "type" : "array",
+            "description" : "Array of cash assets",
+            "items" : {
+              "$ref" : "#/components/schemas/CashAsset"
+            }
+          },
+          "securityAssets" : {
+            "type" : "array",
+            "description" : "Array of security assets",
+            "items" : {
+              "$ref" : "#/components/schemas/SecurityAsset"
+            }
+          }
+        }
+      },
+      "CashAsset" : {
+        "required" : [ "actualFxRate", "actualValueInAccountCurrency", "actualValueInReportCurrency", "amount", "cashAccountIdentifier", "categories", "initialFxRate", "kindOfAccount", "pendingAmount", "profits" ],
+        "type" : "object",
+        "properties" : {
+          "cashAccountIdentifier" : {
+            "$ref" : "#/components/schemas/CashAccount"
+          },
+          "amount" : {
+            "type" : "number",
+            "description" : "Total amount of this cash asset in reporting currency",
+            "format" : "double",
+            "example" : 58.13
+          },
+          "pendingAmount" : {
+            "type" : "number",
+            "description" : "Amount (e.g. of trades), that is not finally processed",
+            "format" : "double",
+            "example" : 58.13
+          },
+          "kindOfAccount" : {
+            "type" : "string",
+            "description" : "Type of cash account"
+          },
+          "initialFxRate" : {
+            "$ref" : "#/components/schemas/ForeignExchangeRate"
+          },
+          "actualFxRate" : {
+            "$ref" : "#/components/schemas/ForeignExchangeRate"
+          },
+          "actualValueInAccountCurrency" : {
+            "$ref" : "#/components/schemas/ActValue"
+          },
+          "actualValueInReportCurrency" : {
+            "$ref" : "#/components/schemas/ActValue"
+          },
+          "profits" : {
+            "$ref" : "#/components/schemas/Profits"
+          },
+          "categories" : {
+            "$ref" : "#/components/schemas/Categories"
+          }
+        }
+      },
+      "Categories" : {
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "type" : "string",
+            "description" : "Currency of the security asset",
+            "example" : "Euro"
+          },
+          "securityCategory" : {
+            "type" : "string",
+            "description" : "Type of the security asset",
+            "example" : "Investment Funds"
+          },
+          "riskClass" : {
+            "type" : "string",
+            "description" : "Risk class of the security asset",
+            "example" : "A"
+          },
+          "realEstate" : {
+            "type" : "string",
+            "description" : "Real assets",
+            "example" : "Shares"
+          },
+          "industry" : {
+            "type" : "string",
+            "description" : "Industry of the security asset",
+            "example" : "0079"
+          },
+          "accountStructureClass" : {
+            "type" : "string",
+            "description" : "Security account structure",
+            "example" : "Equity overlapping"
+          },
+          "country" : {
+            "type" : "string",
+            "description" : "Country of the security asset",
+            "example" : "Germany"
+          },
+          "sector" : {
+            "type" : "string",
+            "description" : "Sector of the security asset",
+            "example" : "Shares cross-sector/miscellaneous"
+          }
+        }
+      },
+      "Profits" : {
+        "required" : [ "percentPL", "unrealFxPL" ],
+        "type" : "object",
+        "properties" : {
+          "unrealPLInTradingCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "unrealPLInReportCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "unrealFxPL" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "percentPL" : {
+            "type" : "number",
+            "description" : "Profit & loss of the security asset, represented as percentage",
+            "format" : "double"
+          }
+        }
+      },
+      "SecurityAsset" : {
+        "required" : [ "actualFxRate", "actualSecurityRateInReportCurrency", "actualSecurityRateInTradingCurrency", "actualValueInReportCurrency", "actualValueInTradingCurrency", "assetDetail", "categories", "initialFxRate", "initialSecurityRateInReportCurrency", "initialSecurityRateInTradingCurrency", "profits", "quantity", "security" ],
+        "type" : "object",
+        "properties" : {
+          "quantity" : {
+            "type" : "number",
+            "description" : "Total quantity of the security asset (number of securities in case of shares, nominal amount in case of bonds)",
+            "format" : "double",
+            "example" : 0.0
+          },
+          "initialSecurityRateInTradingCurrency" : {
+            "$ref" : "#/components/schemas/SecurityRate"
+          },
+          "initialSecurityRateInReportCurrency" : {
+            "$ref" : "#/components/schemas/SecurityRate"
+          },
+          "actualSecurityRateInTradingCurrency" : {
+            "$ref" : "#/components/schemas/SecurityRate"
+          },
+          "actualSecurityRateInReportCurrency" : {
+            "$ref" : "#/components/schemas/SecurityRate"
+          },
+          "actualValueInTradingCurrency" : {
+            "$ref" : "#/components/schemas/ActValue"
+          },
+          "actualValueInReportCurrency" : {
+            "$ref" : "#/components/schemas/ActValue"
+          },
+          "profits" : {
+            "$ref" : "#/components/schemas/Profits"
+          },
+          "security" : {
+            "$ref" : "#/components/schemas/Security"
+          },
+          "assetDetail" : {
+            "type" : "array",
+            "description" : "The allocation of security asset positions to security accounts in a portfolio",
+            "items" : {
+              "$ref" : "#/components/schemas/AssetDetail"
+            }
+          },
+          "initialFxRate" : {
+            "$ref" : "#/components/schemas/ForeignExchangeRate"
+          },
+          "actualFxRate" : {
+            "$ref" : "#/components/schemas/ForeignExchangeRate"
+          },
+          "categories" : {
+            "$ref" : "#/components/schemas/Categories"
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "CurrencyCode" : {
+        "pattern" : "[A-Z]{3}",
+        "type" : "string",
+        "description" : "ISO 4217 Alpha 3 currency code.",
+        "example" : "EUR"
+      },
+      "SecurityAccount" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string",
+            "description" : "Security account identifier",
+            "example" : "100100849100"
+          }
+        }
+      },
+      "CashAccount" : {
+        "required" : [ "currency", "id" ],
+        "type" : "object",
+        "properties" : {
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "id" : {
+            "pattern" : "[0-9]{12}",
+            "type" : "string"
+          }
+        },
+        "description" : "The account used for settling an order transaction execution. <br/>The default account will be used if not specified in the order placement request"
+      },
+      "ForeignExchangeRate" : {
+        "required" : [ "rate", "sourceCurrency", "targetCurrency" ],
+        "type" : "object",
+        "properties" : {
+          "rate" : {
+            "type" : "number",
+            "description" : "Value of source currency stated in terms of target currency. E.g. if 1 EUR (source) = 0.8 USD (target) would have this property set to 0.8",
+            "format" : "double",
+            "example" : 0.8
+          },
+          "sourceCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "targetCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "Amount" : {
+        "required" : [ "amount", "currency" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 58.13
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "SecurityRate" : {
+        "required" : [ "currency", "rate" ],
+        "type" : "object",
+        "properties" : {
+          "rate" : {
+            "type" : "number",
+            "description" : "The rate of the security in the respective currency on the respective date",
+            "format" : "double",
+            "example" : 56.14
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "unitPer" : {
+            "type" : "number",
+            "description" : "Unit/percentage quotation of the security",
+            "format" : "double",
+            "example" : 1.0
+          },
+          "date" : {
+            "type" : "string",
+            "description" : "The date of the security rate in ISO 8601 format YYYY-MM-DD",
+            "format" : "date",
+            "example" : "1970-10-20"
+          }
+        }
+      },
+      "Security" : {
+        "type" : "object",
+        "properties" : {
+          "isin" : {
+            "$ref" : "#/components/schemas/ISIN"
+          },
+          "wkn" : {
+            "$ref" : "#/components/schemas/WKN"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "Name of the security",
+            "example" : "Some Name AG"
+          },
+          "tradeCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "riskClass" : {
+            "type" : "string",
+            "description" : "Risk class of the security",
+            "example" : "A"
+          }
+        },
+        "description" : "The related security including basic information"
+      },
+      "ISIN" : {
+        "pattern" : "[A-Z]{2}[0-9A-Z]{9}[0-9]",
+        "type" : "string",
+        "description" : "International Securities Identification Number",
+        "example" : "DE0007100000"
+      },
+      "WKN" : {
+        "pattern" : "[A-Z0-9]{6}",
+        "type" : "string",
+        "description" : "German securities identification code (Wertpapierkennnumer)",
+        "example" : "710000"
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_assets" : "Grants read access to asset summary of a portfolio group.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_client_credential" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_assets" : "Grants read access to asset summary of a portfolio group."
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_assets" : "Grants read access to asset summary of a portfolio group."
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

@@ -1,0 +1,274 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-creditCardTransactions",
+    "description" : "Provides all transaction information from your customers' credit cards.",
+    "termsOfService" : "https://developer.db.com/#/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/#/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/cards/creditCardTransactions/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Credit Card Transactions",
+    "description" : "Retrieves comprehensive transaction information for your customers' credit cards within a specified time period. Note: The bookingDateFrom parameter cannot be earlier than 2021-07-01. If a date prior to this is provided, it will automatically default to 2021-07-01. Details include incoming and outgoing payment amounts, booking dates, sender and recipient data, along with purpose and reference information."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Credit Card Transactions" ],
+        "summary" : "Reads transactions of a credit card.",
+        "description" : "Retrieves transactions for a specific credit card within a given date range. The credit card is identified by its technicalId, which can be obtained from the Credit Cards API. Note: Refer to the comments regarding the bookingDateFrom attribute for important details.",
+        "operationId" : "getCreditCardTransactions",
+        "parameters" : [ {
+          "name" : "technicalId",
+          "in" : "query",
+          "description" : "Technical credit card number",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "pattern" : "[a-zA-Z0-9]{1,32}",
+            "type" : "string"
+          }
+        }, {
+          "name" : "bookingDateFrom",
+          "in" : "query",
+          "description" : "Defines the start date of the time span. Date in ISO 8601 format YYYY-MM-DD. Note: This parameter cannot be earlier than 2021-07-01. If a date prior to this is provided, it will automatically default to 2021-07-01.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "name" : "bookingDateTo",
+          "in" : "query",
+          "description" : "Defines the end date of the time span. Date in ISO 8601 format YYYY-MM-DD.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/CreditCardTransactionResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 700,
+                  "message" : "No credit card transaction data found. Please try again later."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "read_credit_card_transactions" ]
+        }, {
+          "api_db_smart_access" : [ "read_credit_card_transactions" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "CreditCardTransactionResponse" : {
+        "required" : [ "items", "totalItems" ],
+        "type" : "object",
+        "properties" : {
+          "totalItems" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "description" : "Total number of items found for your request.",
+            "format" : "int32"
+          },
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/CreditCardTransaction"
+            }
+          }
+        }
+      },
+      "CreditCardTransaction" : {
+        "type" : "object",
+        "properties" : {
+          "bookingDate" : {
+            "type" : "string",
+            "description" : "Booking date of the transaction (ISO 8601 format YYYY-MM-DD)",
+            "format" : "date"
+          },
+          "valueDate" : {
+            "type" : "string",
+            "description" : "Value date of the transaction (ISO 8601 format YYYY-MM-DD)",
+            "format" : "date"
+          },
+          "billingDate" : {
+            "type" : "string",
+            "description" : "Concrete billing date (ISO 8601 format YYYY-MM-DD)",
+            "format" : "date"
+          },
+          "reasonForPayment" : {
+            "type" : "string",
+            "description" : "Reason for payment"
+          },
+          "amountInForeignCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "amountInAccountCurrency" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "foreignFxRate" : {
+            "$ref" : "#/components/schemas/FxRate"
+          }
+        },
+        "description" : "A credit card transaction"
+      },
+      "FxRate" : {
+        "type" : "object",
+        "properties" : {
+          "sourceCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "targetCurrency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          },
+          "rate" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "Amount" : {
+        "required" : [ "amount", "currency" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "format" : "double",
+            "example" : 58.13
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "CurrencyCode" : {
+        "pattern" : "[A-Z]{3}",
+        "type" : "string",
+        "description" : "ISO 4217 Alpha 3 currency code.",
+        "example" : "EUR"
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_credit_card_transactions" : "Read your credit card transaction data",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_credit_card_transactions" : "Read your credit card transaction data"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

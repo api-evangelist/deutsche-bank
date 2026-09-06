@@ -1,0 +1,424 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-verifyCustomer",
+    "description" : "Lets you verify customer data against the bank's records. It returns for the respective data fields just the information if they could be verified or not, but not the information known to the bank itself.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/referenceData/verifyCustomer/v1"
+  } ],
+  "tags" : [ {
+    "name" : "VerifyCustomer"
+  } ],
+  "paths" : {
+    "/" : {
+      "post" : {
+        "tags" : [ "VerifyCustomer" ],
+        "summary" : "Verify customer data against the bank's records.",
+        "description" : "Verifies the parameters provided in the request.",
+        "operationId" : "verifyCustomer",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/VerifyCustomerRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/VerifyCustomerResult"
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "verify_customer" ]
+        } ],
+        "x-codegen-request-body-name" : "body"
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "VerifyCustomerRequest" : {
+        "type" : "object",
+        "properties" : {
+          "firstName" : {
+            "type" : "string",
+            "description" : "First name of the user."
+          },
+          "lastName" : {
+            "type" : "string",
+            "description" : "Last name of the user."
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "description" : "Birth date of the user. In the format: YYYY-MM-DD."
+          },
+          "gender" : {
+            "type" : "string",
+            "description" : "Gender of the user."
+          },
+          "academicTitle" : {
+            "type" : "string",
+            "description" : "Academic title of the user."
+          },
+          "titleOfNobility" : {
+            "type" : "string",
+            "description" : "Nobility title of the user."
+          },
+          "nationality" : {
+            "type" : "string",
+            "description" : "Nationality of the user."
+          },
+          "birthName" : {
+            "type" : "string",
+            "description" : "Birth name of the user."
+          },
+          "birthPlace" : {
+            "type" : "string",
+            "description" : "Birth place of the user."
+          },
+          "organisationName" : {
+            "type" : "string",
+            "description" : "Organisation name of the user."
+          },
+          "legitimationDocumentType" : {
+            "type" : "string",
+            "description" : "Document type, see below for specification."
+          },
+          "legitimationDocumentNumber" : {
+            "type" : "string",
+            "description" : "Document number."
+          },
+          "legitimationDocumentIssueDate" : {
+            "type" : "string",
+            "description" : "Issuing date of the document. In the format: YYYY-MM-DD."
+          },
+          "legitimationDocumentIssuingAuthority" : {
+            "type" : "string",
+            "description" : "Issuing authority of the document."
+          },
+          "legitimationDocumentExpirationDate" : {
+            "type" : "string",
+            "description" : "Expiration Date of the document."
+          },
+          "emailAddressType" : {
+            "type" : "string",
+            "description" : "Private or business email address."
+          },
+          "emailAddress" : {
+            "type" : "string",
+            "description" : "Email address."
+          },
+          "phoneCommunicationType" : {
+            "type" : "string",
+            "description" : "Business or private number."
+          },
+          "phoneInternationalAreaCode" : {
+            "type" : "string",
+            "description" : "International area code."
+          },
+          "phoneAreaCode" : {
+            "type" : "string",
+            "description" : "National area code."
+          },
+          "phoneNumber" : {
+            "type" : "string",
+            "description" : "Telephone number."
+          },
+          "addressStreet" : {
+            "type" : "string",
+            "description" : "Street of user."
+          },
+          "addressHouseNumber" : {
+            "type" : "string",
+            "description" : "Housenumber of user."
+          },
+          "addressZip" : {
+            "type" : "string",
+            "description" : "Zip of user."
+          },
+          "addressCity" : {
+            "type" : "string",
+            "description" : "City of user."
+          },
+          "addressCountry" : {
+            "type" : "string",
+            "description" : "Country of user."
+          }
+        },
+        "description" : "Request parameters for verification."
+      },
+      "VerifyCustomerResult" : {
+        "type" : "object",
+        "properties" : {
+          "firstName" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "lastName" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "dateOfBirth" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "gender" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "academicTitle" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "titleOfNobility" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "nationality" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "birthName" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "birthPlace" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "organisationName" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "legitimationDocumentType" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "legitimationDocumentNumber" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "legitimationDocumentIssueDate" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "legitimationDocumentIssuingAuthority" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "legitimationDocumentExpirationDate" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "emailAddressType" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "emailAddress" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "phoneCommunicationType" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "phoneInternationalAreaCode" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "phoneAreaCode" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "phoneNumber" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "addressStreet" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "addressHouseNumber" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "addressZip" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "addressCity" : {
+            "$ref" : "#/components/schemas/checkResult"
+          },
+          "addressCountry" : {
+            "$ref" : "#/components/schemas/checkResult"
+          }
+        },
+        "description" : "Verification result of the requested parameters."
+      },
+      "checkResult" : {
+        "type" : "string",
+        "description" : "Result of parameter verification.",
+        "enum" : [ "VERIFIED", "NOT_VERIFIABLE", "FALSE" ]
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "NaturalPerson" : {
+        "type" : "object",
+        "properties" : {
+          "firstName" : {
+            "type" : "string",
+            "description" : "First name of the user."
+          },
+          "lastName" : {
+            "type" : "string",
+            "description" : "Last name of the user."
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "description" : "Birth date of the user. In the format: YYYY-MM-DD."
+          },
+          "gender" : {
+            "type" : "string",
+            "description" : "Gender of the user."
+          },
+          "academicTitle" : {
+            "type" : "string",
+            "description" : "Academic title of the user."
+          },
+          "titleOfNobility" : {
+            "type" : "string",
+            "description" : "Nobility title of the user."
+          },
+          "nationality" : {
+            "type" : "string",
+            "description" : "Nationality of the user."
+          },
+          "birthName" : {
+            "type" : "string",
+            "description" : "Birth name of the user."
+          },
+          "birthPlace" : {
+            "type" : "string",
+            "description" : "Birth place of the user."
+          },
+          "organisationName" : {
+            "type" : "string",
+            "description" : "Organisation name of the user."
+          },
+          "legitimationDocumentType" : {
+            "type" : "string",
+            "description" : "Document type, see below for specification."
+          },
+          "legitimationDocumentNumber" : {
+            "type" : "string",
+            "description" : "Document number."
+          },
+          "legitimationDocumentIssueDate" : {
+            "type" : "string",
+            "description" : "Issuing date of the document. In the format: YYYY-MM-DD."
+          },
+          "legitimationDocumentIssuingAuthority" : {
+            "type" : "string",
+            "description" : "Issuing authority of the document."
+          },
+          "legitimationDocumentExpirationDate" : {
+            "type" : "string",
+            "description" : "Expiration Date of the document."
+          },
+          "emailAddressType" : {
+            "type" : "string",
+            "description" : "Private or business email address."
+          },
+          "emailAddress" : {
+            "type" : "string",
+            "description" : "Email address."
+          },
+          "phoneCommunicationType" : {
+            "type" : "string",
+            "description" : "Business or private number."
+          },
+          "phoneInternationalAreaCode" : {
+            "type" : "string",
+            "description" : "International area code."
+          },
+          "phoneAreaCode" : {
+            "type" : "string",
+            "description" : "National area code."
+          },
+          "phoneNumber" : {
+            "type" : "string",
+            "description" : "Telephone number."
+          },
+          "addressStreet" : {
+            "type" : "string",
+            "description" : "Street of user."
+          },
+          "addressHouseNumber" : {
+            "type" : "string",
+            "description" : "Housenumber of user."
+          },
+          "addressZip" : {
+            "type" : "string",
+            "description" : "Zip of user."
+          },
+          "addressCity" : {
+            "type" : "string",
+            "description" : "City of user."
+          },
+          "addressCountry" : {
+            "type" : "string",
+            "description" : "Country of user."
+          }
+        },
+        "description" : "Request parameters for verification."
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "verify_customer" : "Allows you to verify customer data provided in the request. Does not grant access to read customer data.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

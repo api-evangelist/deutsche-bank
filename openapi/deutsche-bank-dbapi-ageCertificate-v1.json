@@ -1,0 +1,131 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-ageCertificate",
+    "description" : "Lets your application verify that a customer's age is above a certain age and gives a data-saving confirmation.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/banking/ageCertificate/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Age Certificate",
+    "description" : "Lets your application verify that a customer's age is above a certain age and gives a data-saving confirmation, e.g. ‘above 18’. It is based on bank account information pre-verified by KYC checks.  Applicable only for natural person customers, not companies or others."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Age Certificate" ],
+        "summary" : "Validates if the customer has reached a given age.",
+        "description" : "Validates whether a customer's age is above a certain age and gives a data-saving confirmation, e.g. ‘above 18'. It is based on bank account information pre-verified by KYC checks.",
+        "operationId" : "ageCertificate",
+        "parameters" : [ {
+          "name" : "minimumAge",
+          "in" : "query",
+          "description" : "The minimum age to check against. The endpoint will check if the customer's age is higher than or equal to minimumAge parameter.",
+          "required" : true,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "enum" : [ 14, 16, 18, 21, 25 ]
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AgeResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 1,
+                  "message" : "The given minimumAge is not in the list of possible ages."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "age_certificate" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AgeResponse" : {
+        "required" : [ "ageCheck" ],
+        "type" : "object",
+        "properties" : {
+          "ageCheck" : {
+            "type" : "boolean",
+            "description" : "Equals 'true' if the customer's age is higher than or equal to minimumAge and is a natural person, or 'false' otherwise."
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "age_certificate" : "Grants a check of a person's age, when compared against a specific minimum age",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

@@ -1,0 +1,38 @@
+Website Metadata and Information: https://www.db.com
+
+1. Website Name:
+   - Deutsche Bank
+
+2. URL:
+   - https://www.db.com
+
+3. Description:
+   - Deutsche Bank is a leading financial services provider headquartered in Frankfurt, Germany. It offers financial services including investment banking, asset management, private banking, and retail banking.
+
+4. Key Features:
+   - Corporate and investment banking
+   - Private Bank and Wealth Management
+   - Asset Management Services
+   - Research and market insights
+   - Sustainability and ESG initiatives
+   - Thought leadership content, particularly around digital disruption, tokenisation, entrepreneurship, economic transformation and sustainability
+   - News and information about the bank and its products
+
+5. Language:
+   - English and German
+
+6. Target Audience:
+   - Institutional investors, corporate clients, private clients, retail banking customers, private investors, job seekers
+
+7. Accessibility:
+   - Desktop and mobile-friendly interface
+   - Secure login for clients and partners
+
+8. Legal and Compliance:
+   - Includes privacy policy, terms of use, and regulatory disclosures
+
+9. Contact Information:
+   - Available via the website's contact page including global office locations
+
+10. Last Verified:
+   - August 2025

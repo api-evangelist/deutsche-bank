@@ -1,0 +1,88 @@
+specification: API Commons Lifecycle
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: searched
+source: https://developer.db.com/releasenotes
+description: >-
+  Versioning, release and deprecation posture of the Deutsche Bank dbAPI programme, read from
+  the portal's own release-notes archive and from the 36 published OpenAPI documents.
+versioning:
+  style: path
+  detail: >-
+    Major version is a path segment (/gw/dbapi/banking/transactions/v2). Superseded majors
+    are kept live alongside their successors - processingOrders v1 and v2, consumerLoanOffers
+    v1 and v2, and payments v1 and v3 are all published at once. Each swagger document has a
+    stable swaggerId and is retrievable from the public catalogue at
+    https://simulator-api.db.com/gw/public/dbapi/swaggers/v1/
+  side_by_side_majors:
+    - dbapi-processingOrders-v1 / dbapi-processingOrders-v2
+    - dbapi-loanOffers-privatebanking-v1 / dbapi-loanOffers-privatebanking-v2
+    - dbapi-sepaDirectDebit-v1 / dbapi-sepaCreditTransfer-v3
+    - merchant-solution-services-v2 / merchant-solution-services-v2.1
+release_cadence:
+  cadence: roughly every 6-8 weeks
+  scheme: YYYY.NN (2026.06, 2026.05, ...)
+  archive: https://developer.db.com/releasenotes
+  years_published: 9
+  earliest_year: 2018
+  entry_count_total: 80
+  latest_release:
+    title: '2026.06'
+    date: '2026-08-18'
+  artifact: changelog/deutsche-bank-changelog.yml
+deprecation_policy:
+  published: false
+  detail: >-
+    Deutsche Bank publishes no standalone deprecation policy page, and no operation in any of
+    the 36 specs carries `deprecated: true`. Neither RFC 8594 Sunset nor a Deprecation header
+    appears anywhere in the estate. Retirements ARE announced - the 2026.04 release notes
+    record that "the legacy login flow has been decommissioned" - but they are announced in
+    release notes rather than governed by a stated policy with a notice period.
+  sunset_header: false
+  deprecation_header: false
+  deprecated_operations: 0
+  evidence:
+    - url: https://developer.db.com/releasenotes
+      note: Release 2026.04 announces decommissioning of the legacy login flow.
+sla:
+  published: false
+  detail: >-
+    No SLA or uptime commitment is published on the developer portal. The FAQ states that
+    portal sign-up and simulation are free of charge and that production use of live data is
+    governed by a separate agreement - the availability terms live in that contract.
+status_page:
+  published: false
+  observed:
+    url: https://dbapi.statuspage.io
+    status: 200
+    page_name: dbapi
+    last_updated: '2020-05-12'
+    reported_component_status: major_outage
+    note: >-
+      A Statuspage tenant named "dbapi" exists and answers 200, but its API summary has not
+      been updated since 12 May 2020 and it still reports a major outage. Nothing on
+      developer.db.com, in the portal bundle, or in the CMS links to it. It is recorded here
+      as an observation and is deliberately NOT wired as a StatusPage pointer - advertising a
+      six-year-stale page that says "major outage" would be a false claim on Deutsche Bank's
+      behalf.
+go_live:
+  process: >-
+    Simulation-first. A developer builds against simulator-api.db.com with a test app, then
+    files a go-live request from the portal dashboard; the app must be shared with a team
+    that has an app manager, and the request is reviewed by Deutsche Bank. On approval the
+    client id (and secret) are swapped and the base URL changes to the tenant's production
+    host - endpoints, requests and responses are unchanged.
+  docs: https://developer.db.com/apidocumentation/apigettingstartedguide/golive
+  production_hosts:
+    - https://api.db.com
+    - https://api.norisbank.de
+    - https://api.postbank.de
+support:
+  contact: https://developer.db.com/contact
+  email: bank.api@db.com
+  faq: https://developer.db.com/faq
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

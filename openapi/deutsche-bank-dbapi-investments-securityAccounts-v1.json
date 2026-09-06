@@ -1,0 +1,143 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-securityAccounts",
+    "description" : "Retrieve information about the security accounts of a customer.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/investments/securityAccounts/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Security Accounts",
+    "description" : "Retrieve information about the security accounts of a customer."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Security Accounts" ],
+        "summary" : "Reads all security accounts of the current user.",
+        "description" : "Reads all security accounts owned by the current user. If the current user is not valid or no security accounts exist, an empty result is returned.",
+        "operationId" : "getSecurityAccounts",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "required" : [ "items", "totalItems" ],
+                  "type" : "object",
+                  "properties" : {
+                    "totalItems" : {
+                      "minimum" : 0,
+                      "type" : "integer",
+                      "description" : "Total number of items found for your request.",
+                      "format" : "int32"
+                    },
+                    "items" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/SecurityAccount"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "read_security_accounts_list" ]
+        }, {
+          "api_db_smart_access" : [ "read_security_accounts_list" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "SecurityAccount" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          }
+        },
+        "description" : "A security account."
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_security_accounts_list" : "Grants read access to security account data.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_security_accounts_list" : "Grants read access to security account data."
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

@@ -1,0 +1,182 @@
+specification: API Commons Data Model
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: derived
+source: openapi/ (36 first-party Deutsche Bank OpenAPI 3.0.x documents, 499 component schemas)
+description: >-
+  Entity-relationship graph of the Deutsche Bank dbAPI estate, derived from the $ref graph and
+  the id-reference fields across the 36 published specs. The estate has no single root object:
+  it is anchored on the authenticated CUSTOMER (partner), and every other entity hangs off
+  either an account (cash, credit card, securities) or a payment instruction. There is no
+  global object-id prefix scheme - identifiers are per-resource and mostly opaque strings,
+  with IBAN, ISIN and WKN carrying real external meaning.
+schema_count: 499
+identifier_conventions:
+  - field: iban
+    standard: ISO 13616
+    detail: The primary account identifier across the whole estate - 36 schemas use it. Country prefix and max length 34 are validated.
+  - field: bic
+    standard: ISO 9362
+  - field: isin
+    standard: ISO 6166
+    detail: International Securities Identification Number - the security identifier on the investments surface.
+  - field: wkn
+    standard: German Wertpapierkennnummer
+    detail: The German national security identifier, published alongside ISIN.
+  - field: messageId
+    detail: dbAPI-internal identifier returned on error responses; the support correlation handle.
+  - field: paymentId
+    detail: Returned by every payment initiation; the key for status, detail, cancel and second-factor retry.
+  - field: end_to_end_id
+    detail: SEPA end-to-end reference carried through the payment chain (Merchant Solutions contracts).
+entities:
+  - name: Partner (Customer)
+    spec: openapi/deutsche-bank-dbapi-partners-v2.json
+    description: The authenticated natural person or organisation. The root of the graph.
+    key: implicit (the token subject)
+    relationships:
+      - has_many: Address
+        via: getAddresses
+      - has_many: CashAccount
+        via: getCashAccounts
+      - has_many: CreditCard
+        via: getCreditsCards
+      - has_many: SecurityAccount
+        via: getSecurityAccounts
+  - name: Address
+    spec: openapi/deutsche-bank-dbapi-addresses-v2.json
+    description: Business and private address types for the partner.
+    relationships:
+      - belongs_to: Partner
+  - name: CashAccount
+    spec: openapi/deutsche-bank-dbapi-cashAccounts-v2.json
+    key: iban
+    relationships:
+      - belongs_to: Partner
+      - has_many: Transaction
+        via: getCashAccountTransactions (iban query parameter)
+      - has_one: Brand
+        via: getBrand (iban query parameter)
+  - name: Transaction
+    spec: openapi/deutsche-bank-dbapi-transactions-v2.json
+    key: transactionId
+    description: >-
+      Booked and pending transactions on cash accounts, up to 13 months of history. Release
+      2026.06 added an optional uniqueTag attribute as a stable per-transaction identifier for
+      reconciliation and duplicate detection.
+    relationships:
+      - belongs_to: CashAccount
+        via: iban
+  - name: CreditCard
+    spec: openapi/deutsche-bank-dbapi-creditCards-v1.json
+    relationships:
+      - belongs_to: Partner
+      - has_many: CreditCardTransaction
+  - name: CreditCardTransaction
+    spec: openapi/deutsche-bank-dbapi-creditCardTransactions-v1.json
+    relationships:
+      - belongs_to: CreditCard
+  - name: SecurityAccount (Portfolio)
+    spec: openapi/deutsche-bank-dbapi-investments-securityAccounts-v1.json
+    key: securityAccountId
+    relationships:
+      - belongs_to: Partner
+      - has_many: Asset
+      - has_many: SecurityTransaction
+      - has_many: EarningTransaction
+      - has_one: Performance
+      - has_many: Order
+  - name: Asset
+    spec: openapi/deutsche-bank-dbapi-investments-assets-v1.json
+    relationships:
+      - belongs_to: SecurityAccount
+        via: securityAccountId
+      - references: Security
+        via: isin
+  - name: Security
+    key: isin
+    alternate_key: wkn
+    relationships:
+      - has_many: SecurityRate
+      - has_many: SecurityMarketPlace
+  - name: Order
+    spec: openapi/deutsche-bank-dbapi-investments-orders-v1.json
+    key: orderId
+    description: >-
+      A securities order. Lifecycle is preview -> entry (bound by previewSignature) ->
+      ACCEPTED -> executed or CANCELLED. Cancellation is only possible while ACCEPTED and not
+      yet executed.
+    relationships:
+      - belongs_to: SecurityAccount
+      - references: Security
+        via: isin
+      - has_one: OrderPreview
+        via: orderEntryPreview
+  - name: Payment
+    spec: openapi/deutsche-bank-dbapi-sepaCreditTransfer-v3.json
+    key: paymentId
+    description: >-
+      One instruction across four SEPA schemes - Credit Transfer, Instant Credit Transfer,
+      Direct Debit Core and Direct Debit B2B - each with a single and a bulk variant. Carries
+      status, detail, cancel and second-factor-retry sub-resources.
+    relationships:
+      - belongs_to: CashAccount
+        via: debtor iban
+      - has_one: PaymentStatus
+        via: '{paymentId}/status'
+      - has_one: VopDetails
+        via: '{paymentId}/vopDetails'
+      - has_one: Challenge
+        via: transactionAuthorization
+  - name: Challenge (SCA)
+    spec: openapi/deutsche-bank-dbapi-transactionAuthorization-v1.json
+    description: PSD2 strong customer authentication challenge - PushTAN and other methods, with a method-switch operation.
+    relationships:
+      - references: Payment
+      - references: Order
+  - name: Subscription
+    spec: openapi/deutsche-bank-dbapi-subscriptions-v1.json
+    key: subscriptionId
+    description: An event subscription with a notificationURL, a subscriptionType (one-time/recurring) and an expirationDate.
+    relationships:
+      - belongs_to: Partner
+      - references: Transaction
+      - references: Order
+  - name: AccountOpening
+    spec: openapi/deutsche-bank-dbapi-banking-cashAccountOpenings-v1.json
+    key: accountOpeningId
+    description: A cash-account opening request, polled by status. No cancel operation is published.
+    relationships:
+      - produces: CashAccount
+  - name: LoanOffer
+    spec: openapi/deutsche-bank-dbapi-loanOffers-privatebanking-v2.json
+    key: offerId
+    relationships:
+      - has_many: Document
+        via: '/offers/{offerId}/documents'
+      - has_one: OfferStatus
+  - name: ProcessingOrder
+    spec: openapi/deutsche-bank-dbapi-processingOrders-v2.json
+    relationships:
+      - has_many: Document
+value_objects:
+  - Amount / AmountCurrency (with CurrencyCode, ISO 4217)
+  - IBAN (ISO 13616)
+  - ISIN / WKN
+  - ForeignExchangeRate
+  - ExpiryDate
+  - NaturalPerson (with Sex, MaritalStatus, AcademicTitle, EmploymentLevel)
+  - PhoneNumber
+  - RemittanceInformationUnstructured
+merchant_solutions_model:
+  note: >-
+    The Merchant Solutions contracts carry a separate, snake_cased vocabulary rooted on
+    TransactionInfo - basket_id, tx_id, mandate_id, creditor_id, end_to_end_id - with PSD2*
+    account/balance/transaction schemas whose balance types follow ISO 20022 logic. It does
+    not share identifiers with the dbAPI estate.
+  spec: openapi/deutsche-bank-merchant-solution-services-v2.1.json
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

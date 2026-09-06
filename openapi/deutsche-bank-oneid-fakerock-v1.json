@@ -1,0 +1,657 @@
+{
+  "openapi" : "3.0.3",
+  "info" : {
+    "title" : "GPL-SPA Auth & Authorization API Contract",
+    "description" : "Consolidated API contract derived from gpl-spa code and runtime config.\n\nNotes:\n- Some ForgeRock endpoints are called through @forgerock/javascript-sdk, so exact wire paths are partially SDK-driven.\n- Paths below use conventional ForgeRock AM/OAuth endpoints based on configured baseUrl/realmPath.\n",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/public/oneid/"
+  } ],
+  "tags" : [ {
+    "name" : "Password Encryption"
+  }, {
+    "name" : "ForgeRock Auth Tree"
+  }, {
+    "name" : "ForgeRock OAuth"
+  }, {
+    "name" : "ForgeRock Session"
+  }, {
+    "name" : "Authorization"
+  }, {
+    "name" : "Security"
+  } ],
+  "paths" : {
+    "/jwks" : {
+      "get" : {
+        "tags" : [ "Password Encryption" ],
+        "summary" : "Fetch JWK public key used for password encryption",
+        "operationId" : "getPasswordEncryptionJwk",
+        "responses" : {
+          "200" : {
+            "description" : "Public JWK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Jwk"
+                }
+              }
+            }
+          },
+          "5XX" : {
+            "$ref" : "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/am/json/realms/root/realms/{realm}/authenticate" : {
+      "post" : {
+        "tags" : [ "ForgeRock Auth Tree" ],
+        "summary" : "Start/continue authentication tree",
+        "description" : "Called indirectly via FRAuth.next(...), with query ForceAuth=true and tree=<authenticationTree>.\n",
+        "operationId" : "authenticateTreeStep",
+        "parameters" : [ {
+          "name" : "realm",
+          "in" : "path",
+          "description" : "Realm name in ForgeRock path.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "consumer", "norisbank" ]
+          }
+        }, {
+          "name" : "ForceAuth",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "true"
+          }
+        }, {
+          "name" : "tree",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "onlineBanking"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ForgeRockStepRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Next step or login success",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "oneOf" : [ {
+                    "$ref" : "#/components/schemas/ForgeRockStepResponse"
+                  }, {
+                    "$ref" : "#/components/schemas/ForgeRockLoginSuccess"
+                  } ]
+                }
+              }
+            }
+          },
+          "4XX" : {
+            "$ref" : "#/components/responses/ClientError"
+          },
+          "5XX" : {
+            "$ref" : "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/am/oauth2/realms/root/realms/{realm}/authorize" : {
+      "get" : {
+        "tags" : [ "ForgeRock OAuth" ],
+        "summary" : "OAuth authorize endpoint",
+        "description" : "Accessed by TokenManager.getTokens(...), may include prompt=none and login_hint.\n",
+        "operationId" : "authorize",
+        "parameters" : [ {
+          "name" : "realm",
+          "in" : "path",
+          "description" : "Realm name in ForgeRock path.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "consumer", "norisbank" ]
+          }
+        }, {
+          "name" : "client_id",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "163440-1_deutschebank_onlineBankingClient"
+          }
+        }, {
+          "name" : "response_type",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "code"
+          }
+        }, {
+          "name" : "scope",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "openid"
+          }
+        }, {
+          "name" : "redirect_uri",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "state",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "prompt",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "none", "login" ]
+          }
+        }, {
+          "name" : "login_hint",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "302" : {
+            "description" : "Redirect with authorization code"
+          },
+          "200" : {
+            "description" : "Embedded/SDK-dependent success response"
+          },
+          "4XX" : {
+            "$ref" : "#/components/responses/ClientError"
+          }
+        }
+      }
+    },
+    "/am/oauth2/realms/root/realms/{realm}/access_token" : {
+      "post" : {
+        "tags" : [ "ForgeRock OAuth" ],
+        "summary" : "Exchange authorization data for OAuth tokens",
+        "description" : "Called via TokenManager.getTokens(...).",
+        "operationId" : "exchangeToken",
+        "parameters" : [ {
+          "name" : "realm",
+          "in" : "path",
+          "description" : "Realm name in ForgeRock path.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "consumer", "norisbank" ]
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OAuthTokenRequest"
+              }
+            }
+          },
+          "required" : false
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OAuth tokens",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OAuthTokenResponse"
+                }
+              }
+            }
+          },
+          "4XX" : {
+            "$ref" : "#/components/responses/ClientError"
+          },
+          "5XX" : {
+            "$ref" : "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/am/json/realms/root/realms/{realm}/sessions" : {
+      "post" : {
+        "tags" : [ "ForgeRock Session" ],
+        "summary" : "Logout session",
+        "description" : "FRUser.logout() equivalent; commonly invoked with ?_action=logout",
+        "operationId" : "logout",
+        "parameters" : [ {
+          "name" : "realm",
+          "in" : "path",
+          "description" : "Realm name in ForgeRock path.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "consumer", "norisbank" ]
+          }
+        }, {
+          "name" : "_action",
+          "in" : "query",
+          "required" : false,
+          "style" : "form",
+          "explode" : true,
+          "schema" : {
+            "type" : "string",
+            "example" : "logout"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Logout acknowledged",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : true
+                }
+              }
+            }
+          },
+          "204" : {
+            "description" : "Logout completed with no content"
+          }
+        }
+      }
+    },
+    "/ciam/entitlements/oneids/{oneIdId}/contexts/{contextId}/business-transactions" : {
+      "get" : {
+        "tags" : [ "Authorization" ],
+        "summary" : "Fetch entitlements for a OneID/context",
+        "operationId" : "getBusinessTransactionsEntitlements",
+        "parameters" : [ {
+          "name" : "oneIdId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "contextId",
+          "in" : "path",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Entitlements payload",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : true
+                }
+              }
+            }
+          },
+          "401" : {
+            "$ref" : "#/components/responses/Unauthorized"
+          },
+          "403" : {
+            "$ref" : "#/components/responses/InsufficientAuthenticationState"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    },
+    "/ciam/entitlements/oneids/branch-customer-numbers/privileges" : {
+      "post" : {
+        "tags" : [ "Authorization" ],
+        "summary" : "Fetch entitlements by branch customer numbers",
+        "operationId" : "getBranchCustomerNumberPrivileges",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "object",
+                "additionalProperties" : true
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Privileges payload",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : true
+                }
+              }
+            }
+          },
+          "401" : {
+            "$ref" : "#/components/responses/Unauthorized"
+          },
+          "403" : {
+            "$ref" : "#/components/responses/InsufficientAuthenticationState"
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "Jwk" : {
+        "required" : [ "kid", "kty" ],
+        "type" : "object",
+        "properties" : {
+          "kty" : {
+            "type" : "string",
+            "example" : "RSA"
+          },
+          "kid" : {
+            "type" : "string",
+            "example" : "mock-key-id-1"
+          },
+          "use" : {
+            "type" : "string",
+            "example" : "enc"
+          },
+          "alg" : {
+            "type" : "string",
+            "example" : "RSA-OAEP-256"
+          },
+          "n" : {
+            "type" : "string"
+          },
+          "e" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ForgeRockStepRequest" : {
+        "type" : "object",
+        "properties" : {
+          "authId" : {
+            "type" : "string"
+          },
+          "callbacks" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : true
+            }
+          }
+        },
+        "additionalProperties" : true,
+        "description" : "Generic callback submission body for FRAuth.next"
+      },
+      "ForgeRockStepResponse" : {
+        "required" : [ "authId" ],
+        "type" : "object",
+        "properties" : {
+          "authId" : {
+            "type" : "string"
+          },
+          "stage" : {
+            "type" : "string",
+            "example" : "UsernamePassword"
+          },
+          "callbacks" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : true
+            }
+          }
+        },
+        "additionalProperties" : true
+      },
+      "ForgeRockLoginSuccess" : {
+        "type" : "object",
+        "properties" : {
+          "tokenId" : {
+            "type" : "string"
+          },
+          "successUrl" : {
+            "type" : "string"
+          },
+          "code" : {
+            "type" : "string"
+          },
+          "state" : {
+            "type" : "string"
+          }
+        },
+        "additionalProperties" : true,
+        "description" : "Success shape may vary by SDK/AM config"
+      },
+      "OAuthTokenRequest" : {
+        "type" : "object",
+        "properties" : {
+          "grant_type" : {
+            "type" : "string",
+            "example" : "authorization_code"
+          },
+          "code" : {
+            "type" : "string"
+          },
+          "redirect_uri" : {
+            "type" : "string"
+          },
+          "client_id" : {
+            "type" : "string"
+          },
+          "code_verifier" : {
+            "type" : "string"
+          }
+        },
+        "additionalProperties" : true
+      },
+      "OAuthTokenResponse" : {
+        "required" : [ "accessToken" ],
+        "type" : "object",
+        "properties" : {
+          "accessToken" : {
+            "type" : "string"
+          },
+          "refreshToken" : {
+            "type" : "string"
+          },
+          "idToken" : {
+            "type" : "string"
+          },
+          "token_type" : {
+            "type" : "string",
+            "example" : "Bearer"
+          },
+          "expires_in" : {
+            "type" : "integer",
+            "example" : 3600
+          },
+          "scope" : {
+            "type" : "string",
+            "example" : "openid"
+          },
+          "acr" : {
+            "type" : "string",
+            "example" : "2"
+          }
+        },
+        "additionalProperties" : true
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "message" : {
+            "type" : "string"
+          }
+        },
+        "additionalProperties" : true
+      }
+    },
+    "responses" : {
+      "Unauthorized" : {
+        "description" : "Missing or invalid bearer token",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            },
+            "example" : { }
+          }
+        }
+      },
+      "InsufficientAuthenticationState" : {
+        "description" : "Auth level too low (step-up required)",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            },
+            "example" : {
+              "title" : "Authentication for current session is insufficient to execute the request",
+              "type" : "/insufficient-authentication-state"
+            }
+          }
+        }
+      },
+      "ClientError" : {
+        "description" : "4xx client error",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      },
+      "ServerError" : {
+        "description" : "5xx server error",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "$ref" : "#/components/schemas/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "parameters" : {
+      "RealmPath" : {
+        "name" : "realm",
+        "in" : "path",
+        "description" : "Realm name in ForgeRock path.",
+        "required" : true,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "type" : "string",
+          "enum" : [ "consumer", "norisbank" ]
+        }
+      },
+      "ApiKeyHeader" : {
+        "name" : "apikey",
+        "in" : "header",
+        "required" : false,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "type" : "string"
+        }
+      },
+      "CorrelationIdHeader" : {
+        "name" : "x-correlation-id",
+        "in" : "header",
+        "required" : false,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "type" : "string"
+        }
+      },
+      "BvtHeader" : {
+        "name" : "bvt",
+        "in" : "header",
+        "required" : false,
+        "style" : "simple",
+        "explode" : false,
+        "schema" : {
+          "type" : "string",
+          "enum" : [ "true" ]
+        }
+      }
+    },
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "type" : "http",
+        "scheme" : "bearer",
+        "bearerFormat" : "JWT"
+      }
+    }
+  }
+}

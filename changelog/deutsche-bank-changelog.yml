@@ -1,0 +1,143 @@
+specification: API Commons ChangeLog
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: searched
+source: https://developer.db.com/releasenotes
+cms_source: https://ams-prd.developer.db.com/c2/releasenotes.model.list.json
+description: >-
+  Deutsche Bank publishes a dated release-notes archive for the dbAPI platform going back
+  to 2020, on a roughly six-to-eight week cadence, numbered YYYY.NN. The recent window is
+  structured below; the full archive is on the portal. Notes are narrative rather than
+  per-endpoint diffs, and Deutsche Bank states backward compatibility explicitly when a
+  change is additive.
+scheme: 'YYYY.NN'
+years_published: ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018"]
+entry_count_total: 80
+current_version: '2026.06'
+current_release_date: '2026-08-18'
+entries:
+  - version: '2026.06'
+    date: '2026-08-18'
+    breaking: false
+    highlights:
+      - "We are pleased to share the latest improvements to the dbAPI platform, focusing on a better developer experience, enhanced transaction processing capabilities and preparations for future testing services."
+      - "New Transaction Service Enhancement"
+      - "One of the most frequently requested improvements from our API consumers is now available within the Transaction Service (banking/transactions/v2) for our tenants Deutsche Bank and norisbank."
+      - "A new optional response attribute, uniqueTag, has been introduced to provide a stable identifier for individual transactions."
+  - version: '2026.05'
+    date: '2026-06-30'
+    breaking: false
+    highlights:
+      - "Before entering the summer break, we are pleased to inform you that a new release has been successfully deployed to production."
+      - "This release is primarily driven by regulatory requirements to ensure that we can continue to provide our services with consistent quality and reliability. The scope mainly focuses on services related to Cash Account Opening across all tenants."
+      - "Regulatory Readiness Improvements"
+      - "Implementation of necessary adjustments to meet evolving regulatory requirements, ensuring continued compliance and stability of our platform."
+  - version: '2026.04'
+    date: '2026-06-02'
+    breaking: true
+    highlights:
+      - "We are pleased to announce that a new release has been successfully deployed to production, delivering important enhancements, improved user experience, and key regulatory readiness capabilities."
+      - "Unified Onboarding and Login Experience"
+      - "A new sign-up flow has been introduced to guide users seamlessly through the onboarding process. In parallel, the legacy login flow has been decommissioned."
+      - "This change ensures a consistent, simplified, and user-friendly authentication and onboarding experience across the platform. Users not having migrated to the new flow so far are not locked out. See our FAQ \u201cI have not logged in for a long time and missed the migration window. My login now fails. What to do?\u201c for the necessary steps."
+  - version: '2026.03'
+    date: '2026-04-21'
+    breaking: true
+    highlights:
+      - "We are pleased to announce that our latest release has been successfully deployed today."
+      - "As promised in our previous communication, this release introduces important and exciting enhancements to our db Smart Access product. We have redesigned and simplified how you interact with our services to improve security, usability, and operational efficiency for our consumers."
+      - "Key Enhancements to db Smart Access:"
+      - "With this release, the authorization model for accessing services has been fundamentally improved:"
+  - version: '2026.02'
+    date: '2026-03-03'
+    breaking: false
+    highlights:
+      - "We're excited to share our latest release announcement with you, packed with enhancements, essential fixes, and updated requirements designed to ensure the platform continues to deliver reliable and secure performance."
+      - "Furthermore, we'd like to provide a heads-up that we are currently working on extensive changes for our \u201cdb Smart Access\u201d product. This release lays the groundwork, enabling us to make these significant updates available to our community in the next release. If you're interested in learning more about dbSmartAccess, please feel free to contact us, and we'll be happy to share the latest news with you."
+      - "Following feedback from the last release, we have resolved issues within the onboarding process for new partners."
+      - "The Credit Card Service for organizations has been improved, with all existing issues now resolved."
+  - version: '2026.01'
+    date: '2026-01-20'
+    breaking: false
+    highlights:
+      - "The time has finally come! We are very happy to share that we have expanded our Credit Card service to include data for organizations. Many of you have been eagerly waiting for this enhancement. Should you have any questions or feedback, I would be happy to discuss or clarify them with you."
+      - "New Swagger versions of the 'Product Reference Data\u2019 and the \u2018Net Asset Value (NAV)\u2019 APIs' are available for DWS stakeholders to download as of today."
+      - "As usual, there were minor bug fixes and enhancements to our new APIs based on feedback from our dbAPI community."
+      - "Of course, there were further UI and UX improvements and updates to our API documentation on the Deutsche Bank Developer Portal."
+  - version: '2025.09'
+    date: '2025-12-11'
+    breaking: false
+    highlights:
+      - "Before we head into a well-deserved break, we made stability and availability our main focus for this final rollout."
+      - "In addition, we successfully resolved all remaining smaller items, especially those related to our payment services."
+      - "As usual, there were minor bug fixes and enhancements to our new APIs following feedback from our dbAPI community."
+      - "Of course, there were further UI and UX improvements and enhancements to our API documentation on the Deutsche Bank Developer Portal."
+  - version: '2025.08'
+    date: '2025-11-11'
+    breaking: false
+    highlights:
+      - "This time, there aren\u2019t many functional changes. In addition to the usual improvements, the focus was on technical adjustments and ensuring that our services continue to be available in the usual high quality."
+      - "As usual, there were minor bug fixes and enhancements to our new APIs after some feedback from our dbAPI community."
+      - "Of course, there were further UI and UX improvements and enhancements to our API documentation on the Deutsche Bank Developer Portal."
+      - "And there were some minor bug fixes for the Developer Portal and the simulator test data."
+  - version: '2025.07'
+    date: '2025-09-30'
+    breaking: true
+    highlights:
+      - "You may have already read it in the news section: Starting October 1, simulation services for all brands are temporarily suspended. These services are used for testing purposes and are not part of production workflows. Production services remain fully available and are not affected by this change. We are currently working on a new solution but don\u2019t have a timeline yet. As soon as there is an update, we will share it here."
+      - "The instant payment regulation (IPR), which was adapted by the European Parliament and the Council aims to accelerate the roll out of instant payments in Europe including the so-called \u201cVerification of Payee\u201d service. This must be provided accordingly by October 9th. Please start using the new payment services v3 for both SEPA Credit Transfers and Instant Payments for single and bulk payments. Our payment services v1 and v2 will be discontinued simultaneously on this date. Please adapt your processes accordingly."
+      - "Force external developers to migrate user account to recently introduced new authentication and authorization solution."
+      - "As usual, there were minor bug fixes and enhancements to our new APIs after some feedback from our dbAPI community."
+  - version: '2025.06'
+    date: '2025-08-19'
+    breaking: true
+    highlights:
+      - "The first thing you'll notice is the new option to register on our Deutsche Bank Developer Portal. We've implemented improved integration with our systems so that we can offer you new features in the future as changes occur. Already registered users can easily switch to the new service by following the on-screen instructions. Please allow sufficient time to familiarize yourself with it."
+      - "The other topic is the major change to Deutsche Bank\u2019s Online Banking. Customers have already been well prepared for this through the usual channels."
+      - "Our services across all tenants/brands are also affected by this change, so please read and follow the points below carefully."
+      - "Scheduled downtime per brand:"
+  - version: '2025.05'
+    date: '2025-07-01'
+    breaking: true
+    highlights:
+      - "To simplify our customers' processes, we have introduced another optional attribute for our cashAccounts service to query the account status."
+      - "As with the SEPA Credit Transfer (SCT) service, we have also implemented the second-factor retry with the Bulk SCT service."
+      - "Major changes are coming to the Online Banking of Deutsche Bank. This will also affect our services and their availability. Specifically, it concerns the period from August 22nd to 24th. However, I will provide more detailed information about this in a separate communication."
+      - "I'd like to announce today that we will be decommissioning the \u201conetimepasswords\u201d service with our next release. A replacement for transaction signing has been available for some time."
+  - version: '2025.04'
+    date: '2025-05-20'
+    breaking: true
+    highlights:
+      - "We've extended the Private Banking Loan Offers API with new capabilities that support the submission of required documentation for loan processing, now available for our Deutsche Bank and norisbank clients."
+      - "Due to high demand, we have expanded our SEPA Credit Transfer (SCT) service to include a bulk payment option. This allows our customers to streamline their processes even more efficiently."
+      - "And as you've already heard in the media, there are numerous modernizations taking place around our Online Banking. This naturally affects us as well. We'll begin integrating the norisbank brand into the new Online Banking at the end of May. After the changeover, our norisbank customers will be able to continue using our services with the same proven quality."
+      - "n preparation for the EU\u2019s Instant Payment Regulation and to facilitate the transition to the new requirements, we have introduced a new version v2 of our Instant Payment Service. The older version will soon be decommissioned."
+  - version: '2025.03'
+    date: '2025-04-08'
+    breaking: false
+    highlights:
+      - "We are pleased to announce our new service \u2018ESP Securities Account Opening\u2019. It enables your employees to actively participate in your Employee Shareplan Program by embedding a fully digital account opening process directly into your ESP management system. Feel free to check out more details on our Developer Portal."
+      - "Improvement in reading credit card transactions for Deutsche Bank and norisbank customers."
+      - "Expansion of the product range of our partner DWS. Check out our product overview page."
+      - "Beside this, new business transactions were added to the \u2018processingOrders\u2019service."
+  - version: '2025.02'
+    date: '2025-03-04'
+    breaking: false
+    highlights:
+      - "One of the most interesting topics is our new service for Escrow Account Opening for our tenant Deutsche Bank. For details please refer to our Deutsche Bank Developer Portal."
+      - "Our document upload service processingOrders does now offer brand specific handling to support additional business cases."
+      - "Besides this, new business transactions were added to the same service."
+      - "As usual, there were minor bug fixes and enhancements to our new APIs following some feedback from our dbAPI community."
+  - version: '2025.01'
+    date: '2025-01-21'
+    breaking: false
+    highlights:
+      - "Consumers of our subscription service will notice that the \u201cexpirationDate\u201d issue has been resolved. Please check and adjust accordingly if necessary."
+      - "Improvements for the go-live request to enable a smooth onboarding process."
+      - "Fix connection issues for notification service."
+      - "Enhancements to the processingOrders service to support new business transactions."
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

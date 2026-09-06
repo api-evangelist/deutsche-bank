@@ -1,0 +1,333 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-transactionAnalysis-v1",
+    "description" : "Individuals often need to prove they have sufficient income, for example when applying to rent an apartment. Provides an easy and accurate way to prove recent income and rent payments to describe the financial situation of a customer.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/banking/transactionAnalysis/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Transaction Analysis",
+    "description" : "Provides an easy and accurate way to prove recent income and rent payments to describe the financial situation of a customer. "
+  } ],
+  "paths" : {
+    "/income" : {
+      "get" : {
+        "tags" : [ "Transaction Analysis" ],
+        "summary" : "Transaction Income Check",
+        "description" : "Signing new contracts such as a lease contract often require the customer to provide an income certificate from their bank. Getting hold of such a proof can be time consuming and annoying. Income Check automates this process and provides all the necessary data instantly. All parties save time on concluding contracts.",
+        "operationId" : "getTransactionAnalysisIncome",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/IncomeResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 18,
+                  "message" : "Backend problem. Please narrow time interval."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "description" : "Unsuccessful operation, returns http status 500. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 3,
+                  "message" : "The server encountered an internal error and was unable to complete your request. Please try again."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "income_analysis" ]
+        } ]
+      }
+    },
+    "/rent" : {
+      "get" : {
+        "tags" : [ "Transaction Analysis" ],
+        "summary" : "Transaction Rent Check",
+        "description" : "Signing new contracts such as a lease contract often require the customer to provide a rent certificate from their bank. Getting hold of such a proof can be time consuming and annoying. Check rent automates this process and provides all the necessary data instantly. All parties save time on concluding contracts.",
+        "operationId" : "getTransactionAnalysisRent",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RentResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 18,
+                  "message" : "Backend problem. Please narrow time interval."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "500" : {
+            "description" : "Unsuccessful operation, returns http status 500. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 3,
+                  "message" : "The server encountered an internal error and was unable to complete your request. Please try again."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "rent_analysis" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "IncomeResponse" : {
+        "type" : "object",
+        "properties" : {
+          "lowerLimit" : {
+            "type" : "number",
+            "description" : "Lower limit of the average income"
+          },
+          "upperLimit" : {
+            "type" : "number",
+            "description" : "Upper limit of the average income"
+          },
+          "message" : {
+            "$ref" : "#/components/schemas/Message"
+          }
+        }
+      },
+      "RentResponse" : {
+        "type" : "object",
+        "properties" : {
+          "rentResponses" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AnalysedTransaction"
+            }
+          },
+          "message" : {
+            "$ref" : "#/components/schemas/Message"
+          }
+        }
+      },
+      "Message" : {
+        "required" : [ "code", "text" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "description" : "The response code"
+          },
+          "text" : {
+            "type" : "string",
+            "description" : "The reason message text"
+          },
+          "category" : {
+            "type" : "string",
+            "description" : "Reason category"
+          }
+        },
+        "description" : "Backend response in case of certificate can't be determined"
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "AnalysedTransaction" : {
+        "required" : [ "amount", "bookingDate", "counterPartyName", "originIban" ],
+        "type" : "object",
+        "properties" : {
+          "bookingDate" : {
+            "type" : "string",
+            "description" : "Booking date. In the format YYYY-MM-DD.",
+            "format" : "date"
+          },
+          "originIban" : {
+            "$ref" : "#/components/schemas/IBAN"
+          },
+          "amount" : {
+            "type" : "number",
+            "description" : "Amount of the transaction (EUR only). Always positive value for these outgoing payments! (note this is opposite sign of Simulation, where positive amount means incoming payment, so customer received money.)",
+            "format" : "double"
+          },
+          "paymentReference" : {
+            "maxLength" : 140,
+            "type" : "string",
+            "description" : "Payment reference."
+          },
+          "counterPartyName" : {
+            "maxLength" : 70,
+            "type" : "string",
+            "description" : "Name of the counter party."
+          }
+        },
+        "description" : "Backend response containing a list of 20 transactions, each represents a rent/income payment."
+      },
+      "IBAN" : {
+        "pattern" : "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
+        "type" : "string",
+        "description" : "The IBAN of this account."
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "income_analysis" : "Check income payments",
+              "rent_analysis" : "Check rent payments",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

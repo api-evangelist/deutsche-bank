@@ -1,0 +1,122 @@
+specification: API Commons Sandbox
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: searched
+source: https://developer.db.com/apidocumentation/apigettingstartedguide/testdata
+description: >-
+  Deutsche Bank's developer programme is simulation-first: every developer builds against a
+  full simulation gateway with generated fictional customers before requesting production
+  access. This is one of the strongest sandbox surfaces in European banking - not a set of
+  magic values bolted onto production, but a separate host with its own OAuth provider,
+  its own persona-based test users, and bulk test-transaction upload.
+mode: separate-host
+sandbox_host: https://simulator-api.db.com
+sandbox_gateway_root: https://simulator-api.db.com/gw/dbapi
+sandbox_oidc_issuer: https://simulator-api.db.com/gw/oidc/
+production_hosts:
+  - tenant: Deutsche Bank
+    base: https://api.db.com
+  - tenant: norisbank
+    base: https://api.norisbank.de
+  - tenant: Postbank
+    base: https://api.postbank.de
+promotion:
+  detail: >-
+    Going live swaps the client id (and secret, if used) and the base URL. Deutsche Bank
+    states explicitly: "You don't need to adapt any other information like endpoints and HTTP
+    requests or responses on your side in order to receive live data."
+  docs: https://developer.db.com/apidocumentation/apigettingstartedguide/golive
+  gated: true
+  gate: >-
+    A go-live request is filed from the portal dashboard, the app must be shared with a team
+    that has an app manager, and Deutsche Bank reviews it.
+cost:
+  sandbox: free
+  detail: >-
+    "Signing up to the Developer Portal and testing with it is free of charge." Production
+    use of live data is governed by a separate commercial agreement.
+  source: https://developer.db.com/faq
+test_users:
+  mechanism: generated personas
+  detail: >-
+    Test users mimic an end-user experience through a fictional persona - biography, personal
+    details, transaction history, and which banking products that persona holds (some have a
+    securities account, some do not). The test user's online-banking credentials are then
+    used to authorise against the API Explorer. Created from the Dashboard under My Test
+    Users; templates can be modified or deleted. All test data is generated in the back end.
+  console: https://developer.db.com/dashboard/testusers
+  authorize: https://developer.db.com/apiexplorer/terminal/authorize/db
+  api: POST /testusers?persona={persona}&tenant-id={tenant}
+test_data:
+  bulk_transaction_upload:
+    detail: >-
+      Transactions are uploaded to an already-created test account as a JSON file via the
+      "+Add Bulk Transactions" button on the Test User Details screen.
+    max_per_upload: 1000
+    concurrency: one bulk upload process at a time per developer account
+    rejection: A JSON file with more than 1000 transactions is rejected outright.
+    required_fields:
+      - name: counterPartyIban
+        rules: required, max length 34, first two characters are the country code
+        example: DE10010000000000036678
+      - name: amount
+        rules: required, positive or negative number, numeric(11,2)
+        example: '50'
+      - name: bookingDate
+        rules: required, pattern yyyy-MM-dd
+        example: '2018-08-01'
+      - name: paymentReference
+        rules: required, max length 140
+        example: Steuer Rueckzahlung
+      - name: externalBankTransactionDomainCode
+        rules: required, max 4 characters, letters only
+        example: BFWA
+merchant_solutions_test_values:
+  source: https://ams-prd.developer.db.com/c2/merchant-solutions-explorer-tabs.model.json
+  note: >-
+    Published verbatim by Deutsche Bank for the Merchant Solutions payment gateway test
+    system (testmerch.directpos.de). These are Deutsche Bank's own documented test values -
+    "Do not use real credit card data for your tests."
+  test_cards:
+    - brand: Visa
+      number: '4111111111111111'
+    - brand: MasterCard
+      number: '5232050000010003'
+  three_d_secure_2_cards:
+    - scenario: Without cardholder authorization
+      number: '4012001037167778'
+    - scenario: With cardholder authorization
+      number: '4012001037664444'
+    - scenario: With 3DS Method
+      number: '4005559876540'
+    - scenario: With 3DS Method and cardholder authorization
+      number: '4012001036853337'
+  card_expiry: any date in the future
+  card_cvc: not verified on the test system - any three digits
+  test_ibans_valid:
+    - DE87123456781234567890
+    - DE63123456791212121212
+  test_ibans_invalid:
+    - iban: DE52123456771234567890
+      response_code: 1507
+    - iban: DE90123456791212121211
+      response_code: 1507
+  amount_triggers:
+    - rule: >-
+        A credit card amount that is not divisible by 100 in the minor unit is rejected -
+        3.14 USD (amount 314) is rejected, 3.00 USD is accepted.
+    - rule: >-
+        An amount of 10XX.00 EUR (amount_total.amount = 10XX00, currency EUR) is rejected
+        with back_rc = XX - the two-digit XX selects the simulated decline reason.
+    - rule: Cent amounts are NOT rejected for direct debit payments.
+api_explorer:
+  url: https://developer.db.com/apiexplorer
+  detail: >-
+    An in-portal console that authorises a chosen test persona and calls the simulation
+    gateway directly. Note that tryItOut is false on every dbAPI swagger entry in the public
+    catalogue - the explorer drives the call, the raw swagger listing does not.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

@@ -1,0 +1,29 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Callback API
+  version: 1.0.0
+extends: ../openapi/deutsche-bank-merchant-solution-callback-v2.json
+x-generated: '2026-09-06'
+x-method: generated
+x-source: openapi/deutsche-bank-merchant-solution-callback-v2.json + this repository's derived artifacts
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      provider: deutsche-bank
+      harvested: '2026-09-06'
+      harvested-from: https://simulator-api.db.com/gw/public/dbapi/swaggers/v1/merchant-solution-callback-v2/swagger
+      artifacts:
+        authentication: authentication/deutsche-bank-authentication.yml
+        scopes: scopes/deutsche-bank-scopes.yml
+        conventions: conventions/deutsche-bank-conventions.yml
+        errors: errors/deutsche-bank-error-codes.yml
+        lifecycle: lifecycle/deutsche-bank-lifecycle.yml
+        sandbox: sandbox/deutsche-bank-sandbox.yml
+- target: $.paths['/callback'].post
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.

@@ -1,0 +1,295 @@
+{"data":[{"json":{
+  "scopes": [
+    {
+      "id": "read_accounts",
+      "name": "read_accounts",
+      "description": "Grants read access to all basic cash account data like the current balance and a general account overview for the given customer",
+      "group": "banking"
+    },
+    {
+      "id": "read_accounts_list",
+      "name": "read_accounts_list",
+      "description": "Grants read access to basic cash account data and a general account overview for the given customer",
+      "group": "banking"
+    },
+    {
+      "id": "read_transactions",
+      "name": "read_transactions",
+      "description": "Grants read access to transactions for cash accounts (current and deposit) for the given customer. The API provides in default up to 13 months of transaction history",
+      "group": "banking"
+    },
+    {
+      "id": "rent_analysis",
+      "name": "rent_analysis",
+      "description": "Check rent payments",
+      "group": "banking"
+    },
+    {
+      "id": "income_analysis",
+      "name": "income_analysis",
+      "description": "Check income payments",
+      "group": "banking"
+    },
+    {
+      "id": "open_cash_account",
+      "name": "open_cash_account",
+      "description": "Cash account openings",
+      "group": "banking"
+    },
+    {
+      "id": "open_escrow_account",
+      "name": "open_escrow_account",
+      "description": "Escrow account openings",
+      "group": "banking"
+    },
+    {
+      "id": "read_credit_cards_list_with_details",
+      "name": "read_credit_cards_list_with_details",
+      "description": "Grants read access to credit card data",
+      "group": "credit_cards"
+    },
+    {
+      "id": "read_credit_card_transactions",
+      "name": "read_credit_card_transactions",
+      "description": "Read your credit card transaction data",
+      "group": "credit_cards"
+    },
+    {
+      "id": "offline_access",
+      "name": "offline_access",
+      "description": "Request an OAuth2 Refresh Token",
+      "group": "default"
+    },
+    {
+      "id": "openid",
+      "name": "openid",
+      "description": "Request access to OpenId Connect functionality",
+      "group": "default"
+    },
+    {
+      "id": "investments_report",
+      "name": "investments_report",
+      "description": "Generate investments report for the given customer",
+      "group": "investment_portfolio"
+    },
+    {
+      "id": "read_assets",
+      "name": "read_assets",
+      "description": "Grants read access to asset summary of a portfolio group.",
+      "group": "investment_portfolio"
+    },
+    {
+      "id": "read_performances",
+      "name": "read_performances",
+      "description": "Grants read access to performance overview of a portfolio.",
+      "group": "investment_portfolio"
+    },
+    {
+      "id": "read_security_accounts_list",
+      "name": "read_security_accounts_list",
+      "description": "Grants read access to security account data",
+      "group": "investment_portfolio"
+    },
+    {
+      "id": "read_security_transactions",
+      "name": "read_security_transactions",
+      "description": "Grants read access to all security transactions for the given customer",
+      "group": "investment_portfolio"
+    },
+    {
+      "id": "order_securities",
+      "name": "order_securities",
+      "description": "Order securities",
+      "group": "investment_portfolio"
+    },
+    {
+      "id": "open_esp_securities_account",
+      "name": "open_esp_securities_account",
+      "description": "Open ESP securities accounts",
+      "group": "investment_portfolio"
+    },
+    {
+      "id": "request_private_loans",
+      "name": "request_private_loans",
+      "description": "Request private loans",
+      "group": "lending"
+    },
+    {
+      "id": "request_loans",
+      "name": "request_loans",
+      "description": "Request loans",
+      "group": "lending"
+    },
+    {
+      "id": "transaction_notifications",
+      "name": "transaction_notifications",
+      "description": "Enable the transaction subscription feature",
+      "group": "notification"
+    },
+    {
+      "id": "investments_orders_status_notification",
+      "name": "investments_orders_status_notification",
+      "description": "Enable the investments orders subscription feature",
+      "group": "notification"
+    },
+    {
+      "id": "instant_sepa_credit_transfers",
+      "name": "instant_sepa_credit_transfers",
+      "description": "Initiate and check status of instant SEPA credit transfers",
+      "group": "payments"
+    },
+    {
+      "id": "sepa_credit_transfers",
+      "name": "sepa_credit_transfers",
+      "description": "Initiate and check status of SEPA Credit Transfers",
+      "group": "payments"
+    },
+    {
+      "id": "sepa_direct_debit_core",
+      "name": "sepa_direct_debit_core",
+      "description": "Initiate and check status of SEPA Direct Debit Core",
+      "group": "payments"
+    },
+    {
+      "id": "bulk_instant_sepa_credit_transfers",
+      "name": "bulk_instant_sepa_credit_transfers",
+      "description": "Initiate and check status of bulk SEPA instant credit transfers",
+      "group": "payments"
+    },
+    {
+      "id": "sepa_direct_debit_B2B",
+      "name": "sepa_direct_debit_B2B",
+      "description": "Initiate and check status of SEPA Direct Debit B2B",
+      "group": "payments"
+    },
+    {
+      "id": "bulk_sepa_credit_transfers",
+      "name": "bulk_sepa_credit_transfers",
+      "description": "Bulk SEPA Credit Transfers with status check",
+      "group": "payments"
+    },
+    {
+      "id": "read_ownership_information",
+      "name": "read_ownership_information",
+      "description": "Information about ultimate beneficiary owners",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_additional_organization_data",
+      "name": "read_additional_organization_data",
+      "description": "Grants read access to additional organizational information about a partner representing a company. The additional data contains legal form, industry, local court, stakeholders and tax identification.",
+      "group": "reference_data"
+    },
+    {
+      "id": "verify_account_ownership",
+      "name": "verify_account_ownership",
+      "description": "Performs account verification for the given customer.",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_partners_legi",
+      "name": "read_partners_legi",
+      "description": "Grants read access to legitimation data of the current partner/customer. This data is only available for natural persons. Legitimation data contains information, e.g. about the document type, document number and document issue date for the given customer.",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_check_information",
+      "name": "read_check_information",
+      "description": "Know-Your-Customer Information",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_legal_representatives_data",
+      "name": "read_legal_representatives_data",
+      "description": "Information about legal representatives",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_customer_data",
+      "name": "read_customer_data",
+      "description": "Performs personal data verification for the given customer.",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_partners",
+      "name": "read_partners",
+      "description": "Grants read access to basic data of the current partner/customer. The basic partner data contains, among other information, the first name, the surname and the birthdate for the given customer. There is some overlap between our /partners endpoint and the /userinfo endpoint provided by OpenID connect.",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_additional_personal_data",
+      "name": "read_additional_personal_data",
+      "description": "Grants read access to additional data about the partner. The additional data currently contains the tax identifications for the given customer.",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_addresses",
+      "name": "read_addresses",
+      "description": "Grants read access to address data for the given customer. Two address types are currently supported: business address and private address.",
+      "group": "reference_data"
+    },
+    {
+      "id": "age_certificate",
+      "name": "age_certificate",
+      "description": "Grants a check of a person's age, when compared against a specific minimum age",
+      "group": "reference_data"
+    },
+    {
+      "id": "reserve_branch_customer_number",
+      "name": "reserve_branch_customer_number",
+      "description": "Reserve Branch Customer Number",
+      "group": "reference_data"
+    },
+    {
+      "id": "read_brand",
+      "name": "read_brand",
+      "description": "Grants permission to get data from the /brand endpoint. Only available with client credential grant flow right now.",
+      "group": "reference_data"
+    },
+    {
+      "id": "create_processing_orders",
+      "name": "create_processing_orders",
+      "description": "Grants permission to post data with the /processingOrders endpoint. Only available with client credential grant flow right now.",
+      "group": "uncategorized_scopes"
+    }
+  ],
+  "groups": [
+    {
+      "id": "banking",
+      "name": "Banking"
+    },
+    {
+      "id": "credit_cards",
+      "name": "Credit Cards"
+    },
+    {
+      "id": "default",
+      "name": "Default"
+    },
+    {
+      "id": "investment_portfolio",
+      "name": "Investment Portfolio"
+    },
+    {
+      "id": "lending",
+      "name": "Lending"
+    },
+    {
+      "id": "notification",
+      "name": "Notification"
+    },
+    {
+      "id": "payments",
+      "name": "Payments"
+    },
+    {
+      "id": "reference_data",
+      "name": "Reference Data"
+    },
+    {
+      "id": "uncategorized_scopes",
+      "name": "Uncategorized Scopes",
+      "default": true
+    }
+  ]
+}}]}

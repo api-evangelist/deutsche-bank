@@ -1,0 +1,225 @@
+specification: API Commons Conventions
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: derived
+source: >-
+  openapi/ (36 first-party Deutsche Bank OpenAPI 3.0.x documents, 170 paths / 195 operations)
+  cross-read against https://developer.db.com/apidocumentation
+docs: https://developer.db.com/apidocumentation
+description: >-
+  Cross-cutting runtime semantics of the Deutsche Bank dbAPI estate, computed from the
+  published contracts rather than from prose. The estate is consistent about correlation and
+  about OAuth; it is NOT consistent about replay protection, and it publishes no rate-limit
+  contract at all.
+auth:
+  style: oauth2
+  detail: >-
+    Three named OAuth 2.0 schemes (authorization code, client credentials, db Smart Access
+    client credentials) plus bearer JWT on Merchant Solutions. No API-key path to customer
+    data. See authentication/deutsche-bank-authentication.yml.
+  artifact: authentication/deutsche-bank-authentication.yml
+request_id:
+  header: Correlation-Id
+  direction: request
+  required: true
+  coverage: full
+  detail: >-
+    Every one of the 195 published operations declares a Correlation-Id request header. It is
+    the caller-supplied trace key. On errors the response body carries messageId, the dbAPI
+    internal identifier for the same call - capture both when opening a support case.
+  response_field: messageId
+idempotency:
+  supported: true
+  coverage: partial
+  mechanism: header
+  header: idempotency-id
+  header_variants:
+    - idempotency-id
+    - Idempotency-ID
+  format: uuid
+  required: true
+  semantics: >-
+    "Unique id of the service call. Must be present during retries to avoid multiple
+    processing of the same request." A collision returns HTTP 409 with numeric code 6506,
+    "The IdempotencyId already being used."
+  conflict:
+    status: 409
+    code: 6506
+    message: The IdempotencyId already being used.
+  retention: not documented
+  measurement:
+    write_operations: 128
+    with_idempotency_key: 33
+    without_idempotency_key: 95
+    note: >-
+      Counted across all 36 published specs (POST/PUT/PATCH/DELETE). The mechanism is
+      concentrated in payments, account opening, lending and processing orders. It is absent
+      from the whole investments-orders write surface (including order change and order
+      cancel), the whole subscriptions delete/patch surface, the entire transaction
+      authorization surface, verifyCustomer, and every Merchant Solutions write.
+  scope:
+    - dbapi-banking-cashAccountOpenings-v1 POST / (cashAccountOpenings)
+    - dbapi-investments-espSecuritiesAccounts-v1 POST / (espSecuritiesAccountOpening)
+    - dbapi-investments-orders-v1 POST / (orderEntry)
+    - dbapi-investments-orders-v1 POST /bulk (bulkOrderEntry)
+    - dbapi-loanOffers-privatebanking-v1 POST /offers
+    - dbapi-loanOffers-privatebanking-v1 POST /offers/{offerId}/documents (uploadDocumentUsingDocumentInfo)
+    - dbapi-loanOffers-privatebanking-v1 POST /offers/{offerId}/documents/startCase (notifyDocumentsUpload)
+    - dbapi-loanOffers-privatebanking-v1 POST /offers/{offerId}/documents/transaction (generateTransactionId)
+    - dbapi-loanOffers-privatebanking-v2 POST /offers
+    - dbapi-loanOffers-privatebanking-v2 POST /offers/{offerId}/documents (uploadDocumentUsingDocumentInfo)
+    - dbapi-loanOffers-privatebanking-v2 POST /offers/{offerId}/documents/startCase (notifyDocumentsUpload)
+    - dbapi-loanOffers-privatebanking-v2 POST /offers/{offerId}/documents/transaction (generateTransactionId)
+    - dbapi-payments-sepaInstantCreditTransfer-v3 POST /sepaInstantCreditTransfer (performPaymentInstant)
+    - dbapi-payments-sepaInstantCreditTransfer-v3 POST /sepaInstantCreditTransfer/bulk
+    - dbapi-payments-sepaInstantCreditTransfer-v3 DELETE /sepaInstantCreditTransfer/{paymentId}
+    - dbapi-payments-sepaInstantCreditTransfer-v3 DELETE /sepaInstantCreditTransfer/bulk/{paymentId}
+    - dbapi-payments-sepaInstantCreditTransfer-v3 PATCH /sepaInstantCreditTransfer/{paymentId}
+    - dbapi-payments-sepaInstantCreditTransfer-v3 PATCH /sepaInstantCreditTransfer/bulk/{paymentId}
+    - dbapi-processingOrders-v1 POST / (createProcessingOrders)
+    - dbapi-processingOrders-v1 POST /documents (uploadDocument)
+    - dbapi-processingOrders-v2 POST / (createProcessingOrders)
+    - dbapi-processingOrders-v2 POST /documents (uploadDocument)
+    - dbapi-sepaCreditTransfer-v3 POST /
+    - dbapi-sepaCreditTransfer-v3 POST /bulk
+    - dbapi-sepaCreditTransfer-v3 DELETE /{paymentId}
+    - dbapi-sepaCreditTransfer-v3 DELETE /bulk/{paymentId}
+    - dbapi-sepaCreditTransfer-v3 PATCH /{paymentId}
+    - dbapi-sepaCreditTransfer-v3 PATCH /bulk/{paymentId}
+    - dbapi-sepaDirectDebit-v1 POST /
+    - dbapi-sepaDirectDebit-v1 DELETE /{paymentId}
+    - dbapi-sepaDirectDebit-v1 PATCH /{paymentId}
+    - dbapi-subscriptions-v1 POST /investments/orders (investmentsOrdersPost)
+    - dbapi-subscriptions-v1 POST /transactions (transactionsPost)
+reversibility:
+  grade: verified
+  detail: >-
+    Deutsche Bank publishes real reversal operations on both money-movement surfaces, and on
+    the investments surface it also publishes the WINDOW in which reversal works. On the SEPA
+    payment surfaces the cancel operation exists and is contractually described, but no
+    cancellation window is stated in the specs or the portal documentation - do not assume
+    one.
+  surfaces:
+    - surface: Securities order entry
+      spec: openapi/deutsche-bank-dbapi-investments-orders-v1.json
+      write: orderEntry (POST /) and bulkOrderEntry (POST /bulk)
+      reversal_operation: orderDelete
+      reversal: POST /{orderId}/cancel
+      window: >-
+        "This API tries to cancel an existing order. For that, the order must be in status
+        ACCEPTED but not executed yet. On successful cancellation, the status is updated to
+        CANCELLED."
+      window_source: openapi/deutsche-bank-dbapi-investments-orders-v1.json (paths./{orderId}/cancel.post.description)
+      grade: verified
+      requires_second_factor: true
+      second_factor_header: OTP
+    - surface: SEPA Credit Transfer
+      spec: openapi/deutsche-bank-dbapi-sepaCreditTransfer-v3.json
+      write: POST / and POST /bulk
+      reversal: DELETE /{paymentId} and DELETE /bulk/{paymentId}
+      reversal_summary: Cancel a previously initiated SEPA Credit Transfer.
+      window: not stated
+      grade: documented
+    - surface: SEPA Instant Credit Transfer
+      spec: openapi/deutsche-bank-dbapi-payments-sepaInstantCreditTransfer-v3.json
+      write: POST /sepaInstantCreditTransfer and POST /sepaInstantCreditTransfer/bulk
+      reversal: DELETE /sepaInstantCreditTransfer/{paymentId} and DELETE /sepaInstantCreditTransfer/bulk/{paymentId}
+      reversal_summary: Cancel a previously initiated SEPA Instant Credit Transfer.
+      window: not stated
+      grade: documented
+    - surface: SEPA Direct Debit
+      spec: openapi/deutsche-bank-dbapi-sepaDirectDebit-v1.json
+      write: POST /
+      reversal: DELETE /{paymentId}
+      reversal_summary: Cancel a previously initiated SEPA direct debit.
+      window: not stated
+      grade: documented
+    - surface: Event subscriptions
+      spec: openapi/deutsche-bank-dbapi-subscriptions-v1.json
+      write: POST /transactions, POST /investments/orders
+      reversal: DELETE /transactions/{subscriptionId}, DELETE /investments/orders/{subscriptionId}
+      window: not applicable - a subscription can be deleted at any time
+      grade: documented
+  irreversible:
+    - Cash account opening (dbapi-banking-cashAccountOpenings-v1) - no cancel/withdraw operation is published; the only follow-up is a status read.
+    - ESP securities account opening (dbapi-investments-espSecuritiesAccounts-v1) - same shape, status read only.
+    - Consumer loan offer document commit (notifyDocumentsUpload / startCase) - no reversal operation published.
+dry_run_mode:
+  supported: true
+  detail: >-
+    The investments order surface publishes explicit rehearsal operations: POST /preview
+    (orderEntryPreview), PATCH /{orderId}/preview (changeSecurityOrderPreview), POST
+    /estimatedExpense (costInformation) and POST /estimatedExpenseReport. A preview returns a
+    previewSignature which the real order entry then requires as a request header - so the
+    rehearsal is not advisory, it is a required step. The payment surfaces publish
+    GET /creditorAccounts/{iban}/reachabilityStatus and the VoP (Verification of Payee)
+    detail reads as their pre-flight checks.
+  operations:
+    - orderEntryPreview
+    - changeSecurityOrderPreview
+    - costInformation
+    - estimatedExpenseReport
+    - getReachabilityStatus
+  binding_header: previewSignature
+pagination:
+  style: offset
+  detail: >-
+    The paginated read collections use explicit offset/limit query parameters - 6 operations
+    declare both - and return a totalItems count in the envelope (9 of the 36 specs). There
+    is no cursor and no link-header pagination anywhere in the estate. A sortBy parameter is
+    referenced by error code 131 (valid values bookingDate[ASC] / bookingDate[DESC]) but is
+    NOT declared as a query parameter in any published spec.
+  params:
+    - offset
+    - limit
+  response_fields:
+    - totalItems
+    - limit
+    - offset
+versioning:
+  style: path
+  detail: >-
+    The major version is a path segment on the gateway (/gw/dbapi/banking/transactions/v2).
+    Versions run side by side - processingOrders v1 and v2, consumerLoanOffers v1 and v2, and
+    the payments v1/v3 families are all published simultaneously. Individual swagger
+    documents are addressed by a stable swaggerId (dbapi-transactions-v2).
+  discovery: https://simulator-api.db.com/gw/public/dbapi/swaggers/v1/
+error_envelope:
+  format: proprietary
+  content_type: application/json
+  shape: '{ code: integer, message: string, messageId: string }'
+  rfc9457: false
+  artifact: errors/deutsche-bank-problem-types.yml
+  registry: errors/deutsche-bank-error-codes.yml
+rate_limit_signal:
+  documented: false
+  detail: >-
+    No rate-limit response headers, no 429 response and no published quota appear anywhere in
+    the 36 specs, in the portal documentation, or in the FAQ. An agent has no runtime signal
+    to back off on. See rate-limits/deutsche-bank-rate-limits.yml.
+  artifact: rate-limits/deutsche-bank-rate-limits.yml
+multitenancy:
+  detail: >-
+    One contract, several banks. The same dbAPI operations are served for the Deutsche Bank,
+    norisbank and Postbank tenants; the tenant is selected by the production base URL
+    (api.db.com / api.norisbank.de / api.postbank.de) and by the tenant-id parameter on the
+    public swagger catalogue.
+  docs: https://developer.db.com/apidocumentation/apigettingstartedguide/multitenancy-availability
+strong_customer_authentication:
+  detail: >-
+    PSD2 SCA is exposed as an API. Payment and order writes carry an OTP request header, and
+    the Transaction Authorization API (dbapi-transactionAuthorization-v1) issues, switches
+    and verifies the challenge - including PushTAN.
+  api: openapi/deutsche-bank-dbapi-transactionAuthorization-v1.json
+cross_links:
+  authentication: authentication/deutsche-bank-authentication.yml
+  scopes: scopes/deutsche-bank-scopes.yml
+  errors: errors/deutsche-bank-problem-types.yml
+  lifecycle: lifecycle/deutsche-bank-lifecycle.yml
+  rate_limits: rate-limits/deutsche-bank-rate-limits.yml
+  sandbox: sandbox/deutsche-bank-sandbox.yml
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

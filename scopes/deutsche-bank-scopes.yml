@@ -1,0 +1,150 @@
+specification: API Commons OAuth Scopes
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: searched
+source: https://ams-prd.developer.db.com/c2/scopes-metadata.model.json
+docs: https://developer.db.com/apidocumentation/oauthflows/scopes
+verbatim: scopes/deutsche-bank-scopes-metadata.json
+description: >-
+  The published Deutsche Bank dbAPI OAuth 2.0 scope reference, harvested verbatim from the
+  scope metadata document the developer portal itself renders on its Available Scopes page.
+  42 scopes across 8 functional groups. Scopes are requested against the dbAPI OIDC provider
+  (issuer https://simulator-api.db.com/gw/oidc/ in simulation, https://api.db.com in production)
+  using the authorization code, authorization code with PKCE, client credentials or refresh
+  token grant, depending on the API.
+token_endpoint: https://simulator-api.db.com/gw/oidc/oauth2/token
+authorization_endpoint: https://simulator-api.db.com/gw/oidc/oauth2/authorize
+scope_count: 42
+scopes:
+  - name: read_accounts
+    group: banking
+    description: "Grants read access to all basic cash account data like the current balance and a general account overview for the given customer"
+  - name: read_accounts_list
+    group: banking
+    description: "Grants read access to basic cash account data and a general account overview for the given customer"
+  - name: read_transactions
+    group: banking
+    description: "Grants read access to transactions for cash accounts (current and deposit) for the given customer. The API provides in default up to 13 months of transaction history"
+  - name: rent_analysis
+    group: banking
+    description: "Check rent payments"
+  - name: income_analysis
+    group: banking
+    description: "Check income payments"
+  - name: open_cash_account
+    group: banking
+    description: "Cash account openings"
+  - name: open_escrow_account
+    group: banking
+    description: "Escrow account openings"
+  - name: read_credit_cards_list_with_details
+    group: credit_cards
+    description: "Grants read access to credit card data"
+  - name: read_credit_card_transactions
+    group: credit_cards
+    description: "Read your credit card transaction data"
+  - name: offline_access
+    group: default
+    description: "Request an OAuth2 Refresh Token"
+  - name: openid
+    group: default
+    description: "Request access to OpenId Connect functionality"
+  - name: investments_report
+    group: investment_portfolio
+    description: "Generate investments report for the given customer"
+  - name: read_assets
+    group: investment_portfolio
+    description: "Grants read access to asset summary of a portfolio group."
+  - name: read_performances
+    group: investment_portfolio
+    description: "Grants read access to performance overview of a portfolio."
+  - name: read_security_accounts_list
+    group: investment_portfolio
+    description: "Grants read access to security account data"
+  - name: read_security_transactions
+    group: investment_portfolio
+    description: "Grants read access to all security transactions for the given customer"
+  - name: order_securities
+    group: investment_portfolio
+    description: "Order securities"
+  - name: open_esp_securities_account
+    group: investment_portfolio
+    description: "Open ESP securities accounts"
+  - name: request_private_loans
+    group: lending
+    description: "Request private loans"
+  - name: request_loans
+    group: lending
+    description: "Request loans"
+  - name: transaction_notifications
+    group: notification
+    description: "Enable the transaction subscription feature"
+  - name: investments_orders_status_notification
+    group: notification
+    description: "Enable the investments orders subscription feature"
+  - name: instant_sepa_credit_transfers
+    group: payments
+    description: "Initiate and check status of instant SEPA credit transfers"
+  - name: sepa_credit_transfers
+    group: payments
+    description: "Initiate and check status of SEPA Credit Transfers"
+  - name: sepa_direct_debit_core
+    group: payments
+    description: "Initiate and check status of SEPA Direct Debit Core"
+  - name: bulk_instant_sepa_credit_transfers
+    group: payments
+    description: "Initiate and check status of bulk SEPA instant credit transfers"
+  - name: sepa_direct_debit_B2B
+    group: payments
+    description: "Initiate and check status of SEPA Direct Debit B2B"
+  - name: bulk_sepa_credit_transfers
+    group: payments
+    description: "Bulk SEPA Credit Transfers with status check"
+  - name: read_ownership_information
+    group: reference_data
+    description: "Information about ultimate beneficiary owners"
+  - name: read_additional_organization_data
+    group: reference_data
+    description: "Grants read access to additional organizational information about a partner representing a company. The additional data contains legal form, industry, local court, stakeholders and tax identification."
+  - name: verify_account_ownership
+    group: reference_data
+    description: "Performs account verification for the given customer."
+  - name: read_partners_legi
+    group: reference_data
+    description: "Grants read access to legitimation data of the current partner/customer. This data is only available for natural persons. Legitimation data contains information, e.g. about the document type, document number and document issue date for the given customer."
+  - name: read_check_information
+    group: reference_data
+    description: "Know-Your-Customer Information"
+  - name: read_legal_representatives_data
+    group: reference_data
+    description: "Information about legal representatives"
+  - name: read_customer_data
+    group: reference_data
+    description: "Performs personal data verification for the given customer."
+  - name: read_partners
+    group: reference_data
+    description: "Grants read access to basic data of the current partner/customer. The basic partner data contains, among other information, the first name, the surname and the birthdate for the given customer. There is some overlap between our /partners endpoint and the /userinfo endpoint provided by OpenID connect."
+  - name: read_additional_personal_data
+    group: reference_data
+    description: "Grants read access to additional data about the partner. The additional data currently contains the tax identifications for the given customer."
+  - name: read_addresses
+    group: reference_data
+    description: "Grants read access to address data for the given customer. Two address types are currently supported: business address and private address."
+  - name: age_certificate
+    group: reference_data
+    description: "Grants a check of a person's age, when compared against a specific minimum age"
+  - name: reserve_branch_customer_number
+    group: reference_data
+    description: "Reserve Branch Customer Number"
+  - name: read_brand
+    group: reference_data
+    description: "Grants permission to get data from the /brand endpoint. Only available with client credential grant flow right now."
+  - name: create_processing_orders
+    group: uncategorized_scopes
+    description: "Grants permission to post data with the /processingOrders endpoint. Only available with client credential grant flow right now."
+groups: [{"id": "banking", "name": "Banking"}, {"id": "credit_cards", "name": "Credit Cards"}, {"id": "default", "name": "Default"}, {"id": "investment_portfolio", "name": "Investment Portfolio"}, {"id": "lending", "name": "Lending"}, {"id": "notification", "name": "Notification"}, {"id": "payments", "name": "Payments"}, {"id": "reference_data", "name": "Reference Data"}, {"id": "uncategorized_scopes", "name": "Uncategorized Scopes", "default": true}]
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

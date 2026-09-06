@@ -1,0 +1,1262 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Callback API",
+    "version" : "v2"
+  },
+  "servers" : [ {
+    "url" : "https://example.com/"
+  } ],
+  "tags" : [ {
+    "name" : "Callback",
+    "description" : "The merchant's system has to implement this endpoint to receive callback requests."
+  } ],
+  "paths" : {
+    "/callback" : {
+      "post" : {
+        "tags" : [ "Callback" ],
+        "operationId" : "notifyShopPost",
+        "parameters" : [ {
+          "name" : "X-RequestDate",
+          "in" : "header",
+          "description" : "Current timestamp formatted according to RFC 7231, section 7.1.1.2; part of the signature input.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "Fri, 10 Jan 2021 14:41:15 GMT"
+        }, {
+          "name" : "X-RandomValue",
+          "in" : "header",
+          "description" : "A random value; part of the signature input.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "X1c1IInswtMPNSTfmtGx"
+        }, {
+          "name" : "Digest",
+          "in" : "header",
+          "description" : "SHA-256 hash of the message body",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "SHA-256=/oTBp9ySS9jdnJjaX49msjmzWSsl868V7pWPrcp3mO4="
+        }, {
+          "name" : "Signature",
+          "in" : "header",
+          "description" : "HMAC-256 signature. The values of the \"Digest\", \"X-RequestDate\" and \"X-RandomValue\" headers \n are concatenated. The signature is calculated using the `client_key` as the secret.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "LeeTB596cJBmDozTElmCsvc69HzDpzrnllJAqcL2sac="
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CallbackRequest"
+              },
+              "example" : {
+                "client_id" : "secret",
+                "transaction_info" : {
+                  "type" : "bankaccount",
+                  "transaction_bankaccount_info" : {
+                    "bankAccount" : {
+                      "bic" : "TESTDEL0BK2",
+                      "iban" : "DE39123456790009290701",
+                      "account_holder" : "Jörg Müller-Beßler"
+                    }
+                  }
+                },
+                "rc" : "0",
+                "message" : "Transaction successful.",
+                "amount_total" : {
+                  "amount" : 100,
+                  "currency" : "EUR"
+                },
+                "event_id" : "id1622635202153",
+                "kind" : "DIRECTDEBIT",
+                "tx_action" : "preauthorization",
+                "tx_id" : "pmrM4SYsoJo5jQgtnlDzwm",
+                "basket_id" : "bid1622635202153",
+                "additional_data" : "ADDI_1234XY"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "Acknowledges the receipt of the callback.",
+            "content" : {
+              "application/json" : { }
+            }
+          },
+          "400" : {
+            "description" : "Signals an error.",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AddressPaydirektData" : {
+        "type" : "object",
+        "properties" : {
+          "addon" : {
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Additional address information.",
+            "example" : "Apartment 12A"
+          }
+        },
+        "description" : "Paydirekt specific address fields."
+      },
+      "AliasInfo" : {
+        "type" : "object",
+        "properties" : {
+          "alias" : {
+            "type" : "string",
+            "description" : "Name of the alias.",
+            "example" : "da2c9029-b180-42a7-b473-50d182a01f8a"
+          },
+          "credit_card" : {
+            "$ref" : "#/components/schemas/CreditCardInfo"
+          },
+          "bank_account" : {
+            "$ref" : "#/components/schemas/BankAccount"
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/CommonAddress"
+          }
+        },
+        "description" : "Contains information about the created or updated alias. This field is null if the there was no 'alias_info' in the request."
+      },
+      "AlternativeAddressData" : {
+        "type" : "object",
+        "properties" : {
+          "street" : {
+            "maxLength" : 100,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "The street.",
+            "example" : "Main Street"
+          },
+          "street_number" : {
+            "maxLength" : 10,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "The street number.",
+            "example" : "123a"
+          }
+        },
+        "description" : "Alternative address fields."
+      },
+      "AmountCurrency" : {
+        "required" : [ "amount", "currency" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "integer",
+            "description" : "Minor currency value of an amount of money.",
+            "format" : "int64",
+            "example" : 200
+          },
+          "currency" : {
+            "maxLength" : 3,
+            "minLength" : 3,
+            "pattern" : "[A-Z]{3}",
+            "type" : "string",
+            "description" : "ISO 4217 currency code, three uppercase letters.",
+            "example" : "EUR"
+          }
+        },
+        "description" : "An amount and a currency."
+      },
+      "BankAccount" : {
+        "required" : [ "iban" ],
+        "type" : "object",
+        "properties" : {
+          "bic" : {
+            "maxLength" : 11,
+            "minLength" : 11,
+            "pattern" : "[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}",
+            "type" : "string",
+            "description" : "The business identifier code (BIC) of a bank account. If the branch identifier\n                (positions 9 to 11) is not applicable, it is set to \"XXX\". ",
+            "example" : "VZVDDED1XXX"
+          },
+          "iban" : {
+            "maxLength" : 34,
+            "minLength" : 15,
+            "pattern" : "[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}",
+            "type" : "string",
+            "description" : "The international bank account number of a bank account.",
+            "example" : "DE17215730140403340300"
+          },
+          "account_holder" : {
+            "maxLength" : 27,
+            "minLength" : 1,
+            "pattern" : ".*",
+            "type" : "string",
+            "description" : "The account holder of the bank account.",
+            "example" : "Max Muster"
+          },
+          "bank_name" : {
+            "type" : "string",
+            "description" : "Name of the bank.",
+            "example" : "Musterbank"
+          }
+        },
+        "description" : "Information about a bank account."
+      },
+      "CallbackRequest" : {
+        "required" : [ "client_id", "event_id", "message", "rc", "timestamp", "tx_id" ],
+        "type" : "object",
+        "properties" : {
+          "rc" : {
+            "type" : "string",
+            "description" : "Response code of the transaction. \"0\" in the case of a successful transaction. Other values signify errors.",
+            "example" : "0"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Success or error message, text for the response code.",
+            "example" : "Transaction approved."
+          },
+          "event_id" : {
+            "maxLength" : 50,
+            "minLength" : 1,
+            "pattern" : "[\\/0-9a-zA-Z_.:,\\-+*$%]+",
+            "type" : "string",
+            "description" : "A unique ID for the event.",
+            "example" : "E5686585867636541231230"
+          },
+          "tx_id" : {
+            "type" : "string",
+            "description" : "Unique transaction identifier. Can be used to reference this transaction.",
+            "example" : "020LMG10jxSI8FN0OC4vLR"
+          },
+          "riskmanagement_info" : {
+            "$ref" : "#/components/schemas/RiskmanagementInfoResponse"
+          },
+          "amount_total" : {
+            "$ref" : "#/components/schemas/AmountCurrency"
+          },
+          "kind" : {
+            "type" : "string",
+            "description" : "The type of transaction.",
+            "enum" : [ "DIRECTDEBIT", "CREDITCARD", "CREDITCARD_3DS20", "CREDITTRANSFER", "SOFORTUEBERWEISUNG", "PAYPAL", "PAYDIREKT", "WECHATPAY", "P24", "GIROPAY", "KLARNA", "PSD2" ]
+          },
+          "tx_action" : {
+            "type" : "string",
+            "description" : "The action of a transaction.",
+            "enum" : [ "authorization", "capture", "credit", "preauthorization", "refund", "reversal", "risk_check", "verify-mop", "payment", "avs", "avspayment" ]
+          },
+          "alias_info" : {
+            "$ref" : "#/components/schemas/AliasInfo"
+          },
+          "back_rc" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Response code of a backend system, for example the GICC response code.",
+            "example" : "00"
+          },
+          "timestamp" : {
+            "type" : "string",
+            "description" : "Timestamp of the transaction.",
+            "format" : "date-time"
+          },
+          "transaction_info" : {
+            "$ref" : "#/components/schemas/TransactionInfo"
+          },
+          "client_id" : {
+            "type" : "string",
+            "description" : "The client ID used to calculate the signature.",
+            "example" : "2b48b7c6-8a3b-4f96-a64d-7a08d0c74627"
+          },
+          "basket_id" : {
+            "type" : "string",
+            "description" : "The shopping basket number as submitted in the initial request.",
+            "example" : "basket123456"
+          },
+          "additional_data" : {
+            "type" : "string",
+            "description" : "As submitted in the initial request.",
+            "example" : "SESSION_1234X"
+          },
+          "accounts" : {
+            "type" : "array",
+            "description" : "Account details after a PSD2 account info request.",
+            "items" : {
+              "$ref" : "#/components/schemas/PSD2AccountDetails"
+            }
+          }
+        }
+      },
+      "CommonAddress" : {
+        "type" : "object",
+        "properties" : {
+          "title" : {
+            "type" : "string",
+            "description" : "Customer's title.",
+            "example" : "Ms"
+          },
+          "first_name" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "First name of the individual.",
+            "example" : "Jane"
+          },
+          "last_name" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Last name of the individual.",
+            "example" : "Doe"
+          },
+          "company_name" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Name of the company.",
+            "example" : "Acme Inc."
+          },
+          "email" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Email address of the individual.",
+            "example" : "test_jane@gmail.com"
+          },
+          "phone_contact" : {
+            "$ref" : "#/components/schemas/PhoneContact"
+          },
+          "address_line_1" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "An address line.",
+            "example" : "Main Street 123"
+          },
+          "address_line_2" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "An address line. For 3DS this maps to additional1.",
+            "example" : "Building A"
+          },
+          "address_line_3" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "An address line. For 3DS this maps to additional2.",
+            "example" : "Apartment 12"
+          },
+          "street" : {
+            "type" : "string",
+            "description" : "The street.",
+            "example" : "Main Street"
+          },
+          "street_number" : {
+            "type" : "string",
+            "description" : "The street number.",
+            "example" : "123a"
+          },
+          "postal_code" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Postal code of the address.",
+            "example" : "80469"
+          },
+          "city" : {
+            "maxLength" : 60,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "City of the address.",
+            "example" : "Munich"
+          },
+          "state" : {
+            "maxLength" : 300,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "State or province of the address.",
+            "example" : "BY"
+          },
+          "country" : {
+            "maxLength" : 2,
+            "minLength" : 2,
+            "pattern" : "[A-Z]{2}",
+            "type" : "string",
+            "description" : "The ISO 3166 Alpha-2 country code (upper case) of the individual's homeland.",
+            "example" : "DE"
+          },
+          "extensions" : {
+            "$ref" : "#/components/schemas/CommonAddressExtensions"
+          }
+        },
+        "description" : "Address data as applicable to most use cases."
+      },
+      "CommonAddressExtensions" : {
+        "type" : "object",
+        "properties" : {
+          "alternative_address_data" : {
+            "$ref" : "#/components/schemas/AlternativeAddressData"
+          },
+          "paydirekt_data" : {
+            "$ref" : "#/components/schemas/AddressPaydirektData"
+          }
+        },
+        "description" : "Service specific address fields."
+      },
+      "CreditCardInfo" : {
+        "required" : [ "expiry_date", "number" ],
+        "type" : "object",
+        "properties" : {
+          "number" : {
+            "maxLength" : 19,
+            "minLength" : 10,
+            "pattern" : "[0-9]*",
+            "type" : "string",
+            "description" : "The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.",
+            "example" : "41111111111111111"
+          },
+          "expiry_date" : {
+            "$ref" : "#/components/schemas/ExpiryDate"
+          },
+          "cardholder" : {
+            "maxLength" : 27,
+            "minLength" : 1,
+            "type" : "string",
+            "description" : "The holder of a credit card.",
+            "example" : "Max Muster"
+          },
+          "brand" : {
+            "type" : "string",
+            "description" : "The credit card brand.  The use of this field requires an explicit activation. Please contact customer support. Possible values:     \n           \n* `AMEX`\n* `DINERS`\n* `JCB`\n* `MAESTRO`\n* `MASTERCARD`\n* `VISA`        \n",
+            "example" : "VISA",
+            "enum" : [ "AMEX", "DINERS", "JCB", "MAESTRO", "MASTERCARD", "VISA" ]
+          },
+          "issuer_country" : {
+            "type" : "string",
+            "description" : "The card issuers country of origin.  The use of this field requires an explicit activation. Please contact customer support."
+          }
+        },
+        "description" : "Information about a credit card."
+      },
+      "ExpiryDate" : {
+        "required" : [ "month", "year" ],
+        "type" : "object",
+        "properties" : {
+          "year" : {
+            "maximum" : 2099,
+            "minimum" : 2000,
+            "type" : "integer",
+            "description" : "The credit card expiry year.",
+            "format" : "int32",
+            "example" : 2021
+          },
+          "month" : {
+            "maximum" : 12,
+            "minimum" : 1,
+            "type" : "integer",
+            "description" : "The credit card expiry month.",
+            "format" : "int32",
+            "example" : 11
+          }
+        },
+        "description" : "The credit card expiry date."
+      },
+      "MandateResponse" : {
+        "required" : [ "signed_on" ],
+        "type" : "object",
+        "properties" : {
+          "mandate_id" : {
+            "maxLength" : 32,
+            "minLength" : 32,
+            "type" : "string",
+            "description" : "Unique identification of the SEPA mandate. Use it for managed and already created mandates.",
+            "example" : "89c3d6b532be80339839f1605201f2c7"
+          },
+          "signed_on" : {
+            "type" : "string",
+            "description" : "Date when the SEPA mandate was issued. Full-date notation as defined by RFC 3339, section 5.6.",
+            "format" : "date",
+            "example" : "2017-01-01"
+          }
+        }
+      },
+      "PSD2Account" : {
+        "type" : "object",
+        "properties" : {
+          "iban" : {
+            "maxLength" : 34,
+            "minLength" : 15,
+            "pattern" : "[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}",
+            "type" : "string",
+            "description" : "The international bank account number of a bank account.",
+            "example" : "DE17215730140403340300"
+          },
+          "bban" : {
+            "type" : "string",
+            "description" : "Used for payment accounts which have no IBAN."
+          },
+          "pan" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Primary Account Number (PAN) of a card, can be tokenized by the ASPSP due to PCI DSS\nrequirements."
+          },
+          "masked_pan" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Primary Account Number (PAN) of a card in a masked form."
+          },
+          "msisdn" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "An alias to access a payment account via a registered mobile phone number."
+          },
+          "currency" : {
+            "pattern" : "[A-Z]{3}",
+            "type" : "string",
+            "description" : "ISO 4217 currency code, three uppercase letters.",
+            "example" : "EUR"
+          }
+        }
+      },
+      "PSD2AccountDetails" : {
+        "type" : "object",
+        "properties" : {
+          "iban" : {
+            "type" : "string",
+            "description" : "The international bank account number of a bank account.",
+            "example" : "DE17215730140403340300"
+          },
+          "currency" : {
+            "pattern" : "[A-Z]{3}",
+            "type" : "string",
+            "description" : "ISO 4217 currency code, three uppercase letters.",
+            "example" : "EUR"
+          },
+          "name" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Name of the account given by the bank or the PSU in online-banking."
+          },
+          "owner_name" : {
+            "maxLength" : 140,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Name(s) of the account owner(s)."
+          },
+          "product" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Product name of the bank for this account, proprietary definition."
+          },
+          "status" : {
+            "type" : "string",
+            "description" : "Status of the account\n\n* `ENABLED`: account is available\n* `DELETED`: account is terminated\n* `BLOCKED`: account is blocked for example for legal reasons",
+            "enum" : [ "ENABLED", "DELETED", "BLOCKED" ]
+          },
+          "usage" : {
+            "type" : "string",
+            "description" : "Specifies the usage of the account\n\n* `PRIV`: private personal account\n* `ORGA`: professional account\n* `TEST_USAGE`: returned by Sparkassen sandbox",
+            "enum" : [ "PRIV", "ORGA", "TEST_USAGE" ]
+          },
+          "details" : {
+            "maxLength" : 500,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Specifications that might be provided by the ASPSP such as characteristics of the account or\ncharacteristics of the relevant card."
+          },
+          "balances" : {
+            "type" : "array",
+            "description" : "Balance(s) of the account. There might be more than one balance with different types.",
+            "items" : {
+              "$ref" : "#/components/schemas/PSD2Balance"
+            }
+          },
+          "transactions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PSD2Transaction"
+            }
+          }
+        },
+        "description" : "Contains details of a customer's bank account."
+      },
+      "PSD2Balance" : {
+        "required" : [ "amount", "type" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "$ref" : "#/components/schemas/AmountCurrency"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "The following balance types are excluding credit limits unless the `credit_limit_included` element\nis present and equals true in the corresponding balance element.\nThis definition is following ISO20022 logic for defining balance types.\n\n* `CLOSING_BOOKED`: Balance of the account at the end of the pre-agreed account reporting\nperiod. It is the sum of the opening booked balance at the beginning of\nthe period and all entries booked to the account during the pre-agreed\naccount reporting period. For card-accounts, this is composed of invoiced, but not yet paid entries\n* `EXPECTED`: Balance composed of booked entries and pending items known at the\ntime of calculation, which projects the end of day balance if everything\nis booked on the account and no other entry is posted.\nFor card accounts, this is composed of invoiced, but not yet paid entries,\nnot yet invoiced but already booked entries and pending items (not yet booked),\n* `OPENING_BOOKED`: Book balance of the account at the beginning of the account reporting\nperiod. It always equals the closing book balance from the previous\nreport.\n* `INTERIM_AVAILABLE`: Available balance calculated in the course of the account servicer’s\nbusiness day, at the time specified, and subject to further changes during the business day. The interim balance is calculated on the basis\nof booked credit and debit items during the calculation time/period\nspecified.\nFor card-accounts, this is composed of invoiced, but not yet paid entries and not yet invoiced but already booked entries\n* `INTERIM_BOOKED`: Balance calculated in the course of the account servicer's business day,\nat the time specified, and subject to further changes during the business\nday. The interim balance is calculated on the basis of booked credit and\ndebit items during the calculation time/period specified.\n* `FORWARD_AVAILABLE`: Forward available balance of money that is at the disposal of the\naccount owner on the date specified.\n* `NON_INVOICED`: Only for card accounts, to be defined yet.\n* `PREVIOUSLY_CLOSED`: Balance of the account at the previously closed account reporting period.",
+            "example" : "CLOSING_BOOKED",
+            "enum" : [ "CLOSING_BOOKED", "EXPECTED", "OPENING_BOOKED", "INTERIM_AVAILABLE", "INTERIM_BOOKED", "FORWARD_AVAILABLE", "NON_INVOICED", "PREVIOUSLY_CLOSED" ]
+          },
+          "credit_limit_included" : {
+            "type" : "boolean",
+            "description" : "A flag indicating if the credit limit of the corresponding account is included in\n                    the calculation of the balance, where applicable."
+          },
+          "last_change" : {
+            "type" : "string",
+            "description" : "This data element might be used to indicate for example with the expected or\nbooked balance that no action is known on the account, which is not yet booked.\nDate-time notation as defined by RFC 3339, section 5.6.",
+            "format" : "date-time",
+            "example" : "2021-07-14T08:59:12Z"
+          },
+          "reference_date" : {
+            "type" : "string",
+            "description" : "Indicates the date of the balance. Full-date notation as defined by RFC 3339, section 5.6.",
+            "format" : "date",
+            "example" : "2021-07-14"
+          }
+        }
+      },
+      "PSD2CurrencyExchange" : {
+        "type" : "object",
+        "properties" : {
+          "source_currency" : {
+            "type" : "string",
+            "description" : "Currency from which an amount is to be converted in a currency conversion.",
+            "example" : "USD"
+          },
+          "exchange_rate" : {
+            "type" : "string",
+            "description" : "Factor used to convert an amount from one currency into another. This reflects the\nprice at which one currency was bought with another currency."
+          },
+          "unit_currency" : {
+            "pattern" : "[A-Z]{3}",
+            "type" : "string",
+            "description" : "Currency in which the rate of exchange is expressed in a currency exchange. In the\nexample 1 EUR = xxx CUR, the unit currency is EUR.",
+            "example" : "EUR"
+          },
+          "target_currency" : {
+            "pattern" : "[A-Z]{3}",
+            "type" : "string",
+            "description" : "Currency into which an amount is to be converted in a currency conversion.",
+            "example" : "EUR"
+          },
+          "quotation_date" : {
+            "type" : "string",
+            "description" : "Date at which an exchange rate is quoted.",
+            "format" : "date"
+          },
+          "contract_identification" : {
+            "type" : "string",
+            "description" : "Unique identification to unambiguously identify the foreign exchange contract."
+          }
+        }
+      },
+      "PSD2Remittance" : {
+        "type" : "object",
+        "properties" : {
+          "reference" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "reference_type" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string"
+          },
+          "reference_issuer" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string"
+          }
+        }
+      },
+      "PSD2Transaction" : {
+        "required" : [ "amount", "booking_status" ],
+        "type" : "object",
+        "properties" : {
+          "end_to_end_id" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Unique end to end identifier."
+          },
+          "mandate_id" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Identification of mandates, for example, a SEPA mandate ID."
+          },
+          "check_id" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Identification of a check."
+          },
+          "creditor_id" : {
+            "maxLength" : 35,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Identification of creditors, for example, a SEPA Creditor ID."
+          },
+          "booking_date" : {
+            "type" : "string",
+            "description" : "The date when an entry is posted to an account on the ASPSPs books.",
+            "format" : "date"
+          },
+          "value_date" : {
+            "type" : "string",
+            "description" : "Date at which assets become available to the account owner in case\nof a credit entry, or cease to be available to the account owner in case of a debit entry.\nUsage: If entry status is pending and value date is present, then the value date refers to an expected/requested\nvalue date.",
+            "format" : "date"
+          },
+          "amount" : {
+            "$ref" : "#/components/schemas/AmountCurrency"
+          },
+          "currency_exchange" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PSD2CurrencyExchange"
+            }
+          },
+          "creditor_name" : {
+            "maxLength" : 70,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Name of the creditor of a \"debited\" transaction."
+          },
+          "creditor_account" : {
+            "$ref" : "#/components/schemas/PSD2Account"
+          },
+          "creditor_agent" : {
+            "maxLength" : 11,
+            "minLength" : 11,
+            "pattern" : "[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}",
+            "type" : "string",
+            "description" : "A BIC.",
+            "example" : "VZVDDED1XXX"
+          },
+          "ultimate_creditor" : {
+            "maxLength" : 70,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Name of the ultimate creditor of a \"debited\" transaction."
+          },
+          "debtor_name" : {
+            "maxLength" : 70,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Name of the debtor of a \"credited\" transaction."
+          },
+          "debtor_account" : {
+            "$ref" : "#/components/schemas/PSD2Account"
+          },
+          "debtor_agent" : {
+            "maxLength" : 11,
+            "minLength" : 11,
+            "pattern" : "[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}",
+            "type" : "string",
+            "description" : "A BIC.",
+            "example" : "VZVDDED1XXX"
+          },
+          "ultimate_debtor" : {
+            "maxLength" : 70,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Name of the ultimate debtor of a \"credited\" transaction."
+          },
+          "remittance_information_unstructured" : {
+            "type" : "array",
+            "description" : "Unstructured remittance information.",
+            "items" : {
+              "type" : "string",
+              "description" : "Unstructured remittance information."
+            }
+          },
+          "remittance_information_structured" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PSD2Remittance"
+            }
+          },
+          "entry_reference" : {
+            "type" : "string",
+            "description" : "Entry reference, for example from camt.052 message."
+          },
+          "additional_information" : {
+            "type" : "string",
+            "description" : "Might be used by the ASPSP to transport additional transaction related\n    information to the PSU."
+          },
+          "purpose_code" : {
+            "type" : "string",
+            "description" : "ExternalPurpose1Code according to ISO 20022."
+          },
+          "bank_transaction_code" : {
+            "type" : "string",
+            "description" : "Bank transaction code as used by the ASPSP and using the sub-elements of\nthis structured code defined by ISO20022."
+          },
+          "proprietary_bank_transaction_code" : {
+            "type" : "string",
+            "description" : "Proprietary bank transaction code as used within a community or within an\nASPSP, for example for MT94x based transaction reports."
+          },
+          "balance_after_transaction" : {
+            "$ref" : "#/components/schemas/PSD2Balance"
+          },
+          "booking_status" : {
+            "type" : "string",
+            "description" : "Booking status of a transaction\n\n* `BOOKED`\n* `PENDING`",
+            "example" : "BOOKED",
+            "enum" : [ "BOOKED", "PENDING" ]
+          }
+        },
+        "description" : "A transaction of a bank account."
+      },
+      "PhoneContact" : {
+        "required" : [ "phone_number", "phone_type" ],
+        "type" : "object",
+        "properties" : {
+          "phone_type" : {
+            "type" : "string",
+            "description" : "The phone type.\n\n* `FAX`\n* `HOME`\n* `MOBILE`\n* `OTHER`\n* `PAGER`\n* `WORK`\n",
+            "example" : "FAX",
+            "enum" : [ "FAX", "HOME", "MOBILE", "OTHER", "PAGER", "WORK" ]
+          },
+          "phone_number" : {
+            "maxLength" : 16,
+            "minLength" : 0,
+            "pattern" : "\\+[1-9]\\d{1,14}",
+            "type" : "string",
+            "description" : "A phone number in its canonical international E.164 numbering plan format.",
+            "example" : "'+442071838750'"
+          }
+        },
+        "description" : "A means of contacting a customer by phone.",
+        "example" : {
+          "phone_type" : "FAX",
+          "phone_number" : "'+442071838750'"
+        }
+      },
+      "RiskmanErrorFieldInformation" : {
+        "type" : "object",
+        "properties" : {
+          "field" : {
+            "type" : "string",
+            "description" : "The name of the field which was the reason of the request rejection.",
+            "example" : "orderInformation.billTo.firstName"
+          },
+          "reason" : {
+            "type" : "string",
+            "description" : "The reason why the request was rejected.",
+            "example" : "MISSING_FIELD"
+          }
+        },
+        "description" : "Field name and reason why the request was rejected."
+      },
+      "RiskmanErrorInformation" : {
+        "type" : "object",
+        "properties" : {
+          "error_field_information" : {
+            "type" : "array",
+            "description" : "Detailed field level information regarding the reason why the request was rejected.",
+            "items" : {
+              "$ref" : "#/components/schemas/RiskmanErrorFieldInformation"
+            }
+          },
+          "error_message" : {
+            "type" : "string",
+            "description" : "The reason why the request was rejected.",
+            "example" : "Declined - The request is missing one or more fields."
+          },
+          "error_reason" : {
+            "type" : "string",
+            "description" : "The reason why the request was rejected from the backend system.",
+            "example" : "MISSING_FIELD"
+          },
+          "error_status" : {
+            "type" : "string",
+            "description" : "The status why the request was rejected from the backend system.",
+            "example" : "INVALID_REQUEST"
+          }
+        },
+        "description" : "Detailed error information including fields which had been the reasons for unsuccessful processing."
+      },
+      "RiskmanagementInfoResponse" : {
+        "type" : "object",
+        "properties" : {
+          "case_priority" : {
+            "type" : "string",
+            "description" : "Riskcheck information regarding the case priority.",
+            "example" : "1"
+          },
+          "error_information" : {
+            "$ref" : "#/components/schemas/RiskmanErrorInformation"
+          },
+          "event_id" : {
+            "maxLength" : 50,
+            "minLength" : 1,
+            "pattern" : "[\\/0-9a-zA-Z_.:,\\-+*$%]+",
+            "type" : "string",
+            "description" : "A unique ID for the event.",
+            "example" : "E5686585867636541231230"
+          },
+          "infocodes_address" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the address risk check. See user guide for details and all possible values.",
+              "example" : "[\"COR-BA\",\"COR-SA\",\"MM-A\",\"MM-Z\"]"
+            }
+          },
+          "infocodes_customerlist" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the customer list risk check.  See user guide for details and all possible values.",
+              "example" : "[\"CONPOSNEG\",\"NEG-BCO\"]"
+            }
+          },
+          "infocodes_device_behaviour" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Indicates the device behavior information code(s) returned from device fingerprinting. See user guide for details and all possible values.",
+              "example" : "[\"MouseOffPageDetected\"]"
+            }
+          },
+          "infocodes_globalvelocity" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the velocity risk check. See user guide for details and all possible values.",
+              "example" : "[\"VEL-ADDR\",\"VELS-FP\"]"
+            }
+          },
+          "infocodes_identitychange" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the identity change. See user guide for details and all possible values.",
+              "example" : "[\"ID-M-HPOS\"]"
+            }
+          },
+          "infocodes_internet" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the internet check. See user guide for details and all possible values.",
+              "example" : "[\"FREE-EM\"]"
+            }
+          },
+          "infocodes_phone" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the phone risk check. See user guide for details and all possible values.",
+              "example" : "[\"MMACBST, \"UNV-PH\" ]"
+            }
+          },
+          "infocodes_suspicious" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding suspicious risk. See user guide for details and all possible values.",
+              "example" : "[\"BAD-FP\",\"MUL-EM\"]"
+            }
+          },
+          "infocodes_velocity" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "List of information codes triggered by the order. These information codes were generated when you created\nthe order and product velocity rules and are returned so that you can associate them with the rules. See user guide for details and all possible values.",
+              "example" : "[\"GVEL-R20\",\"GVEL-R21\"]"
+            }
+          },
+          "localtime" : {
+            "type" : "string",
+            "description" : "Riskcheck information regarding the local time of the risk check.",
+            "example" : "55083"
+          },
+          "profile_destination_queue" : {
+            "type" : "string",
+            "description" : "Riskcheck information regarding the profile destination queue of the risk check.",
+            "example" : "dst-queue"
+          },
+          "profile_name" : {
+            "type" : "string",
+            "description" : "Riskcheck information regarding the profile of the risk check.",
+            "example" : "example-profile"
+          },
+          "profile_selectorrule" : {
+            "type" : "string",
+            "description" : "Riskcheck information regarding the profile selector rule risk check.",
+            "example" : "example-rule"
+          },
+          "providers" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Providers used to calculate the risk.",
+              "example" : "[\"provider1\",\"provider2\"]"
+            }
+          },
+          "rules" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the matched rules in risk check.",
+              "example" : "[\"example-rule\"]"
+            }
+          },
+          "score" : {
+            "type" : "string",
+            "description" : "Calculated risk score of request data.",
+            "example" : "14"
+          },
+          "score_factor_codes" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "description" : "Riskcheck information regarding the profile factor codes of the risk check. See user guide for all possible values.",
+              "example" : "[\"G\",\"H\",\"Y\",\"Z\"]"
+            }
+          },
+          "score_model_used" : {
+            "type" : "string",
+            "description" : "Name of the score model used for the transaction. This field contains the name of risk management’s selected model.",
+            "example" : "default_eu"
+          },
+          "travel_actual_final_dst_country" : {
+            "type" : "string",
+            "description" : "Actual country of final destination of the travel.",
+            "example" : "US"
+          },
+          "travel_actual_final_dst_locality" : {
+            "type" : "string",
+            "description" : "Actual city of final destination of the travel.",
+            "example" : "Chicago"
+          },
+          "travel_first_departure_country" : {
+            "type" : "string",
+            "description" : "First departure country of the travel.",
+            "example" : "US"
+          },
+          "travel_first_departure_locality" : {
+            "type" : "string",
+            "description" : "First departure city of the travel.",
+            "example" : "San Francisco"
+          },
+          "tx_risk_status" : {
+            "type" : "string",
+            "description" : "Status result of an external risk management transaction. See user guide for all possible values.",
+            "example" : "ACCEPTED"
+          },
+          "tx_scoring_id" : {
+            "type" : "string",
+            "description" : "Unique scoring transaction identifier. Can be used to reference the depending scoring transaction.",
+            "example" : "6373172383866963604006"
+          },
+          "utc_time" : {
+            "type" : "string",
+            "description" : "Riskcheck information regarding the UTC time of the risk check, used in error cases.",
+            "example" : "'2021-12-21T14:18:04Z'"
+          }
+        }
+      },
+      "TDSInfo" : {
+        "type" : "object",
+        "properties" : {
+          "tds_auth_level" : {
+            "type" : "string",
+            "description" : "The 3D-Secure transaction status.\n        \n* `FULL`: Full 3-D Secure Authentification\n* `ATTEMPT`: 3-D Secure Authentification attempted\n",
+            "example" : "ATTEMPT",
+            "enum" : [ "FULL", "ATTEMPT" ]
+          },
+          "tds_version" : {
+            "maxLength" : 10,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure version."
+          },
+          "tds_ares_cardholder_info" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: ARes card holder information."
+          },
+          "tds_ares_error_code" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: ARes error code."
+          },
+          "tds_ares_error_component" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: ARes error component."
+          },
+          "tds_ares_trans_status" : {
+            "maxLength" : 1,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: ARes transaction status.",
+            "example" : "Y"
+          },
+          "tds_ares_trans_status_reason" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: reason for the ARes transaction status.",
+            "example" : "MediumConfidence"
+          },
+          "tds_rreq_challenge_cancel_indicator" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "Optional 3-D Secure 2 response parameter.",
+            "example" : "CardholderCancel"
+          },
+          "tds_rreq_error_code" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: RReq error code."
+          },
+          "tds_rreq_error_component" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: RReq error component."
+          },
+          "tds_rreq_trans_status" : {
+            "maxLength" : 1,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: RReq transaction status."
+          },
+          "tds_rreq_trans_status_reason" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: reason for the RReq transaction status.",
+            "example" : "MediumConfidence"
+          },
+          "tds_ares_error_description" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: ARes error description."
+          },
+          "tds_ares_error_detail" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: ARes error detail."
+          },
+          "tds_rreq_error_description" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: RReq error description."
+          },
+          "tds_rreq_error_detail" : {
+            "maxLength" : 80,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "3-D Secure 2: RReq error detail."
+          }
+        },
+        "description" : "Contains 3-D Secure response data.  The use of this field requires an explicit activation. Please contact customer support."
+      },
+      "TransactionBankAccountInfo" : {
+        "type" : "object",
+        "properties" : {
+          "bank_account" : {
+            "$ref" : "#/components/schemas/BankAccount"
+          }
+        }
+      },
+      "TransactionCreditCardInfo" : {
+        "type" : "object",
+        "properties" : {
+          "credit_card" : {
+            "$ref" : "#/components/schemas/CreditCardInfo"
+          },
+          "tds_info" : {
+            "$ref" : "#/components/schemas/TDSInfo"
+          },
+          "recurring_payment" : {
+            "maxLength" : 50,
+            "minLength" : 1,
+            "pattern" : "[/0-9a-zA-Z_.:,+*$%-]+",
+            "type" : "string",
+            "description" : "Identifier of a recurring credit card payment.",
+            "example" : "07H987Tx3PF9VxL5G7RfNp"
+          },
+          "cvc_result" : {
+            "type" : "string",
+            "description" : "Response code of the verification of the card verification code\n         according to the response of a backend system.  This value is available on some backend systems.  The use of this field requires an explicit activation. Please contact customer support.  \n         Possible values:\n        \n* `CVC_MATCH`\n* `CVC_NO_MATCH`\n* `CVC_NO_RESPONSE_RECEIVED`\n* `CVC_NOT_PROCESSED`\n* `CVC_NOT_PROVIDED`\n* `CVC_SHOULD_BE_ON_CARD`\n* `CVC_VERIFICATION_UNAVAILABLE`\n\n",
+            "example" : "CVC_MATCH",
+            "enum" : [ "CVC_MATCH", "CVC_NO_MATCH", "CVC_NO_RESPONSE_RECEIVED", "CVC_NOT_PROCESSED", "CVC_NOT_PROVIDED", "CVC_SHOULD_BE_ON_CARD", "CVC_VERIFICATION_UNAVAILABLE" ]
+          },
+          "avs_result" : {
+            "type" : "string",
+            "description" : "Response code of the address verification according to the response of a backend system. \n         This value is available on some backend systems.  The use of this field requires an explicit activation. Please contact customer support.  Possible values:\n        \n* `MATCH`\n* `NO_MATCH`\n",
+            "example" : "MATCH",
+            "enum" : [ "MATCH", "NO_MATCH" ]
+          }
+        }
+      },
+      "TransactionInfo" : {
+        "type" : "object",
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "enum" : [ "creditcard", "bankaccount" ]
+          },
+          "transaction_creditcard_info" : {
+            "$ref" : "#/components/schemas/TransactionCreditCardInfo"
+          },
+          "transaction_bankaccount_info" : {
+            "$ref" : "#/components/schemas/TransactionBankAccountInfo"
+          },
+          "mandate_data" : {
+            "$ref" : "#/components/schemas/MandateResponse"
+          },
+          "back_state" : {
+            "type" : "string",
+            "description" : "State of a transaction according to the response of a backend system. \n         This value is available on some backend systems.  The use of this field requires an explicit activation. Please contact customer support.  Possible values:\n        \n* `DECLINED`\n* `AUTHORIZED`\n* `REVERSED`\n* `CAPTURED`\n* `SETTLED`\n",
+            "example" : "REVERSED",
+            "enum" : [ "DECLINED", "AUTHORIZED", "REVERSED", "CAPTURED", "SETTLED" ]
+          },
+          "ip_address" : {
+            "type" : "string",
+            "description" : "The customer's IP address associated with this transaction.  The use of this field requires an explicit activation. Please contact customer support."
+          }
+        }
+      }
+    }
+  }
+}

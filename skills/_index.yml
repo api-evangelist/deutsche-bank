@@ -1,0 +1,40 @@
+specification: API Commons Agent Skills
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: generated
+source: openapi/ (36 first-party Deutsche Bank OpenAPI 3.0.x documents) + conventions/, errors/, scopes/
+description: >-
+  Packaged agent skills for the Deutsche Bank dbAPI programme. Every operationId, path, header,
+  scope and numeric error code referenced in these skills was read out of Deutsche Bank's own
+  published OpenAPI documents - nothing is invented. Where a spec declares no operationId (the
+  SEPA payment operations do not), the skill addresses the operation by method and path and
+  says so.
+skill_count: 4
+skills:
+  - name: deutsche-bank-account-and-transaction-read
+    file: skills/deutsche-bank-account-and-transaction-read.md
+    consequence: read
+    summary: Cash accounts, credit cards and 13 months of transaction history.
+  - name: deutsche-bank-sepa-credit-transfer
+    file: skills/deutsche-bank-sepa-credit-transfer.md
+    consequence: irreversible-write
+    summary: >-
+      SEPA Credit Transfer, Instant Credit Transfer and Direct Debit - pre-flight reachability,
+      idempotent initiation, PSD2 SCA challenge, status, and cancel (with the honest note that
+      no cancellation window is published).
+  - name: deutsche-bank-securities-order
+    file: skills/deutsche-bank-securities-order.md
+    consequence: reversible-write
+    summary: >-
+      Preview-bound securities order entry. The only surface in the estate with both a
+      mandatory rehearsal step (previewSignature) and a published reversal window (cancel while
+      ACCEPTED and not yet executed).
+  - name: deutsche-bank-event-subscriptions
+    file: skills/deutsche-bank-event-subscriptions.md
+    consequence: write
+    summary: Notification Service subscriptions - create, activate, receive, amend, delete.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

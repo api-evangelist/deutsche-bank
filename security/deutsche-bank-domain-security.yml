@@ -1,18 +1,24 @@
-generated: '2026-07-11'
+generated: '2026-09-06'
 method: probed
 source: live DNS/TLS/HTTP probes of apis.yml + OpenAPI hosts
 hosts:
 - host: www.db.com
   https: true
   tls_version: TLSv1.3
-  cert_expires: Oct 27 23:59:59 2026 GMT
-  hsts: false
+  cert_expires: Feb 27 23:59:59 2027 GMT
+  hsts: true
+  hsts_max_age: 3600
 - host: developer.db.com
   https: true
   tls_version: TLSv1.3
-  cert_expires: Nov  2 23:59:59 2026 GMT
+  cert_expires: Mar 21 23:59:59 2027 GMT
   hsts: true
   hsts_max_age: 31536000
+- host: api.db.com
+  https: true
+  tls_version: TLSv1.3
+  cert_expires: Nov 17 23:59:59 2026 GMT
+  hsts: null
 domains:
 - domain: db.com
   dnssec: false

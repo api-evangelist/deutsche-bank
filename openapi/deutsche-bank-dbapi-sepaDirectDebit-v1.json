@@ -1,0 +1,1589 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-sepaDirectDebit",
+    "description" : "Easily initiate SEPA direct debit then if required cancel or get the status and get the details afterwards.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/paymentInitiation/payments/v1/sepaDirectDebit"
+  } ],
+  "paths" : {
+    "/" : {
+      "post" : {
+        "tags" : [ "create SEPA Direct Debit" ],
+        "summary" : "Initiates an SEPA Direct Debit",
+        "description" : "This API is for create a  Direct Debit",
+        "parameters" : [ {
+          "name" : "idempotency-id",
+          "in" : "header",
+          "description" : "Unique id of the service call. Must be present during retries to avoid multiple processing of the same request",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "otp",
+          "in" : "header",
+          "description" : "One time password required for SDD creation, you can use photo tan or push tan. In case of push tan pass otp as 'PUSHTAN'. in case of photo tan please generate otp by using transaction authorisation APIs. there you must use requestType as 'SEPA_TRANSFER_GRANT'.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SepaDirectDebitRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SepaDirectDebitResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 16,
+                  "message" : "OTP invalid challenge response: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 132,
+                  "message" : "not supported"
+                }, {
+                  "code" : 138,
+                  "message" : "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                }, {
+                  "code" : 139,
+                  "message" : "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                }, {
+                  "code" : 6500,
+                  "message" : "Parameters in the url or content type are incorrect, please check and retry."
+                }, {
+                  "code" : 6501,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 6502,
+                  "message" : "The accepted instructed amount currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6503,
+                  "message" : "Parameters submitted are missing or invalid."
+                }, {
+                  "code" : 6505,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6507,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6509,
+                  "message" : "The parameter in the request does not match with the latest Auth id."
+                }, {
+                  "code" : 6510,
+                  "message" : "Current status does not allow second factor update with the action provided."
+                }, {
+                  "code" : 6511,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6512,
+                  "message" : "Invalid value: dateOfSignature must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6513,
+                  "message" : "Invalid value: requestedCollectionDate must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6514,
+                  "message" : "The signature date of the mandate is in the future. Please correct your entry and try again."
+                }, {
+                  "code" : 6515,
+                  "message" : "The source iban or account type is invalid."
+                }, {
+                  "code" : 6516,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6517,
+                  "message" : "The accepted creditor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6518,
+                  "message" : "The requested collection date should not be a public holiday or in the weekends. Please try again."
+                }, {
+                  "code" : 6519,
+                  "message" : "The requested execution date should not be greater than 90 days in the future. Please try again."
+                }, {
+                  "code" : 6521,
+                  "message" : "The accepted debtor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6523,
+                  "message" : "There is no legal entity present for the source iban. Please correct your entry and try again."
+                }, {
+                  "code" : 6524,
+                  "message" : "You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again."
+                }, {
+                  "code" : 6531,
+                  "message" : "Amount must have at most 2 decimal places"
+                }, {
+                  "code" : 6532,
+                  "message" : "The customer is not eligible to opt out of VOP"
+                }, {
+                  "code" : 6534,
+                  "message" : "MFA session expired for payment creation. Please re-initiate the payment process again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "404" : {
+            "description" : "Unsuccessful operation, returns http status 404. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6504,
+                  "message" : "The parameters in the request do not match the initial request."
+                }, {
+                  "code" : 6508,
+                  "message" : "SEPA payment not found."
+                } ]
+              }
+            }
+          },
+          "409" : {
+            "description" : "Unsuccessful operation, returns http status 409. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6506,
+                  "message" : "The IdempotencyId already being used."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        }, {
+          "api_db_smart_access" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        } ]
+      }
+    },
+    "/{paymentId}/status" : {
+      "get" : {
+        "tags" : [ "get the status of SEPA Direct Debit" ],
+        "summary" : "Retrieve the status of the sepa direct debit ",
+        "description" : "Retrieve the status of a previously initiated SEPA direct debit.",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment Id of SEPA Direct Debit",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SepaDirectStatusResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 16,
+                  "message" : "OTP invalid challenge response: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 132,
+                  "message" : "not supported"
+                }, {
+                  "code" : 138,
+                  "message" : "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                }, {
+                  "code" : 139,
+                  "message" : "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                }, {
+                  "code" : 6500,
+                  "message" : "Parameters in the url or content type are incorrect, please check and retry."
+                }, {
+                  "code" : 6501,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 6502,
+                  "message" : "The accepted instructed amount currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6503,
+                  "message" : "Parameters submitted are missing or invalid."
+                }, {
+                  "code" : 6505,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6507,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6509,
+                  "message" : "The parameter in the request does not match with the latest Auth id."
+                }, {
+                  "code" : 6510,
+                  "message" : "Current status does not allow second factor update with the action provided."
+                }, {
+                  "code" : 6511,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6512,
+                  "message" : "Invalid value: dateOfSignature must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6513,
+                  "message" : "Invalid value: requestedCollectionDate must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6514,
+                  "message" : "The signature date of the mandate is in the future. Please correct your entry and try again."
+                }, {
+                  "code" : 6515,
+                  "message" : "The source iban or account type is invalid."
+                }, {
+                  "code" : 6516,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6517,
+                  "message" : "The accepted creditor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6518,
+                  "message" : "The requested collection date should not be a public holiday or in the weekends. Please try again."
+                }, {
+                  "code" : 6519,
+                  "message" : "The requested execution date should not be greater than 90 days in the future. Please try again."
+                }, {
+                  "code" : 6521,
+                  "message" : "The accepted debtor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6523,
+                  "message" : "There is no legal entity present for the source iban. Please correct your entry and try again."
+                }, {
+                  "code" : 6524,
+                  "message" : "You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again."
+                }, {
+                  "code" : 6531,
+                  "message" : "Amount must have at most 2 decimal places"
+                }, {
+                  "code" : 6532,
+                  "message" : "The customer is not eligible to opt out of VOP"
+                }, {
+                  "code" : 6534,
+                  "message" : "MFA session expired for payment creation. Please re-initiate the payment process again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "404" : {
+            "description" : "Unsuccessful operation, returns http status 404. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6504,
+                  "message" : "The parameters in the request do not match the initial request."
+                }, {
+                  "code" : 6508,
+                  "message" : "SEPA payment not found."
+                } ]
+              }
+            }
+          },
+          "409" : {
+            "description" : "Unsuccessful operation, returns http status 409. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6506,
+                  "message" : "The IdempotencyId already being used."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        }, {
+          "api_db_smart_access" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        } ]
+      }
+    },
+    "/{paymentId}" : {
+      "get" : {
+        "tags" : [ "Get SEPA Direct Debit details" ],
+        "summary" : "Retrieve the sepa direct debit details",
+        "description" : "Retrieve the details of a previously initiated SEPA direct debit.",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment Id of SEPA Direct Debit",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SepaDirectDebitDetailsResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 16,
+                  "message" : "OTP invalid challenge response: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 132,
+                  "message" : "not supported"
+                }, {
+                  "code" : 138,
+                  "message" : "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                }, {
+                  "code" : 139,
+                  "message" : "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                }, {
+                  "code" : 6500,
+                  "message" : "Parameters in the url or content type are incorrect, please check and retry."
+                }, {
+                  "code" : 6501,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 6502,
+                  "message" : "The accepted instructed amount currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6503,
+                  "message" : "Parameters submitted are missing or invalid."
+                }, {
+                  "code" : 6505,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6507,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6509,
+                  "message" : "The parameter in the request does not match with the latest Auth id."
+                }, {
+                  "code" : 6510,
+                  "message" : "Current status does not allow second factor update with the action provided."
+                }, {
+                  "code" : 6511,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6512,
+                  "message" : "Invalid value: dateOfSignature must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6513,
+                  "message" : "Invalid value: requestedCollectionDate must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6514,
+                  "message" : "The signature date of the mandate is in the future. Please correct your entry and try again."
+                }, {
+                  "code" : 6515,
+                  "message" : "The source iban or account type is invalid."
+                }, {
+                  "code" : 6516,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6517,
+                  "message" : "The accepted creditor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6518,
+                  "message" : "The requested collection date should not be a public holiday or in the weekends. Please try again."
+                }, {
+                  "code" : 6519,
+                  "message" : "The requested execution date should not be greater than 90 days in the future. Please try again."
+                }, {
+                  "code" : 6521,
+                  "message" : "The accepted debtor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6523,
+                  "message" : "There is no legal entity present for the source iban. Please correct your entry and try again."
+                }, {
+                  "code" : 6524,
+                  "message" : "You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again."
+                }, {
+                  "code" : 6531,
+                  "message" : "Amount must have at most 2 decimal places"
+                }, {
+                  "code" : 6532,
+                  "message" : "The customer is not eligible to opt out of VOP"
+                }, {
+                  "code" : 6534,
+                  "message" : "MFA session expired for payment creation. Please re-initiate the payment process again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "404" : {
+            "description" : "Unsuccessful operation, returns http status 404. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6504,
+                  "message" : "The parameters in the request do not match the initial request."
+                }, {
+                  "code" : 6508,
+                  "message" : "SEPA payment not found."
+                } ]
+              }
+            }
+          },
+          "409" : {
+            "description" : "Unsuccessful operation, returns http status 409. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6506,
+                  "message" : "The IdempotencyId already being used."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        }, {
+          "api_db_smart_access" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        } ]
+      },
+      "delete" : {
+        "tags" : [ "Delete SEPA Direct Debit" ],
+        "summary" : "Cancel the sepa direct debit",
+        "description" : "Cancel a previously initiated SEPA direct debit.",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment Id of SEPA Direct Debit",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "idempotency-id",
+          "in" : "header",
+          "description" : "Unique id of the service call. Must be present during retries to avoid multiple processing of the same request",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "otp",
+          "in" : "header",
+          "description" : "One time password required for SDD cancellation, you can use photo tan or push tan. In case of push tan pass otp as 'PUSHTAN'. in case of photo tan please generate otp by using transaction authorisation APIs. there you must use requestType as 'SEPA_TRANSFER_CANCELLATION'.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SepaDirectDebitResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 16,
+                  "message" : "OTP invalid challenge response: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 132,
+                  "message" : "not supported"
+                }, {
+                  "code" : 138,
+                  "message" : "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                }, {
+                  "code" : 139,
+                  "message" : "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                }, {
+                  "code" : 6500,
+                  "message" : "Parameters in the url or content type are incorrect, please check and retry."
+                }, {
+                  "code" : 6501,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 6502,
+                  "message" : "The accepted instructed amount currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6503,
+                  "message" : "Parameters submitted are missing or invalid."
+                }, {
+                  "code" : 6505,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6507,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6509,
+                  "message" : "The parameter in the request does not match with the latest Auth id."
+                }, {
+                  "code" : 6510,
+                  "message" : "Current status does not allow second factor update with the action provided."
+                }, {
+                  "code" : 6511,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6512,
+                  "message" : "Invalid value: dateOfSignature must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6513,
+                  "message" : "Invalid value: requestedCollectionDate must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6514,
+                  "message" : "The signature date of the mandate is in the future. Please correct your entry and try again."
+                }, {
+                  "code" : 6515,
+                  "message" : "The source iban or account type is invalid."
+                }, {
+                  "code" : 6516,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6517,
+                  "message" : "The accepted creditor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6518,
+                  "message" : "The requested collection date should not be a public holiday or in the weekends. Please try again."
+                }, {
+                  "code" : 6519,
+                  "message" : "The requested execution date should not be greater than 90 days in the future. Please try again."
+                }, {
+                  "code" : 6521,
+                  "message" : "The accepted debtor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6523,
+                  "message" : "There is no legal entity present for the source iban. Please correct your entry and try again."
+                }, {
+                  "code" : 6524,
+                  "message" : "You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again."
+                }, {
+                  "code" : 6531,
+                  "message" : "Amount must have at most 2 decimal places"
+                }, {
+                  "code" : 6532,
+                  "message" : "The customer is not eligible to opt out of VOP"
+                }, {
+                  "code" : 6534,
+                  "message" : "MFA session expired for payment creation. Please re-initiate the payment process again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "404" : {
+            "description" : "Unsuccessful operation, returns http status 404. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6504,
+                  "message" : "The parameters in the request do not match the initial request."
+                }, {
+                  "code" : 6508,
+                  "message" : "SEPA payment not found."
+                } ]
+              }
+            }
+          },
+          "409" : {
+            "description" : "Unsuccessful operation, returns http status 409. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6506,
+                  "message" : "The IdempotencyId already being used."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        }, {
+          "api_db_smart_access" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        } ]
+      },
+      "patch" : {
+        "tags" : [ "Second factor retry for SEPA Direct Debit" ],
+        "summary" : "Second factor retry for SEPA Direct Debit",
+        "description" : "User can retry the second factor if it's failed, The new once's will be initiated after deleting the existing once's.",
+        "parameters" : [ {
+          "name" : "paymentId",
+          "in" : "path",
+          "description" : "Payment Id of SEPA Direct Debit",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "idempotency-id",
+          "in" : "header",
+          "description" : "Unique id of the service call. Must be present during retries to avoid multiple processing of the same request",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "name" : "otp",
+          "in" : "header",
+          "description" : "One time password required for second factor update, in case of push tan use 'PUSHTAN'. in case of photo tan please generate otp by using transaction authorisation APIs. there you must use requestType corresponds to the action. for create action it must be 'SEPA_TRANSFER_GRANT' and for cancel 'SEPA_TRANSFER_CANCELLATION'.",
+          "required" : true,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SepaDirectDebitUpdateScaRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SepaDirectDebitResponse"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 16,
+                  "message" : "OTP invalid challenge response: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                }, {
+                  "code" : 132,
+                  "message" : "not supported"
+                }, {
+                  "code" : 138,
+                  "message" : "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+                }, {
+                  "code" : 139,
+                  "message" : "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+                }, {
+                  "code" : 6500,
+                  "message" : "Parameters in the url or content type are incorrect, please check and retry."
+                }, {
+                  "code" : 6501,
+                  "message" : "Contracting bank details are Invalid or Missing."
+                }, {
+                  "code" : 6502,
+                  "message" : "The accepted instructed amount currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6503,
+                  "message" : "Parameters submitted are missing or invalid."
+                }, {
+                  "code" : 6505,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6507,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6509,
+                  "message" : "The parameter in the request does not match with the latest Auth id."
+                }, {
+                  "code" : 6510,
+                  "message" : "Current status does not allow second factor update with the action provided."
+                }, {
+                  "code" : 6511,
+                  "message" : "Invalid execution date."
+                }, {
+                  "code" : 6512,
+                  "message" : "Invalid value: dateOfSignature must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6513,
+                  "message" : "Invalid value: requestedCollectionDate must match yyyy-MM-dd format."
+                }, {
+                  "code" : 6514,
+                  "message" : "The signature date of the mandate is in the future. Please correct your entry and try again."
+                }, {
+                  "code" : 6515,
+                  "message" : "The source iban or account type is invalid."
+                }, {
+                  "code" : 6516,
+                  "message" : "Cancellation is not allowed for this transaction."
+                }, {
+                  "code" : 6517,
+                  "message" : "The accepted creditor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6518,
+                  "message" : "The requested collection date should not be a public holiday or in the weekends. Please try again."
+                }, {
+                  "code" : 6519,
+                  "message" : "The requested execution date should not be greater than 90 days in the future. Please try again."
+                }, {
+                  "code" : 6521,
+                  "message" : "The accepted debtor account currency is EUR. Please correct your entry and try again."
+                }, {
+                  "code" : 6523,
+                  "message" : "There is no legal entity present for the source iban. Please correct your entry and try again."
+                }, {
+                  "code" : 6524,
+                  "message" : "You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again."
+                }, {
+                  "code" : 6531,
+                  "message" : "Amount must have at most 2 decimal places"
+                }, {
+                  "code" : 6532,
+                  "message" : "The customer is not eligible to opt out of VOP"
+                }, {
+                  "code" : 6534,
+                  "message" : "MFA session expired for payment creation. Please re-initiate the payment process again."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          },
+          "404" : {
+            "description" : "Unsuccessful operation, returns http status 404. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6504,
+                  "message" : "The parameters in the request do not match the initial request."
+                }, {
+                  "code" : 6508,
+                  "message" : "SEPA payment not found."
+                } ]
+              }
+            }
+          },
+          "409" : {
+            "description" : "Unsuccessful operation, returns http status 409. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 6506,
+                  "message" : "The IdempotencyId already being used."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        }, {
+          "api_db_smart_access" : [ "sepa_direct_debit_core", "sepa_direct_debit_B2B" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "SepaDirectDebitRequest" : {
+        "required" : [ "creditor", "creditorAccount", "debtor", "debtorAccount", "debtorAgent", "directDebitTransaction", "instructedAmount", "localInstrumentCode", "remittanceInformationStructured", "remittanceInformationUnstructured", "requestedCollectionDate", "sequenceCode" ],
+        "type" : "object",
+        "properties" : {
+          "localInstrumentCode" : {
+            "$ref" : "#/components/schemas/LocalInstrumentCode"
+          },
+          "sequenceCode" : {
+            "$ref" : "#/components/schemas/SequenceCode"
+          },
+          "requestedCollectionDate" : {
+            "$ref" : "#/components/schemas/DateString"
+          },
+          "creditor" : {
+            "$ref" : "#/components/schemas/Creditor"
+          },
+          "creditorAccount" : {
+            "$ref" : "#/components/schemas/CreditorAccount"
+          },
+          "paymentIdentification" : {
+            "$ref" : "#/components/schemas/PaymentIdentification"
+          },
+          "instructedAmount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "directDebitTransaction" : {
+            "$ref" : "#/components/schemas/DirectDebitTransaction"
+          },
+          "debtorAgent" : {
+            "$ref" : "#/components/schemas/DebtorAgent"
+          },
+          "debtor" : {
+            "$ref" : "#/components/schemas/Debtor"
+          },
+          "debtorAccount" : {
+            "$ref" : "#/components/schemas/DebtorAccount"
+          },
+          "remittanceInformationStructured" : {
+            "$ref" : "#/components/schemas/RemittanceInformationStructured"
+          },
+          "remittanceInformationUnstructured" : {
+            "$ref" : "#/components/schemas/RemittanceInformationUnstructured"
+          }
+        }
+      },
+      "SepaDirectDebitUpdateScaRequest" : {
+        "required" : [ "action", "authId" ],
+        "type" : "object",
+        "properties" : {
+          "action" : {
+            "$ref" : "#/components/schemas/Action"
+          },
+          "authId" : {
+            "$ref" : "#/components/schemas/AuthId"
+          }
+        }
+      },
+      "SepaDirectDebitResponse" : {
+        "required" : [ "authId", "paymentId", "transactionStatus" ],
+        "type" : "object",
+        "properties" : {
+          "transactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus"
+          },
+          "paymentId" : {
+            "$ref" : "#/components/schemas/PaymentId"
+          },
+          "authId" : {
+            "$ref" : "#/components/schemas/AuthId"
+          }
+        }
+      },
+      "Creditor" : {
+        "required" : [ "creditorName" ],
+        "type" : "object",
+        "properties" : {
+          "creditorName" : {
+            "$ref" : "#/components/schemas/CreditorName"
+          },
+          "creditorPostalAddress" : {
+            "$ref" : "#/components/schemas/CreditorPostalAddress"
+          }
+        }
+      },
+      "CreditorAccount" : {
+        "required" : [ "currency", "iban" ],
+        "type" : "object",
+        "properties" : {
+          "iban" : {
+            "$ref" : "#/components/schemas/IBAN"
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "Amount" : {
+        "required" : [ "amount", "currency" ],
+        "type" : "object",
+        "properties" : {
+          "amount" : {
+            "type" : "number",
+            "example" : 58.13
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "CurrencyCode" : {
+        "pattern" : "[A-Z]{3}",
+        "type" : "string",
+        "description" : "ISO 4217 Alpha 3 currency code.",
+        "example" : "EUR"
+      },
+      "IBAN" : {
+        "pattern" : "[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}",
+        "type" : "string",
+        "description" : "The IBAN of this account."
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "MandateRelatedInformation" : {
+        "required" : [ "dateOfSignature", "mandateId" ],
+        "type" : "object",
+        "properties" : {
+          "mandateId" : {
+            "$ref" : "#/components/schemas/MandateId"
+          },
+          "dateOfSignature" : {
+            "$ref" : "#/components/schemas/DateString"
+          },
+          "amendmentIndicator" : {
+            "$ref" : "#/components/schemas/AmendmentIndicator"
+          },
+          "amendmentInformationDetails" : {
+            "$ref" : "#/components/schemas/AmendmentInformationDetails"
+          }
+        }
+      },
+      "MandateId" : {
+        "maxLength" : 35,
+        "type" : "string",
+        "description" : ""
+      },
+      "AmendmentIndicator" : {
+        "type" : "boolean",
+        "description" : ""
+      },
+      "AmendmentInformationDetails" : {
+        "type" : "object",
+        "properties" : {
+          "originalCreditorSchemeId" : {
+            "$ref" : "#/components/schemas/originalCreditorSchemeId"
+          }
+        }
+      },
+      "originalCreditorSchemeId" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "maxLength" : 140,
+            "type" : "string",
+            "description" : ""
+          },
+          "identification" : {
+            "$ref" : "#/components/schemas/OriginalIdentification"
+          }
+        }
+      },
+      "OriginalIdentification" : {
+        "type" : "object",
+        "properties" : {
+          "privateId" : {
+            "type" : "object",
+            "properties" : {
+              "others" : {
+                "type" : "object",
+                "properties" : {
+                  "identification" : {
+                    "type" : "string"
+                  },
+                  "schemeNameProprietary" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreditorSchemeId" : {
+        "required" : [ "identification" ],
+        "type" : "object",
+        "properties" : {
+          "identification" : {
+            "$ref" : "#/components/schemas/Identification"
+          }
+        }
+      },
+      "Identification" : {
+        "required" : [ "privateId" ],
+        "type" : "object",
+        "properties" : {
+          "privateId" : {
+            "required" : [ "others" ],
+            "type" : "object",
+            "properties" : {
+              "others" : {
+                "required" : [ "identification", "schemeNameProprietary" ],
+                "type" : "object",
+                "properties" : {
+                  "identification" : {
+                    "type" : "string"
+                  },
+                  "schemeNameProprietary" : {
+                    "type" : "string",
+                    "enum" : [ "SEPA" ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreditorName" : {
+        "maxLength" : 70,
+        "type" : "string",
+        "description" : "Name by which a party is known and which is usually used to identify that party"
+      },
+      "CreditorPostalAddress" : {
+        "$ref" : "#/components/schemas/Address"
+      },
+      "creditorAccount" : {
+        "type" : "object",
+        "properties" : {
+          "iban" : {
+            "$ref" : "#/components/schemas/IBAN"
+          },
+          "currency" : {
+            "$ref" : "#/components/schemas/CurrencyCode"
+          }
+        }
+      },
+      "DebtorAccount" : {
+        "required" : [ "iban" ],
+        "type" : "object",
+        "properties" : {
+          "iban" : {
+            "$ref" : "#/components/schemas/IBAN"
+          }
+        }
+      },
+      "RemittanceInformationStructured" : {
+        "maxLength" : 140,
+        "type" : "string",
+        "description" : "recommended to be used in each transaction ; contract related - references to the business; it depends on the client what they want to include"
+      },
+      "RemittanceInformationUnstructured" : {
+        "type" : "string",
+        "description" : "recommended to be used in each transaction ; contract related : references to the business; it depends on the client what they want to include"
+      },
+      "DebtorName" : {
+        "maxLength" : 140,
+        "type" : "string"
+      },
+      "FinancialInstitutionId" : {
+        "type" : "string",
+        "description" : ""
+      },
+      "remittanceInformationUnstructured" : {
+        "maxLength" : 140,
+        "type" : "string"
+      },
+      "EndToEndIdentification" : {
+        "pattern" : "[a-zA-Z0-9.-]{1,35}",
+        "type" : "string",
+        "description" : "Unique identification assigned by the initiating party to unambiguously identify the transaction"
+      },
+      "InstructionId" : {
+        "pattern" : "[a-zA-Z0-9.-]{1,35}",
+        "type" : "string"
+      },
+      "Address" : {
+        "type" : "object",
+        "properties" : {
+          "country" : {
+            "maxLength" : 2,
+            "minLength" : 2,
+            "type" : "string",
+            "description" : "ISO 3166-1 alpha-2 country code",
+            "example" : "DE"
+          },
+          "addressLine" : {
+            "$ref" : "#/components/schemas/AddressLine"
+          }
+        }
+      },
+      "AddressLine" : {
+        "type" : "object",
+        "properties" : {
+          "streetAndHouseNumber" : {
+            "maxLength" : 70,
+            "type" : "string",
+            "description" : "Street name and house number"
+          },
+          "zipCodeAndCity" : {
+            "maxLength" : 70,
+            "type" : "string",
+            "description" : "Zip code and city name"
+          }
+        }
+      },
+      "SepaDirectStatusResponse" : {
+        "required" : [ "transactionStatus" ],
+        "type" : "object",
+        "properties" : {
+          "transactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus"
+          }
+        }
+      },
+      "LocalInstrumentCode" : {
+        "type" : "string",
+        "description" : "",
+        "enum" : [ "CORE", "B2B" ]
+      },
+      "DateString" : {
+        "type" : "string",
+        "description" : "must match yyyy-MM-dd format, also in CET timezone.",
+        "format" : "date"
+      },
+      "DirectDebitTransaction" : {
+        "required" : [ "creditorSchemeId", "mandateRelatedInformation" ],
+        "type" : "object",
+        "properties" : {
+          "mandateRelatedInformation" : {
+            "$ref" : "#/components/schemas/MandateRelatedInformation"
+          },
+          "creditorSchemeId" : {
+            "$ref" : "#/components/schemas/CreditorSchemeId"
+          }
+        }
+      },
+      "Debtor" : {
+        "required" : [ "debtorName" ],
+        "type" : "object",
+        "properties" : {
+          "debtorName" : {
+            "$ref" : "#/components/schemas/DebtorName"
+          },
+          "debtorPostalAddress" : {
+            "$ref" : "#/components/schemas/Address"
+          }
+        }
+      },
+      "DebtorAgent" : {
+        "required" : [ "financialInstitutionId" ],
+        "type" : "object",
+        "properties" : {
+          "financialInstitutionId" : {
+            "$ref" : "#/components/schemas/FinancialInstitutionId"
+          }
+        }
+      },
+      "PaymentIdentification" : {
+        "type" : "object",
+        "properties" : {
+          "endToEndIdentification" : {
+            "$ref" : "#/components/schemas/EndToEndIdentification"
+          },
+          "instructionId" : {
+            "$ref" : "#/components/schemas/InstructionId"
+          }
+        }
+      },
+      "SequenceCode" : {
+        "type" : "string",
+        "description" : "",
+        "enum" : [ "FNAL", "FRST", "OOFF", "RCUR", "RPRE" ]
+      },
+      "TransactionStatus" : {
+        "type" : "string",
+        "description" : "Specifies the status of a transaction in a coded form based on SEPA Rulebook: AT-R1 The type of R-message 'RJCT’ in case of a negative confirmation or reject, or 'ACCP' in case of a positive confirmation. 'PDNG' value is possible in case Payment Order Response is sent for not yet rejected transaction",
+        "example" : "ACCP",
+        "enum" : [ "RJCT", "RCVD", "ACCP", "ACTC", "CANC", "PDNG" ]
+      },
+      "Action" : {
+        "type" : "string",
+        "description" : "defines the action for retry second factor, CREATE is for updating the second factor for create sepa direct debit and  CANCEL is for cancel",
+        "enum" : [ "CREATE", "CANCEL" ]
+      },
+      "PaymentId" : {
+        "type" : "string",
+        "description" : "resource identification of the generated paymentinitiation resource ('Transaction-ID' from the header which is populated with the Intra Bank ID); should be available at least when status is PDNG or ACCP",
+        "example" : "232ed5b7-fc70-4c67-98bb-bf95b3300001"
+      },
+      "AuthId" : {
+        "type" : "string",
+        "description" : "Authentication Id used for update SCA status SEPA payment, It will be valid for 5 minutes.",
+        "example" : "232ed5b7-fc70-4c67-98bb-bf95b3300001"
+      },
+      "SepaDirectDebitDetailsResponse" : {
+        "required" : [ "creditor", "creditorAccount", "debtor", "debtorAccount", "debtorAgent", "directDebitTransaction", "instructedAmount", "localInstrumentCode", "paymentId", "remittanceInformationStructured", "remittanceInformationUnstructured", "requestedCollectionDate", "sequenceCode", "transactionStatus" ],
+        "type" : "object",
+        "properties" : {
+          "transactionStatus" : {
+            "$ref" : "#/components/schemas/TransactionStatus"
+          },
+          "paymentId" : {
+            "$ref" : "#/components/schemas/PaymentId"
+          },
+          "localInstrumentCode" : {
+            "$ref" : "#/components/schemas/LocalInstrumentCode"
+          },
+          "sequenceCode" : {
+            "$ref" : "#/components/schemas/SequenceCode"
+          },
+          "requestedCollectionDate" : {
+            "$ref" : "#/components/schemas/DateString"
+          },
+          "creditor" : {
+            "$ref" : "#/components/schemas/Creditor"
+          },
+          "creditorAccount" : {
+            "$ref" : "#/components/schemas/CreditorAccount"
+          },
+          "paymentIdentification" : {
+            "$ref" : "#/components/schemas/PaymentIdentification"
+          },
+          "instructedAmount" : {
+            "$ref" : "#/components/schemas/Amount"
+          },
+          "directDebitTransaction" : {
+            "$ref" : "#/components/schemas/DirectDebitTransaction"
+          },
+          "debtorAgent" : {
+            "$ref" : "#/components/schemas/DebtorAgent"
+          },
+          "debtor" : {
+            "$ref" : "#/components/schemas/Debtor"
+          },
+          "debtorAccount" : {
+            "$ref" : "#/components/schemas/DebtorAccount"
+          },
+          "remittanceInformationStructured" : {
+            "$ref" : "#/components/schemas/RemittanceInformationStructured"
+          },
+          "remittanceInformationUnstructured" : {
+            "$ref" : "#/components/schemas/RemittanceInformationUnstructured"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "sepa_direct_debit_core" : "Initiate and check status of SEPA Direct Debit Core",
+              "sepa_direct_debit_B2B" : "Initiate and check status of SEPA Direct Debit B2B",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "sepa_direct_debit_core" : "Initiate and check status of SEPA Direct Debit Core",
+              "sepa_direct_debit_B2B" : "Initiate and check status of SEPA Direct Debit B2B"
+            }
+          }
+        }
+      }
+    }
+  }
+}

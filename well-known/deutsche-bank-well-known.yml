@@ -1,0 +1,150 @@
+specification: API Commons Well-Known
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: probed
+source: live HTTP probes of every host this record knows
+description: >-
+  Probe of the standard /.well-known/ discovery paths on every Deutsche Bank host in this
+  record - the registrable domain, the developer portal, the API gateways and the identity
+  providers. Deutsche Bank serves a real RFC 9116 security.txt on db.com and www.db.com, and
+  publishes two live OpenID Connect discovery documents (the dbAPI gateway OIDC provider on
+  simulator-api.db.com and the corporate CIAM provider on cidp-eu.db.com) - both under
+  product-specific roots rather than the host root. IMPORTANT: developer.db.com is an Angular
+  single-page application with a catch-all route that answers HTTP 200 with the portal HTML
+  shell for EVERY /.well-known/* path. Every 200 recorded on that host below is that shell,
+  not a document, and is scored as a miss.
+hosts:
+  - host: www.db.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        file: deutsche-bank-security.txt
+        note: Real RFC 9116 document. Contact https://www.db.com/security-disclosure, Expires 2027-03-31.
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: db.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        file: deutsche-bank-security.txt
+        note: Same document as www.db.com.
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/ai-plugin.json
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: simulator-api.db.com
+    documents:
+      - path: /gw/oidc/.well-known/openid-configuration
+        status: 200
+        file: deutsche-bank-simulator-openid-configuration.json
+        note: >-
+          Real OIDC discovery document for the dbAPI OAuth provider. issuer
+          https://simulator-api.db.com/gw/oidc/. Published under the gateway product root,
+          not the host root.
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /gw/oidc/.well-known/oauth-authorization-server
+        status: 404
+      - path: /gw/oidc/.well-known/oauth-protected-resource
+        status: 404
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: cidp-eu.db.com
+    documents:
+      - path: /am/oauth2/global/.well-known/openid-configuration
+        status: 200
+        file: deutsche-bank-cidp-openid-configuration.json
+        note: >-
+          Real OIDC discovery document for the Deutsche Bank corporate identity provider
+          (ForgeRock AM). issuer https://cidp-eu.db.com/am/oauth2/global. This is the issuer
+          the developer portal itself authenticates against (portal config.json cidpConfig).
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: developer.db.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        note: SPA shell (text/html Angular index) - NOT a document. Treated as a miss.
+      - path: /.well-known/openid-configuration
+        status: 200
+        note: SPA shell - NOT a document. Treated as a miss.
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        note: SPA shell - NOT a document. Treated as a miss.
+      - path: /.well-known/api-catalog
+        status: 200
+        note: SPA shell - NOT a document. Treated as a miss.
+      - path: /.well-known/ai-plugin.json
+        status: 200
+        note: SPA shell - NOT a document. Treated as a miss.
+      - path: /.well-known/agent-card.json
+        status: 200
+        note: SPA shell - NOT a document. Treated as a miss.
+      - path: /.well-known/agent.json
+        status: 200
+        note: SPA shell - NOT a document. Treated as a miss.
+  - host: api.gcp.developer.db.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+  - host: ams-prd.developer.db.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+      - path: /.well-known/openid-configuration
+        status: 404
+      - path: /.well-known/api-catalog
+        status: 404
+      - path: /.well-known/agent-card.json
+        status: 404
+      - path: /.well-known/agent.json
+        status: 404
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

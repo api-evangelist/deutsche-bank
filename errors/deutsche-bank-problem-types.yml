@@ -1,0 +1,79 @@
+specification: API Commons Error Catalog
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: derived
+source: openapi/ (36 first-party Deutsche Bank OpenAPI 3.0.x documents, 4xx/5xx responses)
+description: >-
+  HTTP-status-level error surface derived from every 4xx/5xx response declared across the 36
+  published Deutsche Bank OpenAPI documents (195 operations). Deutsche Bank does NOT emit
+  RFC 9457 application/problem+json - every error is the proprietary application/json
+  ErrorResponse envelope (integer code, message, messageId). The numeric code registry
+  behind these statuses is catalogued separately in errors/deutsche-bank-error-codes.yml.
+format: proprietary
+rfc9457: false
+content_type: application/json
+schema: ErrorResponse / ErrorModel
+problem_types:
+  - status: 400
+    title: Bad Request
+    occurrences: 169
+    description: >-
+      Request validation, business-rule and second-factor failures. Carries the largest share
+      of the numeric registry - field format violations, SEPA payment-block consistency
+      checks, eligibility rules and OTP/2FA rejections.
+    remediation: >-
+      Read the numeric code in the body and match it against errors/deutsche-bank-error-codes.yml.
+      Most 400s are deterministic and will not succeed on retry without changing the request.
+  - status: 401
+    title: Unauthorized
+    occurrences: 164
+    description: Missing, expired or insufficient OAuth 2.0 access token.
+    remediation: >-
+      Re-mint the access token at https://api.db.com/gw/oidc/oauth2/token (or the simulator
+      equivalent) using the grant the operation's security scheme declares, with the required
+      scope. Use the refresh_token grant where offline_access was granted.
+  - status: 403
+    title: Forbidden
+    occurrences: 17
+    description: >-
+      Token is valid but does not carry the scope, tenant entitlement or db Smart Access
+      contract entitlement the operation requires.
+    remediation: Request the scope named in scopes/deutsche-bank-scopes.yml for this operation.
+  - status: 404
+    title: Not Found
+    occurrences: 36
+    description: Unknown resource identifier - paymentId, orderId, subscriptionId, accountOpeningId.
+    remediation: Confirm the identifier came from a prior 2xx of the matching create/list operation.
+  - status: 409
+    title: Conflict
+    occurrences: 29
+    description: >-
+      Replay and state conflicts. Code 6506 "The IdempotencyId already being used" is the
+      idempotency-id collision signal on the payment and account-opening write surfaces.
+    remediation: >-
+      A 409/6506 means the original request is already being processed - poll the matching
+      status operation rather than re-submitting with a new idempotency-id.
+  - status: 422
+    title: Unprocessable Entity
+    occurrences: 2
+    description: Semantically invalid payload on the investments order surface.
+  - status: 500
+    title: Internal Server Error
+    occurrences: 31
+    description: Unhandled gateway or downstream banking-core failure.
+    remediation: Retry with the SAME idempotency-id where the operation supports one.
+  - status: 4XX
+    title: Client error (range declared)
+    occurrences: 3
+  - status: 5XX
+    title: Server error (range declared)
+    occurrences: 3
+notes:
+  - No Retry-After header is declared anywhere in the published specs.
+  - No 429 response is declared on ANY of the 195 published operations - there is no rate-limit error contract in the specs.
+  - The messageId field is the support correlation handle - capture it alongside Correlation-Id.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

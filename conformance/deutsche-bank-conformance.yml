@@ -1,0 +1,174 @@
+specification: API Commons Conformance
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: derived
+source: >-
+  openapi/ (36 first-party Deutsche Bank OpenAPI 3.0.x documents),
+  well-known/deutsche-bank-simulator-openid-configuration.json,
+  well-known/deutsche-bank-cidp-openid-configuration.json,
+  https://developer.db.com/apidocumentation
+description: >-
+  Cross-cutting and domain standards the Deutsche Bank dbAPI estate demonstrably conforms to,
+  each with the exact contract location that evidences it. Deutsche Bank's market has a
+  regulatory standard - PSD2 and the SEPA payment schemes - and the contract carries the
+  signature rather than only the marketing page.
+conformance:
+  - id: openapi-3.0
+    conforms: true
+    evidence: >-
+      All 36 published documents declare openapi 3.0.1, 3.0.2 or 3.0.3 and parse. Retrieved
+      from Deutsche Bank's own public catalogue at
+      https://simulator-api.db.com/gw/public/dbapi/swaggers/v1/
+  - id: oauth2
+    conforms: true
+    evidence: >-
+      components.securitySchemes declares three oauth2 schemes across the estate -
+      api_auth_code (authorizationCode), api_client_credential and api_db_smart_access
+      (clientCredentials). Authorization and token endpoints published in the OIDC discovery
+      document.
+  - id: oidc
+    conforms: true
+    evidence: >-
+      Live OpenID Connect discovery documents at
+      https://simulator-api.db.com/gw/oidc/.well-known/openid-configuration (issuer
+      https://simulator-api.db.com/gw/oidc/) and
+      https://cidp-eu.db.com/am/oauth2/global/.well-known/openid-configuration. userinfo,
+      jwks_uri, end_session_endpoint and the openid scope are all published.
+  - id: oauth2-pkce
+    conforms: true
+    evidence: >-
+      code_challenge_methods_supported ["S256"] in the dbAPI OIDC discovery document, plus a
+      dedicated portal guide at
+      https://developer.db.com/apidocumentation/oauthflows/oauthcodegrantpkce
+  - id: rfc8705-mtls-client-auth
+    conforms: true
+    evidence: >-
+      The dbAPI OIDC discovery document advertises tls_client_auth and
+      self_signed_tls_client_auth in token_endpoint_auth_methods_supported, and
+      tls_client_certificate_bound_access_tokens is true.
+  - id: rfc8628-device-authorization
+    conforms: true
+    evidence: >-
+      device_authorization_endpoint and urn:ietf:params:oauth:grant-type:device_code are
+      published in the dbAPI OIDC discovery document.
+  - id: rfc8693-token-exchange
+    conforms: true
+    evidence: >-
+      urn:ietf:params:oauth:grant-type:token-exchange in grant_types_supported of the dbAPI
+      OIDC discovery document.
+  - id: rfc7662-token-introspection
+    conforms: true
+    evidence: introspection_endpoint published in the dbAPI OIDC discovery document.
+  - id: rfc7009-token-revocation
+    conforms: true
+    evidence: revocation_endpoint published in the dbAPI OIDC discovery document.
+  - id: rfc9116-security-txt
+    conforms: true
+    evidence: >-
+      https://www.db.com/.well-known/security.txt returns a real RFC 9116 document with
+      Contact, Expires, Preferred-Languages and Hiring fields.
+  - id: rfc9457-problem-details
+    conforms: false
+    evidence: >-
+      No application/problem+json media type and no type/title/detail/instance envelope
+      appears in any of the 36 specs. Errors use a proprietary { code, message, messageId }
+      JSON envelope.
+  - id: rfc8594-sunset-header
+    conforms: false
+    evidence: No Sunset or Deprecation header appears in any published spec, and no operation is marked deprecated.
+  - id: rfc6585-rate-limiting
+    conforms: false
+    evidence: >-
+      No 429 response, no Retry-After and no RateLimit-* header is declared on any of the 195
+      published operations.
+  - id: idempotency-key
+    conforms: partial
+    evidence: >-
+      An idempotency-id (uuid) request header is declared on 33 of 128 published write
+      operations, with a 409 / code 6506 collision contract. It is not the IETF
+      Idempotency-Key header and it does not span the mutating surface. See
+      conventions/deutsche-bank-conventions.yml.
+  - id: pagination-offset-limit
+    conforms: true
+    evidence: offset and limit query parameters plus a totalItems envelope field on the paginated read collections.
+domain_standards:
+  - id: psd2
+    name: PSD2 / Payment Services Directive 2
+    conforms: true
+    evidence: >-
+      The contract itself encodes PSD2 semantics, not just a marketing claim. The Transactions
+      API parameter documentation branches on whether the call was made "with a PSD2-compliant
+      strong customer authentication (SCA)" and applies a different maximum look-back day
+      count when it was not
+      (openapi/deutsche-bank-dbapi-transactions-v2.json, bookingDateFrom description). Deutsche
+      Bank additionally ships SCA itself as a first-class API surface -
+      dbapi-transactionAuthorization-v1 issues, switches and verifies PushTAN and other
+      challenge methods - and payment writes carry an OTP header.
+    spec_location: openapi/deutsche-bank-dbapi-transactions-v2.json
+  - id: sepa
+    name: SEPA payment schemes (SCT, SCT Inst, SDD Core, SDD B2B)
+    conforms: true
+    evidence: >-
+      Four SEPA schemes are exposed as named, separately-scoped API products - SEPA Credit
+      Transfer (dbapi-sepaCreditTransfer-v3), SEPA Instant Credit Transfer
+      (dbapi-payments-sepaInstantCreditTransfer-v3), SEPA Direct Debit Core and SEPA Direct
+      Debit B2B (dbapi-sepaDirectDebit-v1, scopes sepa_direct_debit_core and
+      sepa_direct_debit_B2B), each with bulk variants and scheme-specific validation codes
+      (charge bearer restricted to SLEV, control-sum and transaction-count block checks).
+    spec_location: openapi/deutsche-bank-dbapi-sepaCreditTransfer-v3.json
+  - id: vop
+    name: Verification of Payee (EU Instant Payments Regulation)
+    conforms: true
+    evidence: >-
+      Dedicated VoP operations on both credit-transfer surfaces -
+      GET /sepaInstantCreditTransfer/{paymentId}/vopDetails and the bulk equivalent - plus a
+      published opt-out eligibility rule (error code 6532, "The customer is not eligible to
+      opt out of VOP").
+    spec_location: openapi/deutsche-bank-dbapi-payments-sepaInstantCreditTransfer-v3.json
+  - id: iso20022
+    name: ISO 20022
+    conforms: partial
+    evidence: >-
+      The account-balance vocabulary follows ISO 20022 balance types verbatim ("This
+      definition is following ISO20022 logic for defining balance types" - CLOSING_BOOKED,
+      EXPECTED, etc.) in the Merchant Solutions services and callback contracts. The dbAPI
+      payment surfaces are JSON-native rather than pain.001 XML, so this is a vocabulary
+      alignment, not a message-format conformance.
+    spec_location: openapi/deutsche-bank-merchant-solution-services-v2.1.json
+  - id: iso4217
+    name: ISO 4217 currency codes
+    conforms: true
+    evidence: Referenced as the currency code definition in 16 of the 36 published specs.
+  - id: iso3166
+    name: ISO 3166 country codes
+    conforms: true
+    evidence: Referenced as the country code definition in 11 of the 36 published specs.
+  - id: iso13616-iban
+    name: ISO 13616 IBAN / ISO 9362 BIC
+    conforms: true
+    evidence: >-
+      IBAN is the primary account identifier across 19 specs, with published length and
+      country-prefix validation rules; BIC appears in 11.
+  - id: iso8601
+    name: ISO 8601 dates
+    conforms: true
+    evidence: Declared as the date format for booking dates and transaction timestamps throughout.
+not_claimed:
+  - id: fapi
+    note: >-
+      No FAPI (Financial-grade API) profile claim appears in the specs, the discovery
+      documents or the portal documentation. Deutsche Bank publishes the mTLS and PKCE
+      building blocks FAPI requires, but does not assert the profile - so neither do we.
+  - id: berlin-group-nextgenpsd2
+    note: >-
+      The dbAPI programme is Deutsche Bank's own "beyond PSD2" contract shape, not the Berlin
+      Group NextGenPSD2 XS2A framework. No NextGenPSD2 path, header or naming convention
+      appears in any published spec. Deutsche Bank's separate regulatory PSD2/XS2A interface
+      is a distinct surface and is not part of this catalogue.
+  - id: fdx
+    note: No FDX (Financial Data Exchange) reference anywhere in the estate - as expected for a European issuer.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

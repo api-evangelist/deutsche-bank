@@ -1,0 +1,125 @@
+specification: API Commons Webhooks
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: derived
+source: >-
+  openapi/deutsche-bank-dbapi-subscriptions-v1.json,
+  openapi/deutsche-bank-merchant-solution-callback-v2_1.json,
+  openapi/deutsche-bank-merchant-solution-callback-v2.json
+description: >-
+  Deutsche Bank publishes no AsyncAPI document, but it does ship a real, contracted event
+  surface in two places: a first-class Notification Service that lets a client subscribe to
+  bank events and receive them at its own notificationURL, and a signed merchant callback
+  contract for the Merchant Solutions payment gateway. Both are described in published
+  OpenAPI - the subscription management side and the receiver side respectively - so the
+  event surface is machine-readable even though it is not AsyncAPI-shaped.
+asyncapi_published: false
+webhooks_published: true
+surfaces:
+  - name: dbAPI Notification Service (event subscriptions)
+    spec: openapi/deutsche-bank-dbapi-subscriptions-v1.json
+    docs: https://developer.db.com/apiexplorer
+    model: subscribe-then-receive
+    detail: >-
+      The client creates a subscription with a filterCriteria and a subscriptionDetails block
+      carrying notificationURL (the URL the notification will be passed towards),
+      subscriptionType (one-time or recurring) and an optional expirationDate. Subscriptions
+      are then listed, patched, activated and deleted through the same API. Deutsche Bank
+      pushes to the registered URL; the delivery payload schema is not published.
+    management_operations:
+      - operationId: transactionsPost
+        method: POST
+        path: /transactions
+        event: transaction created
+        scope: transaction_notifications
+      - operationId: transactionsGet
+        method: GET
+        path: /transactions
+      - operationId: transactionsSubscriptionIdPatch
+        method: PATCH
+        path: /transactions/{subscriptionId}
+      - operationId: transactionsSubscriptionIdDelete
+        method: DELETE
+        path: /transactions/{subscriptionId}
+      - operationId: investmentsOrdersPost
+        method: POST
+        path: /investments/orders
+        event: investments order status change
+        scope: investments_orders_status_notification
+      - operationId: investmentsOrdersGet
+        method: GET
+        path: /investments/orders
+      - operationId: investmentsOrdersSubscriptionIdPatch
+        method: PATCH
+        path: /investments/orders/{subscriptionId}
+      - operationId: investmentsOrdersSubscriptionIdDelete
+        method: DELETE
+        path: /investments/orders/{subscriptionId}
+      - operationId: subscriptionActivation
+        method: PATCH
+        path: /{subscriptionId}
+      - operationId: investmentSubscriptionActivation
+        method: PATCH
+        path: /investments/{subscriptionId}
+    subscription_fields:
+      - name: notificationURL
+        required: true
+        format: url
+        description: The URL the notification will be passed towards.
+      - name: subscriptionType
+        required: true
+        enum:
+          - one-time
+          - recurring
+      - name: expirationDate
+        required: false
+        format: date
+    idempotency: Idempotency-ID header on both create operations.
+    delivery_payload_published: false
+    note: >-
+      The subscription CONTRACT is published; the shape of the notification Deutsche Bank
+      POSTs to notificationURL is not. An integrator has to discover the callback body
+      empirically, which is the main gap in this surface.
+  - name: Merchant Solutions payment callback
+    spec: openapi/deutsche-bank-merchant-solution-callback-v2_1.json
+    versions:
+      - merchant-solution-callback-v2
+      - merchant-solution-callback-v2_1
+    model: receiver-contract
+    detail: >-
+      Unlike the notification service, this one publishes the RECEIVER side: Deutsche Bank
+      documents the exact POST /callback endpoint a merchant must implement, its
+      CallbackRequest body, and the signature headers it will send. The declared server is
+      https://example.com/ because the host is the merchant's own - a templated server, not a
+      Deutsche Bank host.
+    operation:
+      operationId: notifyShopPost
+      method: POST
+      path: /callback
+    security_headers:
+      - name: X-RequestDate
+        description: Current timestamp formatted according to RFC 7231, section 7.
+      - name: X-RandomValue
+        description: A random value; part of the signature input.
+      - name: Digest
+        description: SHA-256 hash of the message body.
+      - name: Signature
+        description: HMAC-256 signature over Digest, X-RequestDate and X-RandomValue.
+    payload_schema: CallbackRequest
+    payload_includes:
+      - TransactionInfo
+      - TransactionCreditCardInfo
+      - TransactionBankAccountInfo
+      - RiskmanagementInfoResponse
+      - MandateResponse
+      - PSD2Transaction
+      - TDSInfo
+gaps:
+  - No AsyncAPI 2.x/3.x document is published for either surface.
+  - The notification delivery payload for the dbAPI Notification Service is undocumented.
+  - No published retry, backoff or replay policy for either callback surface.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

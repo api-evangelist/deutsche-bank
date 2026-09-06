@@ -1,0 +1,203 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-creditCards",
+    "description" : "Gives you an overview of a customer's credit cards.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v1"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/cards/creditCards/v1"
+  } ],
+  "tags" : [ {
+    "name" : "Credit Cards",
+    "description" : "Gives you an overview of a customer's credit cards that were actively used over the past 18 months. The data retrieved by this api includes the card owner's name and the expiry date as well as masked card numbers. Use the Credit Card Transaction api to perform further inquiries on the customer's credit card activities."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Credit Cards" ],
+        "summary" : "Reads all active credit cards for a customer.",
+        "description" : "Reads all active credit cards for a customer. If the customer is not known or no credit cards for the customer exist, an empty result is returned.",
+        "operationId" : "getCreditsCards",
+        "parameters" : [ {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "required" : [ "items", "totalItems" ],
+                  "type" : "object",
+                  "properties" : {
+                    "totalItems" : {
+                      "minimum" : 0,
+                      "type" : "integer",
+                      "description" : "Total number of items found for your request.",
+                      "format" : "int32"
+                    },
+                    "items" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/CreditCard"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Unsuccessful operation, returns http status 400. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 2,
+                  "message" : "Invalid value for %s."
+                }, {
+                  "code" : 3,
+                  "message" : "Invalid value for %s: %s."
+                }, {
+                  "code" : 17,
+                  "message" : "Invalid OTP."
+                }, {
+                  "code" : 114,
+                  "message" : "Unable to identify transaction by Id."
+                }, {
+                  "code" : 126,
+                  "message" : "Organizations are currently not supported."
+                }, {
+                  "code" : 127,
+                  "message" : "Booking date from must precede booking date to."
+                }, {
+                  "code" : 131,
+                  "message" : "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+                } ]
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unsuccessful operation, returns http status 401. See 'example' property for possible values.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                },
+                "example" : [ {
+                  "code" : 401,
+                  "message" : "The requested function requires a SCA Level Authentication."
+                } ]
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "read_credit_cards_list_with_details" ]
+        }, {
+          "api_db_smart_access" : [ "read_credit_cards_list_with_details" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "CreditCard" : {
+        "type" : "object",
+        "properties" : {
+          "technicalId" : {
+            "type" : "string",
+            "description" : "Unique technical Id"
+          },
+          "embossedLine1" : {
+            "type" : "string",
+            "description" : "First line of name embossed on card"
+          },
+          "embossedLine2" : {
+            "type" : "string",
+            "description" : "Second line of name embossed on card"
+          },
+          "hasDebitFeatures" : {
+            "type" : "boolean",
+            "description" : "Flag, to decide if the card is of type debit or credit"
+          },
+          "expiryDate" : {
+            "type" : "string",
+            "description" : "Expiry Date of credit card in format MM.YYYY"
+          },
+          "productName" : {
+            "type" : "string",
+            "description" : "Product name, which is displayed to the customer"
+          },
+          "securePAN" : {
+            "type" : "string",
+            "description" : "Last 4 digits of credit card number"
+          }
+        },
+        "description" : "Information on a credit card"
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_credit_cards_list_with_details" : "Grants read access to credit card data.",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      },
+      "api_db_smart_access" : {
+        "type" : "oauth2",
+        "flows" : {
+          "clientCredentials" : {
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_credit_cards_list_with_details" : "Grants read access to credit card data."
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

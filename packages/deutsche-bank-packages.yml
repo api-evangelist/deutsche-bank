@@ -1,0 +1,109 @@
+specification: API Commons Packages
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://ams-prd.developer.db.com/c2/sdk-content.model.json,
+  https://ams-prd.developer.db.com/c2/merchant-solutions-explorer-tabs.model.json,
+  https://api.github.com/orgs/deutschebank/repos, registry searches on npm, PyPI, Maven
+  Central, RubyGems and NuGet
+description: >-
+  Deutsche Bank publishes NO first-party API client library on any public package registry.
+  Every registry was searched directly and every hit belonged to someone else. What Deutsche
+  Bank does ship is a pair of mobile SDKs distributed as binary frameworks from the developer
+  portal, and a page of shop plugins and server libraries that the portal itself labels
+  "available soon" and has done for several release cycles. This is a real, dated
+  abandonment signal, so it is recorded as data rather than omitted.
+official_registry_packages: 0
+packages:
+  - name: Decoupled Wallet SDK (iOS)
+    official: true
+    registry: none
+    distribution: binary framework download from the developer portal
+    artifact: emotional-platform.xcframework
+    version: 1.2.0
+    published: null
+    version_source: >-
+      Read from the iOS Release Notes published in
+      https://ams-prd.developer.db.com/c2/sdk-content.model.json - the highest version listed
+      is 1.2.0 (Show daily and monthly limit; Biometric Login). Deutsche Bank publishes no
+      release DATE for any SDK version, so `published` is null: checked, nothing to record.
+    requirements: iOS 12.1+, Xcode 11.6+, Swift 5+
+    dependencies:
+      - WebIdIosSdk (XCFramework)
+      - AhoyRTC (AhoyKit.framework + WebRTC.framework)
+    docs: https://developer.db.com/products/sdk/decoupled-wallet-sdk
+    note: >-
+      White-label virtual card issuing SDK. Not a client library for the dbAPI REST estate -
+      it is a product in its own right. Requirements naming Xcode 11.6 and iOS 12.1 date this
+      distribution to roughly 2020-2021.
+  - name: Decoupled Wallet SDK (Android)
+    official: true
+    registry: none
+    distribution: binary library download from the developer portal
+    version: 1.2.0
+    published: null
+    version_source: >-
+      Android Release Notes in https://ams-prd.developer.db.com/c2/sdk-content.model.json.
+      No release dates are published, so `published` is null.
+    docs: https://developer.db.com/products/sdk/decoupled-wallet-sdk
+  - name: Deutsche Bank API server libraries (Ruby, PHP, .NET, Go, Java)
+    official: true
+    registry: none
+    version: null
+    published: null
+    status: announced-not-shipped
+    note: >-
+      The portal's SDK page states verbatim: "The downloads for the following libraries will
+      be available soon: Ruby, PHP, .Net, Go, Java", with an empty downloadUrl and empty
+      fileName on every entry. Nothing has shipped. Searched npm, PyPI, RubyGems, Maven
+      Central (including g:"com.db") and NuGet - no first-party Deutsche Bank dbAPI client
+      exists on any of them. version is null because there is nothing published to version.
+    source: https://ams-prd.developer.db.com/c2/sdk-content.model.json
+  - name: Deutsche Bank shop plugins (Magento 2, Drupal, PrestaShop, WooCommerce, OpenCart, osCommerce, Oxid, Gambio, Modified, VirtueMart, Xt:Commerce, Zencart, Commerce:seo)
+    official: true
+    registry: none
+    version: null
+    published: null
+    status: announced-not-shipped
+    note: >-
+      "These are the official Deutsche Bank shop-plugins for the most widely used shop systems
+      to enable the connection to Deutsche Bank Payment Gateway... The downloads for the
+      following shop plugins will be available soon." Thirteen platforms named, zero download
+      URLs populated. See components/deutsche-bank-components.yml.
+    source: https://ams-prd.developer.db.com/c2/merchant-solutions-explorer-tabs.model.json
+registries_searched:
+  - registry: npm
+    endpoint: https://registry.npmjs.org/-/v1/search
+    result: no first-party Deutsche Bank dbAPI client found
+  - registry: Maven Central
+    endpoint: https://search.maven.org/solrsearch/select
+    query: 'g:"com.db"'
+    result: numFound 0
+  - registry: PyPI
+    result: no first-party Deutsche Bank dbAPI client found
+  - registry: RubyGems
+    result: no first-party Deutsche Bank dbAPI client found
+  - registry: NuGet
+    result: no first-party Deutsche Bank dbAPI client found
+github:
+  org: https://github.com/deutschebank
+  repos: 28
+  api_related:
+    - name: deutschebank/deutsche-bank-api-program
+      url: https://github.com/deutschebank/deutsche-bank-api-program
+      language: Java
+      last_push: '2025-06-27'
+      contents: tutorials only (no packaged library)
+      note: >-
+        Deutsche Bank's public API-programme repository holds tutorials, not a distributable
+        client. It is the closest thing to an official SDK and it is not one.
+  note: >-
+    The rest of the deutschebank GitHub organisation is enterprise open source - the Fluxnova
+    BPM platform (FINOS), Waltz, spring-bot, plexus-interop, dbMango - none of it a dbAPI
+    client library.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

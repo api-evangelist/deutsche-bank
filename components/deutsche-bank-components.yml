@@ -1,0 +1,84 @@
+specification: API Commons Components
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://ams-prd.developer.db.com/c2/merchant-solutions-explorer-tabs.model.json,
+  https://ams-prd.developer.db.com/c2/products/sdk/decoupled-wallet-sdk-detail.model.json,
+  https://ams-prd.developer.db.com/c2/products/merchant-solutions/payment-acceptance-detail.model.json
+description: >-
+  Deutsche Bank's embeddable surface is mobile and commerce-platform shaped rather than
+  web-component shaped: a white-label mobile wallet SDK you drop into your own app, a hosted
+  merchant portal, and a catalogue of e-commerce platform plugins. There are no JavaScript
+  UI elements, no web components and no embeddable iframes published for the dbAPI REST
+  estate.
+families:
+  - family: Mobile
+    components:
+      - name: Decoupled Wallet SDK
+        type: white-label mobile SDK
+        platforms:
+          - iOS (emotional-platform.xcframework)
+          - Android
+        status: live
+        detail: >-
+          Embeds Deutsche Bank virtual card issuing into a third-party mobile app. The card is
+          linked during onboarding to any German SEPA account and does not require the
+          customer to hold a Deutsche Bank current account. Fully re-brandable - Deutsche Bank
+          carries the regulatory compliance and payment processing.
+        surfaces:
+          - card and profile splitscreen
+          - Welcome Screen with customisable icon
+          - configurable app bar (background colour and title)
+          - Activity integration option (Android)
+          - isCardProvisioned API to check whether the card is activated on device
+        docs: https://developer.db.com/products/sdk/decoupled-wallet-sdk
+        packages: packages/deutsche-bank-packages.yml
+  - family: Merchant / commerce platform plugins
+    status: announced-not-shipped
+    detail: >-
+      Deutsche Bank names thirteen official shop plugins for connecting a storefront to the
+      Deutsche Bank Payment Gateway, but every downloadUrl on the page is empty and the copy
+      reads "will be available soon".
+    components:
+      - name: Deutsche Bank shop plugins
+        type: e-commerce platform plugin
+        platforms:
+          - Magento 2
+          - Commerce:seo
+          - Drupal
+          - Gambio
+          - Modified
+          - OpenCart
+          - osCommerce
+          - Oxid
+          - PrestaShop
+          - VirtueMart
+          - WooCommerce
+          - 'Xt:Commerce'
+          - Zencart
+        available: false
+        docs: https://developer.db.com/products/payment-acceptance
+  - family: Hosted surfaces
+    components:
+      - name: Merchant Portal
+        type: hosted dashboard
+        detail: >-
+          "An easy to use Merchant Portal allows you to get an overview over all transactions
+          that have been processed through your online shop", alongside settlement options and
+          reconciliation reporting.
+        docs: https://developer.db.com/products/payment-acceptance
+      - name: API Explorer
+        type: hosted API console
+        detail: >-
+          In-portal console that authorises a generated test persona against the simulation
+          gateway and issues live calls against the published specs.
+        url: https://developer.db.com/apiexplorer
+gaps:
+  - No JavaScript/web components, element libraries or hosted checkout iframes are published for the dbAPI REST estate.
+  - Every shop plugin listed is announced rather than downloadable.
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

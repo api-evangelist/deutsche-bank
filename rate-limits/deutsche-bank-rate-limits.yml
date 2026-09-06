@@ -4,89 +4,63 @@ schema: https://raw.githubusercontent.com/api-evangelist/interface-research/main
 provider: Deutsche Bank
 providerId: deutsche-bank
 created: '2026-05-04'
-# Provenance stamped 2026-08-11: this artifact was written by the API Evangelist
-# bulk sweep dated 2026-05-04, not harvested from the provider. See roadmap#35.
-method: generated
-modified: '2026-05-04'
+modified: '2026-09-06'
+generated: '2026-09-06'
+method: searched
+source: >-
+  https://developer.db.com/apidocumentation + openapi/ (36 first-party OpenAPI documents,
+  195 operations) + https://developer.db.com/faq
 tags:
   - Banking
   - Financial
-  - Wealth Management
   - Open Banking
-  - PSD2
   - Rate Limiting
-  - Quotas
-  - Throttling
-description: Machine-readable rate limit definitions for the Deutsche Bank API surface. Captures per-tier
-  quotas, burst behavior, response signaling, and recovery semantics. Defaults are scaffold values to
-  be replaced with published provider limits.
-headers:
-  limit: X-RateLimit-Limit
-  remaining: X-RateLimit-Remaining
-  reset: X-RateLimit-Reset
-  retryAfter: Retry-After
-  policy: RateLimit-Policy
-responseCodes:
-  throttled: 429
-  quotaExceeded: 429
-  serviceUnavailable: 503
-limits:
-  - tier: free
-    name: Free Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 10
-    burst: 20
-    timeFrame: minute
-    applies:
-      - Deutsche Bank API Program
-  - tier: free
-    name: Free Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
+description: >-
+  Deutsche Bank publishes NO rate limits for the dbAPI programme. This file replaces a
+  2026-05-04 bulk-sweep scaffold that asserted 10/100/1000 requests-per-minute tiers and a
+  full X-RateLimit-* header set - none of which Deutsche Bank publishes or returns. The
+  honest finding is a zero, and it is a real gap for any agent integrating this estate: there
+  is no runtime signal to back off on.
+limit_count: 0
+headers: {}
+responseCodes: {}
+limits: []
+evidence:
+  - check: 429 response declared in any published operation
+    result: none
+    detail: No 4xx response with status 429 appears in any of the 36 specs (195 operations).
+  - check: Retry-After response header
+    result: none
+  - check: X-RateLimit-* / RateLimit-* response headers
+    result: none
+  - check: quota or throttling language in the portal documentation
+    result: none
+    detail: >-
+      The full developer documentation model (docs.model.json, 142 KB, nine guide sections)
+      contains no occurrence of "rate limit", "throttle", "quota", "429" or "Retry-After".
+  - check: quota language in the published FAQ
+    result: none
+  - check: per-tier quota on a pricing page
+    result: none
+    detail: There is no pricing page. See plans/deutsche-bank-plans-pricing.yml.
+observed_limits:
+  - scope: sandbox test-data upload (developer portal, not the API)
     limit: 1000
-    timeFrame: month
-    applies:
-      - Deutsche Bank API Program
-  - tier: professional
-    name: Professional Tier Default
-    scope: api-key
-    metric: requests_per_minute
-    limit: 100
-    burst: 200
-    timeFrame: minute
-    applies:
-      - Deutsche Bank API Program
-  - tier: professional
-    name: Professional Tier Monthly Quota
-    scope: api-key
-    metric: requests_per_month
-    limit: 100000
-    timeFrame: month
-    applies:
-      - Deutsche Bank API Program
-  - tier: enterprise
-    name: Enterprise Negotiated Limit
-    scope: contract
-    metric: requests_per_minute
-    limit: 1000
-    burst: 5000
-    timeFrame: minute
-    applies:
-      - Deutsche Bank API Program
-policies:
-  - name: Backoff Strategy
-    description: Clients should implement exponential backoff with jitter, honoring the Retry-After header
-      when present.
-  - name: Burst Handling
-    description: Short bursts above the steady-state limit are tolerated up to the documented burst ceiling
-      before throttling engages.
-  - name: Quota Reset
-    description: Monthly quotas reset at the start of each calendar month in UTC. Per-minute and per-second
-      windows reset on a sliding-window basis.
-  - name: Fair Use
-    description: Even on uncapped enterprise tiers, sustained usage that materially impacts shared infrastructure
-      may be subject to fair-use throttling.
+    unit: transactions per bulk upload file
+    behaviour: A JSON file containing more than 1000 transactions is rejected.
+    source: https://developer.db.com/apidocumentation/apigettingstartedguide/testdata
+  - scope: sandbox test-data upload concurrency
+    limit: 1
+    unit: bulk upload process per developer account
+    source: https://developer.db.com/apidocumentation/apigettingstartedguide/testdata
+notes:
+  - >-
+    Production capacity is presumably set in the bilateral go-live agreement rather than
+    published; that is a commercial choice, not an omission we can fill in.
+  - >-
+    Because there is no 429 contract, a client cannot distinguish throttling from a 500. The
+    only retry guidance derivable from the contract is: retry a 500 with the SAME
+    idempotency-id where the operation declares one.
 maintainers:
   - FN: Kin Lane
     email: kin@apievangelist.com

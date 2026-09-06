@@ -1,0 +1,1000 @@
+specification: API Commons Error Catalog
+specificationVersion: '0.1'
+provider: Deutsche Bank
+providerId: deutsche-bank
+generated: '2026-09-06'
+method: derived
+source: openapi/ (36 first-party Deutsche Bank OpenAPI 3.0.x documents, 4xx/5xx response examples)
+docs: https://developer.db.com/apiexplorer
+description: >-
+  Deutsche Bank's dbAPI does not use RFC 9457 problem+json. It returns a proprietary
+  application/json envelope with a NUMERIC error code, a human message and an internal
+  messageId, and it publishes the full code registry inside the OpenAPI documents
+  themselves as response examples. This catalogue is the union of every distinct numeric
+  code found across the 36 published specs - 190 codes.
+format: proprietary
+rfc9457: false
+envelope:
+  content_type: application/json
+  schema: ErrorResponse / ErrorModel (identical shape in every spec)
+  required:
+    - code
+    - message
+  fields:
+    - name: code
+      type: integer
+      description: The error code.
+    - name: message
+      type: string
+      description: Description of the belonging error code.
+    - name: messageId
+      type: string
+      description: dbAPI internal message-id (unique identifier) that allows reference to each API call.
+code_count: 190
+bands:
+  - name: validation and request semantics
+    count: 40
+  - name: business rules and account state
+    count: 95
+  - name: payment initiation and SEPA processing
+    count: 33
+  - name: account opening eligibility
+    count: 9
+  - name: document and format handling
+    count: 2
+  - name: other
+    count: 11
+error_codes:
+  - code: 1
+    message: "The given minimumAge is not in the list of possible ages."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-ageCertificate-v1"]
+  - code: 2
+    message: "Invalid value: mTanMobileNumber must match \\+[1-9]\\d{6,14}$."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1", "dbapi-cashAccounts-v2", "dbapi-creditCardTransactions-v1", "dbapi-creditCards-v1"]
+  - code: 3
+    message: "The server encountered an internal error and was unable to complete your request. Please try again."
+    http_status: ["400", "500"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1", "dbapi-cashAccounts-v2", "dbapi-creditCardTransactions-v1", "dbapi-creditCards-v1"]
+  - code: 4
+    message: "Customer rejected."
+    http_status: ["422"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 5
+    message: "Must provide at least two multiparts: \"processingOrder\" and 1-n parts with part name equal to processingOrder.documentMetadata[].documentName."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-processingOrders-v1", "dbapi-processingOrders-v2"]
+  - code: 6
+    message: "Input error."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1", "dbapi-processingOrders-v1", "dbapi-processingOrders-v2"]
+  - code: 7
+    message: "Missing mandatory attribute or object."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 8
+    message: "Only account products AktivKonto or BestKonto or JungesKonto allowed."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1", "dbapi-processingOrders-v1", "dbapi-processingOrders-v2"]
+  - code: 9
+    message: "Account Currency may only be Euro."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 10
+    message: "Only private customers allowed."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 11
+    message: "No Schufa consent was given."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 12
+    message: "Missing end date for JungesKonto."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 13
+    message: "No SMS will be sent for community accounts."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 14
+    message: "Mobile number required for sending SMS."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 15
+    message: "Account product JungesKonto not allowed for community accounts."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 16
+    message: "Community account can only be created in branches."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1", "dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 17
+    message: "Self-employed customers not allowed."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1", "dbapi-cashAccounts-v2", "dbapi-creditCardTransactions-v1", "dbapi-creditCards-v1"]
+  - code: 18
+    message: "Invalid identification process type."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1", "dbapi-transactionAnalysis-v1", "dbapi-transactions-v2"]
+  - code: 19
+    message: "Credit card product not allowed for this client."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 20
+    message: "Debit card product not allowed for this client."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 21
+    message: "Debit mastercard product not allowed for this client."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 50
+    message: "Cash account opening request contains invalid contracting bank."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 51
+    message: "Communication address not allowed in request."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 52
+    message: "Solvency information is required if any loan products (credit card or overdraft credit) are included."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 53
+    message: "Community accounts require 2 customers."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 54
+    message: "Community details are required for joint account opening."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 55
+    message: "Cash account opening request contains invalid account product."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 56
+    message: "Cash account opening request contains invalid credit card product."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 57
+    message: "Cash account opening request contains invalid debit mastercard product."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 58
+    message: "Digital services required for 2 customers."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 59
+    message: "Cash account opening request missing contracting bank."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 60
+    message: "Self-employment information not allowed for employed customer."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 61
+    message: "Employment information not allowed for self-employed customer."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 62
+    message: "German and non-German taxpayer indications are contradictory."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 63
+    message: "Cash account opening request contains invalid savings product."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 64
+    message: "Missing redirect URL for Legitimation as a Service (LaaS)."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 65
+    message: "Redirect URL for Legitimation as a Service (LaaS) not allowed."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 66
+    message: "Missing notification URL."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 67
+    message: "Notification URL not allowed when \"receiveStatusNotifications\" flag is false."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 68
+    message: "Invalid promotion id."
+    http_status: ["400"]
+    band: "validation and request semantics"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 100
+    message: "Can't use securityAccountId for performance, cashFlowProjection and portfolioOverview."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-reports-v1", "dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2"]
+  - code: 101
+    message: "Invalid value for parameter portfolioId or securityAccountId."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-assets-v1", "dbapi-investments-earningTransactions-v1", "dbapi-investments-performances-v1", "dbapi-investments-reports-v1"]
+  - code: 102
+    message: "Invalid value for parameter externalOrderReference or securityAccountId."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2", "dbapi-transactionAuthorization-v1"]
+  - code: 103
+    message: "Not authorized to access PortfolioId or securityAccountId."
+    http_status: ["400", "403"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-assets-v1", "dbapi-investments-earningTransactions-v1", "dbapi-investments-performances-v1", "dbapi-investments-reports-v1"]
+  - code: 104
+    message: "No valid PortfolioId or securityAccountId."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-assets-v1", "dbapi-investments-earningTransactions-v1", "dbapi-investments-performances-v1", "dbapi-investments-reports-v1"]
+  - code: 105
+    message: "startDate is greater than or equal to endDate."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-assets-v1", "dbapi-investments-earningTransactions-v1", "dbapi-investments-performances-v1", "dbapi-investments-reports-v1"]
+  - code: 106
+    message: "endDate is a future date - must be less or equal to current date."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-performances-v1", "dbapi-investments-reports-v1"]
+  - code: 107
+    message: "startDate is a future date - must be less or equal to current date."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-performances-v1", "dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2"]
+  - code: 108
+    message: "Performance calculation not possible due to an average capital of zero."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-performances-v1", "dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2"]
+  - code: 109
+    message: "Max number of records exceeded. Please change request parameter."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-earningTransactions-v1", "dbapi-investments-securityTransactions-v1", "dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2"]
+  - code: 110
+    message: "clientID not authorized."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-assets-v1", "dbapi-investments-earningTransactions-v1", "dbapi-investments-performances-v1", "dbapi-investments-securityTransactions-v1"]
+  - code: 111
+    message: "2FA method is not ACTIVE."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2", "dbapi-transactionAuthorization-v1"]
+  - code: 112
+    message: "The uploaded document does not meet file size requirements. Please check and try again."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2", "dbapi-transactionAuthorization-v1"]
+  - code: 113
+    message: "The uploaded document exceeds the maximum allowed file size. Please check and try again."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2", "dbapi-transactionAuthorization-v1"]
+  - code: 114
+    message: "Unable to identify transaction by Id."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-cashAccounts-v2", "dbapi-creditCardTransactions-v1", "dbapi-creditCards-v1", "dbapi-customerSolvency-v1"]
+  - code: 117
+    message: "Date range (period) has to be in same calendar year."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-reports-v1"]
+  - code: 118
+    message: "Body contains no report - at least one report required."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-reports-v1"]
+  - code: 119
+    message: "AggregatedCost/DetailedCost report: earliest year available is 2018."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-reports-v1"]
+  - code: 120
+    message: "CashFlowProjection report: date must be in future."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-reports-v1"]
+  - code: 126
+    message: "Organizations are currently not supported."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-creditCards-v1"]
+  - code: 127
+    message: "Booking date from must precede booking date to."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-cashAccounts-v2", "dbapi-creditCardTransactions-v1", "dbapi-creditCards-v1", "dbapi-customerSolvency-v1"]
+  - code: 129
+    message: "Invalid processing order request/data, one or more fields failed validation"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-processingOrders-v1", "dbapi-processingOrders-v2"]
+  - code: 130
+    message: "Please choose a date range according to the lifetime of the account where assets exist"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-performances-v1", "dbapi-investments-reports-v1"]
+  - code: 131
+    message: "Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-cashAccounts-v2", "dbapi-creditCardTransactions-v1", "dbapi-creditCards-v1", "dbapi-customerSolvency-v1"]
+  - code: 132
+    message: "not supported"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 137
+    message: "Invalid document upload request - must be exactly one multipart"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-processingOrders-v1", "dbapi-processingOrders-v2"]
+  - code: 138
+    message: "it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 139
+    message: "it seems that you started a pushTAN challenge. Please use the GET endpoint to continue"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 322
+    message: "Application data not found"
+    http_status: ["404"]
+    band: "business rules and account state"
+    specs: ["dbapi-banking-cashAccountOpenings-v1"]
+  - code: 401
+    message: "The requested function requires a SCA Level Authentication."
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-cashAccounts-v2", "dbapi-creditCardTransactions-v1", "dbapi-creditCards-v1", "dbapi-customerSolvency-v1"]
+  - code: 601
+    message: "Order deletion/modification not allowed due to order state."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 602
+    message: "Multiple positions exist. Please contact your personal bank advisor."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 603
+    message: "Insufficient stock"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 604
+    message: "Security data not found"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 605
+    message: "Missing authorization"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 606
+    message: "Quantity not tradeable"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 607
+    message: "No suitable position found"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 609
+    message: "Only one price should be provided for the order limit"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 610
+    message: "The order exceeds the maximum available quota: Free quota: {freeQuota}"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 611
+    message: "Not enough securities with minimum holding period available"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 613
+    message: "Ordering quotas of OEREFs (Open-Ended Real Estate Funds) bought after 21.07.2013 and cannot be returned"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 614
+    message: "Ordering quotas of OEREFs (Open-Ended Real Estate Funds) bought partly after 21.07.2013 and cannot be returned"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 615
+    message: "Security not tradeable"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 616
+    message: "Order not in orderbook"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 617
+    message: "Minimum order amount not reached"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 620
+    message: "CashAccount does not exist"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 621
+    message: "Customer is not allowed to order"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 622
+    message: "Security Account is not valid for orders"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 623
+    message: "Liquidity not sufficient for order"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 624
+    message: "MarketPlace does not exist"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 633
+    message: "SecurityAccount does not exist"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 634
+    message: "ExpiryDate is before current date"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 635
+    message: "Invalid blockingDate"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 636
+    message: "ExpiryDate must be a business day"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 637
+    message: "Setting a limit when ordering over the capital management company is not possible"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 638
+    message: "Setting an expiry date when ordering over the capital management company is not possible"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 639
+    message: "Either WKN or ISIN must be provided"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 640
+    message: "invalid preview Signature"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 641
+    message: "preview Signature expired"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 642
+    message: "preview Signature order parameter mismatch"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 643
+    message: "Unique external order reference missing"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 644
+    message: "Order type is not allowed for user"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 645
+    message: "User not allowed to use (2FA) session"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 646
+    message: "Daily order limit exceeded"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 647
+    message: "2FA for session renewal required. Limit exceeded"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 648
+    message: "2FA for session renewal required. Time exceeded"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 649
+    message: "2FA for session renewal required. Transaction count greater than max transaction count"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 650
+    message: "Business authorisation issue. Cash account not found"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 651
+    message: "Business authorisation issue. Security account not found"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 652
+    message: "Business authorisation issue. Partner ID not found"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 653
+    message: "Business authorisation issue. Client ID setup incorrect"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 654
+    message: "Invalid limit price/stop price."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 655
+    message: "The order is part of a bulk order and cannot be changed."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 656
+    message: "addOns.expiryDate not allowed with type of addOns.restriction"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 657
+    message: "OTC market place not allowed"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 658
+    message: "Maximum addOns.expiryDate exceeded."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 659
+    message: "Token doesn't exist"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 660
+    message: "No price returned by PriceModule"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 661
+    message: "BestEx could not be retrieved for holding recommendation"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 662
+    message: "No data for given wkn found"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 664
+    message: "Mismatching ccy for the given security"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 665
+    message: "Security not tradeable with market place"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 666
+    message: "Best Execution stock market could not be determined"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 667
+    message: "Portfolio not found"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 668
+    message: "Security data not found"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 669
+    message: "Backend responded with an unexpected SA Key"
+    http_status: ["500"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 670
+    message: "Market place ID not provided"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1", "dbapi-transactionAuthorization-v1"]
+  - code: 671
+    message: "The order cannot be cancelled, it is already executed."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 672
+    message: "Investment decider rejected"
+    http_status: ["401"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 673
+    message: "Investment decider was not provided"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 699
+    message: "reportToken doesn't exist"
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 700
+    message: "No credit card transaction data found. Please try again later."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-creditCardTransactions-v1"]
+  - code: 701
+    message: "validation not successful: consent information is not available, but required."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 702
+    message: "validation not successful: consent information cannot be validated completely."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 703
+    message: "The user\u2019s investment decision experience rating needs to be updated. The required steps can be performed within the Online Banking."
+    http_status: ["400"]
+    band: "business rules and account state"
+    specs: ["dbapi-investments-orders-v1"]
+  - code: 1005
+    message: "Generic backend error."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1006
+    message: "Subscription clientId not found."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1007
+    message: "Invalid date format. Please use ISO 8601 format (yyyy-MM-dd)."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1008
+    message: "A request with the same idempotency key has already been processed."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1009
+    message: "Invalid filter criteria provided."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1010
+    message: "Invalid expiration date provided."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1011
+    message: "Invalid notification URL provided."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1012
+    message: "Invalid subscription activation request."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1013
+    message: "Concurrent modification detected. Please retry the request."
+    http_status: ["409"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1014
+    message: "Subscription not found."
+    http_status: ["404"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 1015
+    message: "Too many subscriptions."
+    http_status: ["400"]
+    band: "other"
+    specs: ["dbapi-subscriptions-v1"]
+  - code: 6500
+    message: "Parameters in the url or content type are incorrect, please check and retry."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6501
+    message: "Contracting bank details are Invalid or Missing."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6502
+    message: "The accepted instructed amount currency is EUR. Please correct your entry and try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6503
+    message: "Parameters submitted are missing or invalid."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6504
+    message: "The parameters in the request do not match the initial request."
+    http_status: ["404"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6505
+    message: "Invalid execution date."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6506
+    message: "The IdempotencyId already being used."
+    http_status: ["409"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6507
+    message: "Cancellation is not allowed for this transaction."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6508
+    message: "SEPA payment not found."
+    http_status: ["404"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6509
+    message: "The parameter in the request does not match with the latest Auth id."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6510
+    message: "Current status does not allow second factor update with the action provided."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6511
+    message: "Invalid execution date."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6512
+    message: "Invalid value: dateOfSignature must match yyyy-MM-dd format."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-sepaDirectDebit-v1"]
+  - code: 6513
+    message: "Invalid value: requestedCollectionDate must match yyyy-MM-dd format."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-sepaDirectDebit-v1"]
+  - code: 6514
+    message: "The signature date of the mandate is in the future. Please correct your entry and try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-sepaDirectDebit-v1"]
+  - code: 6515
+    message: "The source iban or account type is invalid."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6516
+    message: "Cancellation is not allowed for this transaction."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6517
+    message: "The accepted creditor account currency is EUR. Please correct your entry and try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6518
+    message: "The requested collection date should not be a public holiday or in the weekends. Please try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6519
+    message: "The requested execution date should not be greater than 90 days in the future. Please try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6520
+    message: "Invalid value: requestedExecutionDate must match yyyy-MM-dd format."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3"]
+  - code: 6521
+    message: "The accepted debtor account currency is EUR. Please correct your entry and try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6523
+    message: "There is no legal entity present for the source iban. Please correct your entry and try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6524
+    message: "You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6525
+    message: "The group header control sum does not match the total of all transactions amounts. Please try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3"]
+  - code: 6526
+    message: "Invalid value: createDateTime must match yyyy-MM-dd'T'HH:mm:ss format."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3"]
+  - code: 6527
+    message: "The payment information control sum does not match the total amount of transactions in this block. Please try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3"]
+  - code: 6528
+    message: "The group header transaction count does not match the total number of transactions provided. Please try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3"]
+  - code: 6529
+    message: "The payment information transaction count does not match the total number of transactions provided in this block. Please try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3"]
+  - code: 6531
+    message: "Amount must have at most 2 decimal places"
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-payments-sepaInstantCreditTransfer-v3", "dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6532
+    message: "The customer is not eligible to opt out of VOP"
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 6533
+    message: "Only 'SLEV' is allowed for the charge bearer field. Please update the value and try again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-sepaCreditTransfer-v3"]
+  - code: 6534
+    message: "MFA session expired for payment creation. Please re-initiate the payment process again."
+    http_status: ["400"]
+    band: "payment initiation and SEPA processing"
+    specs: ["dbapi-sepaCreditTransfer-v3", "dbapi-sepaDirectDebit-v1"]
+  - code: 7001
+    message: "The client should have a German address."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7002
+    message: "The client should be a German citizen."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7003
+    message: "The client should be at least 18 years old."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7004
+    message: "The client cannot have US citizenship, US green card, or be born in the US."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7005
+    message: "The client should be German or non-German taxpayer."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7006
+    message: "Taxpayer information not set for a non-German taxpayer."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7007
+    message: "Non-German taxpayer information set for a Germany-only taxpayer."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7008
+    message: "Taxpayer information not set for a German taxpayer."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 7009
+    message: "German taxpayer information set for a non-German taxpayer."
+    http_status: ["400"]
+    band: "account opening eligibility"
+    specs: ["dbapi-investments-espSecuritiesAccounts-v1"]
+  - code: 9007
+    message: "Invalid currency code"
+    http_status: ["400"]
+    band: "document and format handling"
+    specs: ["dbapi-cashAccounts-v2"]
+  - code: 9010
+    message: "The uploaded document does not meet pdf-format requirements. Please check and try again."
+    http_status: ["400"]
+    band: "document and format handling"
+    specs: ["dbapi-loanOffers-privatebanking-v1", "dbapi-loanOffers-privatebanking-v2"]
+maintainers:
+  - FN: Kin Lane
+    email: kin@apievangelist.com

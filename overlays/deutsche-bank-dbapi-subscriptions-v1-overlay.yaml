@@ -1,0 +1,98 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for dbapi-subscriptions
+  version: 1.0.0
+extends: ../openapi/deutsche-bank-dbapi-subscriptions-v1.json
+x-generated: '2026-09-06'
+x-method: generated
+x-source: openapi/deutsche-bank-dbapi-subscriptions-v1.json + this repository's derived artifacts
+actions:
+- target: $.info
+  update:
+    x-apievangelist:
+      provider: deutsche-bank
+      harvested: '2026-09-06'
+      harvested-from: https://simulator-api.db.com/gw/public/dbapi/swaggers/v1/dbapi-subscriptions-v1/swagger
+      artifacts:
+        authentication: authentication/deutsche-bank-authentication.yml
+        scopes: scopes/deutsche-bank-scopes.yml
+        conventions: conventions/deutsche-bank-conventions.yml
+        errors: errors/deutsche-bank-error-codes.yml
+        lifecycle: lifecycle/deutsche-bank-lifecycle.yml
+        sandbox: sandbox/deutsche-bank-sandbox.yml
+- target: $.info
+  update:
+    x-rate-limits:
+      published: false
+      note: No 429, no Retry-After and no RateLimit-* header is declared in this contract or documented
+        by the provider.
+      artifact: rate-limits/deutsche-bank-rate-limits.yml
+    x-error-format:
+      rfc9457: false
+      envelope: '{ code: integer, message: string, messageId: string }'
+      registry: errors/deutsche-bank-error-codes.yml
+- target: $.servers
+  update:
+  - url: https://api.db.com/gw/dbapi/notifications/subscriptions/v1
+    description: Production - Deutsche Bank tenant (documented at https://developer.db.com/apidocumentation/apigettingstartedguide/golive).
+      The harvested contract ships only the simulation server.
+- target: $.paths['/investments/orders'].post
+  update:
+    x-idempotency:
+      supported: true
+      header: idempotency-id
+      conflict:
+        status: 409
+        code: 6506
+      note: Replay-protected.
+- target: $.paths['/investments/orders/{subscriptionId}'].delete
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/investments/orders/{subscriptionId}'].patch
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/investments/{subscriptionId}'].patch
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/transactions'].post
+  update:
+    x-idempotency:
+      supported: true
+      header: idempotency-id
+      conflict:
+        status: 409
+        code: 6506
+      note: Replay-protected.
+- target: $.paths['/transactions/{subscriptionId}'].delete
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/transactions/{subscriptionId}'].patch
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.
+- target: $.paths['/{subscriptionId}'].patch
+  update:
+    x-idempotency:
+      supported: false
+      header: null
+      conflict: null
+      note: NOT replay-protected - this write declares no idempotency header. Read state back before retrying.

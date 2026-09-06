@@ -1,0 +1,560 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "dbapi-partners",
+    "description" : "Allows you to check your customer’s personal information such as first name, last name or date of birth.",
+    "termsOfService" : "https://developer.db.com/termsandconditions",
+    "contact" : {
+      "url" : "https://developer.db.com/contact",
+      "email" : "bank.api@db.com"
+    },
+    "version" : "v2"
+  },
+  "servers" : [ {
+    "url" : "https://simulator-api.db.com:443/gw/dbapi/referenceData/partners/v2"
+  } ],
+  "tags" : [ {
+    "name" : "Partners",
+    "description" : "Allows you to check your customer’s personal information such as first name, last name or date of birth."
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Partners" ],
+        "summary" : "Retrieves personal information about the customer.",
+        "description" : "Retrieves personal information (e.g. first name, last name, date of birth and more) about the currently authorized customer.",
+        "operationId" : "getPartners",
+        "parameters" : [ {
+          "name" : "otp",
+          "in" : "header",
+          "description" : "The one-time password, to gain access to sensitive data",
+          "required" : false,
+          "style" : "simple",
+          "explode" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "Correlation-Id",
+          "in" : "header",
+          "description" : "Free form key controlled by the caller e.g. uuid",
+          "required" : false,
+          "schema" : {
+            "maxLength" : 50,
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "required" : [ "partners", "totalItems" ],
+                  "type" : "object",
+                  "properties" : {
+                    "totalItems" : {
+                      "minimum" : 0,
+                      "type" : "integer",
+                      "description" : "Total number of items found for your request parameters.",
+                      "format" : "int32"
+                    },
+                    "partners" : {
+                      "type" : "array",
+                      "items" : {
+                        "$ref" : "#/components/schemas/Partner"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "default" : {
+            "description" : "unsuccessful operation",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security" : [ {
+          "api_auth_code" : [ "read_partners", "read_partners_legi", "read_additional_personal_data", "read_customer_data", "read_additional_organization_data", "read_ownership_information", "read_check_information", "read_legal_representatives_data" ]
+        } ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "PhoneNumber" : {
+        "type" : "object",
+        "properties" : {
+          "communicationType" : {
+            "type" : "string",
+            "description" : "Type of Phonenumber",
+            "enum" : [ "BUSINESS_PHONE", "PRIVATE_PHONE", "MOBILE_PHONE", "FAX" ]
+          },
+          "internationalAreaCode" : {
+            "type" : "string",
+            "description" : "International area code"
+          },
+          "areaCode" : {
+            "type" : "string",
+            "description" : "Area code"
+          },
+          "telephoneNumber" : {
+            "type" : "string",
+            "description" : "Telephone or fax number"
+          }
+        },
+        "description" : "Phonenumber with type Business, Private, Mobile. For Organizations also Fax."
+      },
+      "EmailAddress" : {
+        "type" : "object",
+        "properties" : {
+          "emailAddressType" : {
+            "type" : "string",
+            "description" : "Type of EmailAddress",
+            "enum" : [ "PRIVATE_ADDRESS", "BUSINESS_ADDRESS" ]
+          },
+          "emailAddress" : {
+            "type" : "string",
+            "description" : "Email address"
+          }
+        },
+        "description" : "Email-Address with type PRIVATE_ADDRESS, BUSINESS_ADDRESS."
+      },
+      "TradeRegisterEntry" : {
+        "type" : "object",
+        "properties" : {
+          "localCourt" : {
+            "type" : "string",
+            "description" : "The local court where the organization was registered.",
+            "example" : "Amtsgericht Hamburg"
+          },
+          "legalForm" : {
+            "type" : "string",
+            "description" : "Legal form of the organization",
+            "example" : "AG - Aktiengesellschaft"
+          },
+          "number" : {
+            "type" : "string",
+            "description" : "Trade register number of the organization",
+            "example" : "B2533"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Trade register number type of the organization",
+            "example" : "HRA"
+          }
+        },
+        "description" : "Information on the organization's trade register entry"
+      },
+      "TaxIdentification" : {
+        "title" : "TaxIdentification",
+        "type" : "object",
+        "properties" : {
+          "country" : {
+            "type" : "string",
+            "description" : "The country for which the document has been issued."
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Identification type",
+            "enum" : [ "ECONOMIC_ID", "GENERIC_TAX_ID", "TAX_ID" ]
+          },
+          "number" : {
+            "type" : "string",
+            "description" : "Identification number"
+          }
+        }
+      },
+      "Affiliation" : {
+        "type" : "object",
+        "properties" : {
+          "naceCode" : {
+            "type" : "string",
+            "description" : "NACE code describing the industry sector the organization is engaged in"
+          },
+          "isMainIndustry" : {
+            "type" : "boolean",
+            "description" : "True if this industry is the main sector the organization is engaged in, false otherwise."
+          },
+          "percentage" : {
+            "type" : "integer",
+            "description" : "The stake of the sector the organization is engaged in, as percentage (without fraction)."
+          }
+        },
+        "description" : "Describes an industry sector the organization is engaged in"
+      },
+      "Partner" : {
+        "required" : [ "partnerType" ],
+        "type" : "object",
+        "properties" : {
+          "partnerType" : {
+            "type" : "string",
+            "description" : "Definition of the partner type",
+            "enum" : [ "NATURAL_PERSON", "COMMUNITY", "ORGANIZATION" ]
+          },
+          "contractingBank" : {
+            "type" : "string",
+            "description" : "The contracting bank the partner belongs to",
+            "enum" : [ "DEUTSCHE_BANK_AG", "DEUTSCHE_BANK_PGK", "NORISBANK" ]
+          },
+          "naturalPerson" : {
+            "$ref" : "#/components/schemas/NaturalPerson"
+          },
+          "community" : {
+            "$ref" : "#/components/schemas/Community"
+          },
+          "organization" : {
+            "$ref" : "#/components/schemas/Organization"
+          },
+          "emailAddresses" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EmailAddress"
+            }
+          },
+          "phoneNumbers" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PhoneNumber"
+            }
+          },
+          "additionalPersonalData" : {
+            "title" : "AdditionalPersonalData",
+            "type" : "object",
+            "properties" : {
+              "taxIdentifications" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/components/schemas/TaxIdentification"
+                }
+              }
+            }
+          }
+        },
+        "description" : "Personal data belonging to a partner which can be one of the definitions Natural Person, Community or Organization."
+      },
+      "Community" : {
+        "required" : [ "communityName" ],
+        "type" : "object",
+        "properties" : {
+          "communityName" : {
+            "type" : "string",
+            "description" : "Name of the Community."
+          }
+        },
+        "description" : "A partner and the specific details for this community e.g. married couple."
+      },
+      "Organization" : {
+        "required" : [ "organizationName" ],
+        "type" : "object",
+        "properties" : {
+          "organizationName" : {
+            "type" : "string",
+            "description" : "Name of the Organization."
+          },
+          "foundationDate" : {
+            "type" : "string",
+            "description" : "Date when the organization was found, in the format YYYY-MM-DD.",
+            "format" : "date"
+          },
+          "lastReviewDate" : {
+            "type" : "string",
+            "description" : "Date of last kyc review",
+            "format" : "date"
+          },
+          "businessPhone" : {
+            "$ref" : "#/components/schemas/PhoneNumber"
+          },
+          "tradeRegisterEntry" : {
+            "$ref" : "#/components/schemas/TradeRegisterEntry"
+          },
+          "taxIdentifications" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaxIdentification"
+            }
+          },
+          "affiliations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Affiliation"
+            }
+          },
+          "representativeFunctions" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/RepresentativeFunction"
+            }
+          },
+          "uboInformations" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/UboInformation"
+            }
+          }
+        },
+        "description" : "A partner and the specific details for this organization e.g. Company ABC."
+      },
+      "RepresentativeFunction" : {
+        "type" : "object",
+        "properties" : {
+          "firstName" : {
+            "type" : "string",
+            "description" : "First name of the representative",
+            "example" : "John"
+          },
+          "lastName" : {
+            "type" : "string",
+            "description" : "Last name of the representative",
+            "example" : "Doe"
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "description" : "Birth date of the partner. In the format YYYY-MM-DD."
+          },
+          "representativeFunction" : {
+            "type" : "string",
+            "description" : "Contains the function description of the representative",
+            "example" : "Vorstandsmitglied"
+          },
+          "nationalities" : {
+            "type" : "array",
+            "description" : "Nationalities of representative.",
+            "items" : {
+              "$ref" : "#/components/schemas/Nationality"
+            }
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/Address"
+          }
+        },
+        "description" : "Representatives of the organization"
+      },
+      "UboInformation" : {
+        "type" : "object",
+        "properties" : {
+          "naturalPerson" : {
+            "$ref" : "#/components/schemas/NaturalPerson"
+          },
+          "address" : {
+            "$ref" : "#/components/schemas/Address"
+          },
+          "types" : {
+            "type" : "array",
+            "description" : "Positions with Company",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "description" : "Information about the ultimate beneficial owner"
+      },
+      "Nationality" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "description" : "Country code"
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "Type of nationality",
+            "enum" : [ "NATIONALITY", "FIRST_NATIONALITY", "NATIONALITY_USA_TERRITORY" ]
+          }
+        }
+      },
+      "ErrorResponse" : {
+        "required" : [ "code", "message" ],
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "integer",
+            "description" : "The error code"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "Description of the belonging error code."
+          },
+          "messageId" : {
+            "type" : "string",
+            "description" : "dbAPI internal message-id (unique identifier) that allow reference to each of your API calls."
+          }
+        },
+        "description" : "Default error response message"
+      },
+      "NaturalPerson" : {
+        "required" : [ "dateOfBirth", "dbAPIauthenticatedUser", "firstName", "gender", "lastName" ],
+        "type" : "object",
+        "properties" : {
+          "firstName" : {
+            "type" : "string",
+            "description" : "First name of the partner"
+          },
+          "lastName" : {
+            "type" : "string",
+            "description" : "Last name of the partner"
+          },
+          "dateOfBirth" : {
+            "type" : "string",
+            "description" : "Birth date of the partner. In the format YYYY-MM-DD."
+          },
+          "birthCountry" : {
+            "type" : "string",
+            "description" : "Birth country of the partner."
+          },
+          "gender" : {
+            "type" : "string",
+            "description" : "Gender of the partner",
+            "enum" : [ "MALE", "FEMALE", "UNKNOWN" ]
+          },
+          "academicTitle" : {
+            "type" : "string",
+            "description" : "Academic title of the partner."
+          },
+          "titleOfNobility" : {
+            "type" : "string",
+            "description" : "Title of nobility."
+          },
+          "nationality" : {
+            "type" : "string",
+            "description" : "Nationality of partner."
+          },
+          "birthName" : {
+            "type" : "string",
+            "description" : "Birthname of partner."
+          },
+          "birthPlace" : {
+            "type" : "string",
+            "description" : "Birthplace of partner."
+          },
+          "legitimation" : {
+            "$ref" : "#/components/schemas/Legitimation"
+          },
+          "pep" : {
+            "type" : "boolean",
+            "description" : "Indicates if the partner is a politically exposed person."
+          },
+          "dbAPIauthenticatedUser" : {
+            "type" : "boolean",
+            "description" : "This flag indicates if the currently via dbAPI authenticated user is this Partner."
+          }
+        },
+        "description" : "A partner and the specific details for this natural person."
+      },
+      "Legitimation" : {
+        "required" : [ "documentIssueDate", "documentIssuingAuthority", "documentNumber", "documentType" ],
+        "type" : "object",
+        "properties" : {
+          "documentType" : {
+            "type" : "integer",
+            "description" : "Document type:\n\n\n 0 = Unknown\n 1 = ID card Germany/EU/Switzerland\n 2 = Passport\n 3 = Pass\n 4 = Child's ID card\n 5 = Preliminary German ID card\n 6 = Certificate according to § 63 AsylVfG\n 7 = Passport substitute for foreigner according to § 39 AuslG\n 8 = Birth certificate\n 9 = Official personnel entry in company register\n 11 = Official seal\n 13 = Diplomatic passport\n 14 = Ministerial passport\n 15 = Passport according § 14 DVO-AuslG\n 20 = Preliminary German passport\n 21 = Business old age pension scheme\n 22 = Stock ownership plan\n 26 = Official Passport / Service Passport\n 27 = Travel document\n 28 = Replacement ID card\n 29 = Geneva Conventions ID card\n 30 = Release of disclosure\n 31 = Other document anti-money laundering\n",
+            "format" : "int32"
+          },
+          "documentNumber" : {
+            "type" : "string",
+            "description" : "Document number"
+          },
+          "documentIssueDate" : {
+            "type" : "string",
+            "description" : "Document issue date. In the format YYYY-MM-DD."
+          },
+          "documentIssuingAuthority" : {
+            "type" : "string",
+            "description" : "Document issuing authority"
+          },
+          "documentExpirationDate" : {
+            "type" : "string",
+            "description" : "Document expiration date. In the format YYYY-MM-DD."
+          },
+          "cavState" : {
+            "$ref" : "#/components/schemas/CavState"
+          }
+        },
+        "description" : "Legitimation of partner"
+      },
+      "CavState" : {
+        "required" : [ "state" ],
+        "type" : "object",
+        "properties" : {
+          "state" : {
+            "type" : "string",
+            "description" : "Cav status code",
+            "enum" : [ "APPROVED", "INPROGRESS", "NOTAVAILABLE" ]
+          },
+          "cavTimestamp" : {
+            "type" : "string",
+            "description" : "Timestamp of last cav status change. In the format YYYY-MM-DD-HH.MI.SS.FFFFFF"
+          }
+        },
+        "description" : "control and verification state information (kufStatus)"
+      },
+      "Address" : {
+        "required" : [ "city", "country", "houseNumber", "street", "zip" ],
+        "type" : "object",
+        "properties" : {
+          "street" : {
+            "type" : "string",
+            "description" : "Street"
+          },
+          "houseNumber" : {
+            "type" : "string",
+            "description" : "House number"
+          },
+          "zip" : {
+            "type" : "string",
+            "description" : "Zip code"
+          },
+          "city" : {
+            "type" : "string",
+            "description" : "City"
+          },
+          "country" : {
+            "type" : "string",
+            "description" : "Country (ISO code)"
+          },
+          "registeredResidence" : {
+            "type" : "boolean",
+            "description" : "Registered residence flag"
+          },
+          "addressType" : {
+            "type" : "string",
+            "description" : "Type of address",
+            "enum" : [ "PRIVATE_ADDRESS", "BUSINESS_ADDRESS" ]
+          }
+        },
+        "description" : "Address belonging to a user."
+      }
+    },
+    "securitySchemes" : {
+      "api_auth_code" : {
+        "type" : "oauth2",
+        "flows" : {
+          "authorizationCode" : {
+            "authorizationUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/authorize",
+            "tokenUrl" : "https://simulator-api.db.com:443/gw/oidc/oauth2/token",
+            "scopes" : {
+              "read_partners" : "Grants read access to basic data of the current partner/customer. The basic partner data contains, among other information, the first name, the surname and the birthdate for the given customer. There is some overlap between our /partners endpoint and the /userinfo endpoint provided by OpenID connect.",
+              "read_partners_legi" : "Grants read access to legitimation data of the current partner/customer. This data is only available for natural persons. Legitimation data contains information, e.g. about the document type, document number and document issue date for the given customer.",
+              "read_additional_personal_data" : "Grants read access to additional data about the partner. The additional data currently contains the tax identifications for the given customer.",
+              "read_customer_data" : "Performs personal data verification for the given customer.",
+              "read_additional_organization_data" : "Grants read access to additional organizational information about a partner representing a company. The additional data contains legal form, industry, local court, stakeholders and tax identification.",
+              "read_ownership_information" : "Information about ultimate beneficiary owners",
+              "read_check_information" : "Know-Your-Customer Information",
+              "read_legal_representatives_data" : "Information about legal representatives",
+              "openid" : "Request access to OpenId Connect functionality",
+              "offline_access" : "Request an OAuth2 Refresh Token"
+            }
+          }
+        }
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}
