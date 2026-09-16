@@ -24,6 +24,19 @@ tags:
 - Credit Cards
 - Merchant Solutions
 - Germany
+- Financial-Services
+tags_raw:
+- Banking
+- Financial
+- Wealth Management
+- Open Banking
+- PSD2
+- Payments
+- SEPA
+- Investments
+- Credit Cards
+- Merchant Solutions
+- Germany
 - Financial Services
 created: '2025-02-08'
 modified: '2026-09-06'
@@ -59,31 +72,16 @@ accessModel:
   generated: '2026-09-06'
   method: searched
 apis:
-- aid: deutsche-bank:deutsche-bank
-  name: Deutsche Bank API Program
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/deutsche-bank.png
-  description: The Deutsche Bank API Program (dbAPI) - 30 published OpenAPI contracts covering cash
-    accounts, transactions and transaction analysis, credit cards, SEPA credit transfer, instant
-    credit transfer and direct debit, securities accounts, assets, performance, orders and reports,
-    consumer loan offers, cash and securities account opening, processing orders, reference data
-    (partners, addresses, age certificate, customer verification, solvency), PSD2 strong customer
-    authentication, and an event notification service. Contracts are served from Deutsche Bank's
-    own public swagger catalogue and the same operations run for the Deutsche Bank, norisbank and
-    Postbank tenants.
+- aid: deutsche-bank:deutsche-bank-alias-api
+  name: Deutsche Bank Alias API
+  description: The alias API contains endpoints to add, update or delete aliases for means of payment.
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
   tags:
-  - Banking
-  - Open Banking
-  - PSD2
-  - Payments
-  - SEPA
-  - Investments
-  - Credit Cards
-  - Lending
-  - Reference Data
-  - Notifications
+  - Alias
   properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-alias-api-openapi.yml
   - type: Documentation
     url: https://developer.db.com/apidocumentation
   - type: APIReference
@@ -98,134 +96,1328 @@ apis:
     url: sandbox/deutsche-bank-sandbox.yml
   - type: Webhooks
     url: asyncapi/deutsche-bank-webhooks.yml
-  - type: OpenAPI
-    name: dbapi-addresses
-    url: openapi/deutsche-bank-dbapi-addresses-v2.json
-  - type: OpenAPI
-    name: dbapi-ageCertificate
-    url: openapi/deutsche-bank-dbapi-ageCertificate-v1.json
-  - type: OpenAPI
-    name: dbapi-banking-cashAccountOpenings
-    url: openapi/deutsche-bank-dbapi-banking-cashAccountOpenings-v1.json
-  - type: OpenAPI
-    name: dbapi-cashAccounts
-    url: openapi/deutsche-bank-dbapi-cashAccounts-v2.json
-  - type: OpenAPI
-    name: dbapi-creditCardTransactions
-    url: openapi/deutsche-bank-dbapi-creditCardTransactions-v1.json
-  - type: OpenAPI
-    name: dbapi-creditCards
-    url: openapi/deutsche-bank-dbapi-creditCards-v1.json
-  - type: OpenAPI
-    name: dbapi-customerSolvency
-    url: openapi/deutsche-bank-dbapi-customerSolvency-v1.json
-  - type: OpenAPI
-    name: dbapi-investments-assets
-    url: openapi/deutsche-bank-dbapi-investments-assets-v1.json
-  - type: OpenAPI
-    name: dbapi-investments-earningTransactions
-    url: openapi/deutsche-bank-dbapi-investments-earningTransactions-v1.json
-  - type: OpenAPI
-    name: dbapi-investments-espSecuritiesAccounts
-    url: openapi/deutsche-bank-dbapi-investments-espSecuritiesAccounts-v1.json
-  - type: OpenAPI
-    name: dbapi-investments-orders
-    url: openapi/deutsche-bank-dbapi-investments-orders-v1.json
-  - type: OpenAPI
-    name: dbapi-investments-performances
-    url: openapi/deutsche-bank-dbapi-investments-performances-v1.json
-  - type: OpenAPI
-    name: dbapi-investments-reports
-    url: openapi/deutsche-bank-dbapi-investments-reports-v1.json
-  - type: OpenAPI
-    name: dbapi-securityAccounts
-    url: openapi/deutsche-bank-dbapi-investments-securityAccounts-v1.json
-  - type: OpenAPI
-    name: dbapi-investments-securityTransactions
-    url: openapi/deutsche-bank-dbapi-investments-securityTransactions-v1.json
-  - type: OpenAPI
-    name: dbapi-loanOffers-privatebanking
-    url: openapi/deutsche-bank-dbapi-loanOffers-privatebanking-v1.json
-  - type: OpenAPI
-    name: dbapi-loanOffers-privatebanking
-    url: openapi/deutsche-bank-dbapi-loanOffers-privatebanking-v2.json
-  - type: OpenAPI
-    name: dbapi-partners
-    url: openapi/deutsche-bank-dbapi-partners-v2.json
-  - type: OpenAPI
-    name: dbapi-sepaInstantCreditTransfer
-    url: openapi/deutsche-bank-dbapi-payments-sepaInstantCreditTransfer-v3.json
-  - type: OpenAPI
-    name: dbapi-processingOrders
-    url: openapi/deutsche-bank-dbapi-processingOrders-v1.json
-  - type: OpenAPI
-    name: dbapi-processingOrders
-    url: openapi/deutsche-bank-dbapi-processingOrders-v2.json
-  - type: OpenAPI
-    name: dbapi-sepaCreditTransfer
-    url: openapi/deutsche-bank-dbapi-sepaCreditTransfer-v3.json
-  - type: OpenAPI
-    name: dbapi-sepaDirectDebit
-    url: openapi/deutsche-bank-dbapi-sepaDirectDebit-v1.json
-  - type: OpenAPI
-    name: dbapi-subscriptions
-    url: openapi/deutsche-bank-dbapi-subscriptions-v1.json
-  - type: OpenAPI
-    name: dbapi-swaggers-v1
-    url: openapi/deutsche-bank-dbapi-swaggers-v1.json
-  - type: OpenAPI
-    name: dbapi-transactionAnalysis-v1
-    url: openapi/deutsche-bank-dbapi-transactionAnalysis-v1.json
-  - type: OpenAPI
-    name: dbapi-transactionAuthorization
-    url: openapi/deutsche-bank-dbapi-transactionAuthorization-v1.json
-  - type: OpenAPI
-    name: dbapi-transactions
-    url: openapi/deutsche-bank-dbapi-transactions-v2.json
-  - type: OpenAPI
-    name: dbapi-verifyCustomer
-    url: openapi/deutsche-bank-dbapi-verifyCustomer-v1.json
-  - type: OpenAPI
-    name: GPL-SPA Auth & Authorization API Contract
-    url: openapi/deutsche-bank-oneid-fakerock-v1.json
-- aid: deutsche-bank:merchant-solutions
-  name: Deutsche Bank Merchant Solutions
-  image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/deutsche-bank.png
-  description: 'Merchant Solutions is the payment acceptance and issuing product portfolio of Deutsche
-    Bank - the Merchant-Server II REST platform behind Deutsche Bank''s payment gateway. Three contracts
-    are published through the Deutsche Bank developer portal: a Security API that mints the bearer
-    JWT, a Services API carrying the transaction, alias, mandate and reporting surface (54 operations
-    at v2.1), and a signed Callback API describing the webhook a merchant must implement. The declared
-    hosts are the platform''s own directpos.de test endpoints, which is why they differ from db.com.'
-  humanURL: https://developer.db.com/products/payment-acceptance
-  baseURL: https://testmerch.directpos.de/rest-api
-  tags:
-  - Payments
-  - Merchant Services
-  - Payment Gateway
-  - Card Acceptance
-  - PSD2
-  properties:
   - type: Documentation
     url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-apple-pay-api
+  name: Deutsche Bank Apple Pay API
+  description: >-
+    The Apple Pay™ API contains endpoints to initiate a payment session to perform credit card payment
+    transactions based on Apple Pay™ payment information.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Apple Pay
+  properties:
   - type: OpenAPI
-    name: Callback API
-    url: openapi/deutsche-bank-merchant-solution-callback-v2.json
+    url: openapi/deutsche-bank-apple-pay-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-authorization-api
+  name: Deutsche Bank Authorization API
+  description: The Authorization API from Deutsche Bank — 3 operation(s) for authorization.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Authorization
+  properties:
   - type: OpenAPI
-    name: Callback API
-    url: openapi/deutsche-bank-merchant-solution-callback-v2_1.json
+    url: openapi/deutsche-bank-authorization-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-callback-api
+  name: Deutsche Bank Callback API
+  description: The merchant's system has to implement this endpoint to receive callback requests.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Callback
+  properties:
   - type: OpenAPI
-    name: Merchant-Server II REST Security API
-    url: openapi/deutsche-bank-merchant-solution-security-v2.json
+    url: openapi/deutsche-bank-callback-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-cancel-sepa-credit-transfers-api
+  name: Deutsche Bank Cancel SEPA Credit Transfers API
+  description: Use these endpoints to cancel existing SEPA Credit Transfers.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Cancel SEPA Credit Transfers
+  properties:
   - type: OpenAPI
-    name: Merchant-Server II REST Security API
-    url: openapi/deutsche-bank-merchant-solution-security-v2_1.json
+    url: openapi/deutsche-bank-cancel-sepa-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-cancel-sepa-instant-credit-transfers-api
+  name: Deutsche Bank Cancel SEPA Instant Credit Transfers API
+  description: Use these endpoints to cancel existing SEPA Instant Credit Transfers.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Cancel SEPA Instant Credit Transfers
+  properties:
   - type: OpenAPI
-    name: Merchant-Server II REST Services API
-    url: openapi/deutsche-bank-merchant-solution-services-v2.1.json
+    url: openapi/deutsche-bank-cancel-sepa-instant-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-cash-account-opening-status-api
+  name: Deutsche Bank Cash account opening status API
+  description: >-
+    The Cash account opening status API from Deutsche Bank — 1 operation(s) for cash account opening status.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Cash account opening status
+  properties:
   - type: OpenAPI
-    name: Merchant-Server II REST Services API
-    url: openapi/deutsche-bank-merchant-solution-services-v2.json
+    url: openapi/deutsche-bank-cash-account-opening-status-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-cash-account-openings-api
+  name: Deutsche Bank Cash Account Openings API
+  description: >-
+    Lets you easily open cash accounts with Deutsche Bank, Postbank or norisbank on your customer's behalf.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Cash Account Openings
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-cash-account-openings-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-cash-accounts-api
+  name: Deutsche Bank Cash Accounts API
+  description: >-
+    Gives you an overview of all savings and current accounts of your customers. With this api, you can
+    retrieve details such as IBAN, BIC or account type which you can then use for further inquiries on
+    the accounts.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Cash Accounts
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-cash-accounts-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-create-sepa-credit-transfers-api
+  name: Deutsche Bank Create SEPA Credit Transfers API
+  description: >-
+    Use these endpoints to create SEPA Credit Transfers. Both single and bulk payments are supported.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Create SEPA Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-create-sepa-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-create-sepa-instant-credit-transfers-api
+  name: Deutsche Bank Create SEPA Instant Credit Transfers API
+  description: >-
+    Use these endpoints to create SEPA Instant Credit Transfers. Both single and bulk payments are supported.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Create SEPA Instant Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-create-sepa-instant-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-employee-share-plan-securities-account-opening-api
+  name: Deutsche Bank Employee Share Plan Securities Account Opening API
+  description: >-
+    The Employee Share Plan Securities Account Opening API from Deutsche Bank — 2 operation(s) for employee
+    share plan securities account opening.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Employee Share Plan Securities Account Opening
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-employee-share-plan-securities-account-opening-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-escore-api
+  name: Deutsche Bank E Score API
+  description: The eScore API contains endpoints to minimize non-payment risk.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - eScore
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-escore-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-forgerock-auth-tree-api
+  name: Deutsche Bank ForgeRock Auth Tree API
+  description: The ForgeRock Auth Tree API from Deutsche Bank — 1 operation(s) for forgerock auth tree.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - ForgeRock Auth Tree
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-forgerock-auth-tree-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-forgerock-oauth-api
+  name: Deutsche Bank ForgeRock OAuth API
+  description: The ForgeRock OAuth API from Deutsche Bank — 2 operation(s) for forgerock oauth.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - ForgeRock OAuth
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-forgerock-oauth-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-forgerock-session-api
+  name: Deutsche Bank ForgeRock Session API
+  description: The ForgeRock Session API from Deutsche Bank — 1 operation(s) for forgerock session.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - ForgeRock Session
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-forgerock-session-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-forms-api
+  name: Deutsche Bank Forms API
+  description: >-
+    The Forms API contains endpoints to initialize a form service interaction. It allows the merchant
+    to redirect the customer to a customizable frontend page where the customer may enter sensitive payment
+    data. After receipt of the necessary information, the frontend will carry out the transaction and
+    redirect the customer back to the merchant’s page.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Forms
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-forms-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-get-details-for-sepa-credit-transfers-api
+  name: Deutsche Bank Get details for SEPA Credit Transfers API
+  description: >-
+    Use these endpoints to retrieve the details of SEPA Credit Transfers, both for single and bulk payments.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Get details for SEPA Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-get-details-for-sepa-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-get-details-for-sepa-instant-credit-transfers-api
+  name: Deutsche Bank Get details for SEPA Instant Credit Transfers API
+  description: >-
+    Use these endpoints to retrieve the details of SEPA Instant Credit Transfers, both for single and
+    bulk payments.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Get details for SEPA Instant Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-get-details-for-sepa-instant-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-get-status-for-sepa-credit-transfers-api
+  name: Deutsche Bank Get status for SEPA Credit Transfers API
+  description: >-
+    Use these endpoints to retrieve the processing status of SEPA Credit Transfers, both for single and
+    bulk payments.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Get status for SEPA Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-get-status-for-sepa-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-get-status-for-sepa-instant-credit-transfers-api
+  name: Deutsche Bank Get status for SEPA Instant Credit Transfers API
+  description: >-
+    Use these endpoints to retrieve the processing status of SEPA Instant Credit Transfers, both for single
+    and bulk payments.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Get status for SEPA Instant Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-get-status-for-sepa-instant-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-get-vop-details-for-sepa-credit-transfers-api
+  name: Deutsche Bank Get VoP details for SEPA Credit Transfers API
+  description: >-
+    Use these endpoints to check the Verification of Payee (VoP) details for your SEPA Credit Transfers,
+    whether you're making a single payment or a bulk transfer.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Get VoP details for SEPA Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-get-vop-details-for-sepa-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-get-vop-details-for-sepa-instant-credit-transfers-api
+  name: Deutsche Bank Get VoP details for SEPA Instant Credit Transfers API
+  description: >-
+    Use these endpoints to check the Verification of Payee (VoP) details for your SEPA Instant Credit
+    Transfers, whether you're making a single payment or a bulk transfer.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Get VoP details for SEPA Instant Credit Transfers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-get-vop-details-for-sepa-instant-credit-transfers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-google-pay-api
+  name: Deutsche Bank Google Pay API
+  description: >-
+    The Google Pay™ API contains endpoints to perform credit card payment transactions based on Google
+    Pay™ payment information.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Google Pay
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-google-pay-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-headless-3-d-secure-api
+  name: Deutsche Bank Headless 3-D Secure API
+  description: >-
+    The Headless 3-D Secure API contains endpoints to conduct headless 3-D Secure transactions.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Headless 3-D Secure
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-headless-3-d-secure-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-iframe-api
+  name: Deutsche Bank I Frame API
+  description: >-
+    The iFrame API contains an endpoint to initialize an iFrame interaction. It allows the merchant to
+    embed specific elements of a frontend page into their own web page. Entry of sensitive data is done
+    in these elements so that they can be sent to the merchant without the merchant ever being in contact
+    with it. After the API receives the entered data, it will inform the merchant who then calls the corresponding
+    Payment API endpoint.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - iFrame
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-iframe-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-info-api
+  name: Deutsche Bank Info API
+  description: Information related operations.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Info
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-info-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-investments-order-subscription-api
+  name: Deutsche Bank Investments Order Subscription API
+  description: Investment Order Subscription Api
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Investments Order Subscription
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-investments-order-subscription-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-loan-offers-api
+  name: Deutsche Bank Loan Offers API
+  description: The Loan Offers API from Deutsche Bank — 5 operation(s) for loan offers.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Loan Offers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-loan-offers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-managed-mandate-api
+  name: Deutsche Bank Managed Mandate API
+  description: The Managed Mandate API contains endpoints to work with managed mandates.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Managed Mandate
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-managed-mandate-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-order-change-api
+  name: Deutsche Bank Order Change API
+  description: Change an existing order or preview a change of an existing order
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Order Change
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-order-change-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-order-delete-api
+  name: Deutsche Bank Order Delete API
+  description: Delete an existing order
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Order Delete
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-order-delete-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-order-details-api
+  name: Deutsche Bank Order Details API
+  description: Retrieve details on existing orders
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Order Details
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-order-details-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-order-entry-api
+  name: Deutsche Bank Order Entry API
+  description: Create an order or preview an order creation
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Order Entry
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-order-entry-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-order-expense-report-api
+  name: Deutsche Bank Order Expense Report API
+  description: Produce a PDF with the estimated expenses for an order execution or modification.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Order Expense Report
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-order-expense-report-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-password-encryption-api
+  name: Deutsche Bank Password Encryption API
+  description: The Password Encryption API from Deutsche Bank — 1 operation(s) for password encryption.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Password Encryption
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-password-encryption-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-payment-api
+  name: Deutsche Bank Payment API
+  description: >-
+    The Payment API contains endpoints to add or modify payment transactions. When using the API, the
+    merchant is only integrated to the API at the backend. All use cases are triggered via an API call.
+    It is the merchant's responsibility to collect all relevant payment data via their own frontend.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Payment
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-payment-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-payment-link-api
+  name: Deutsche Bank Payment Link API
+  description: >-
+    The Payment Link API contains endpoints to prepare payments your customers can carry out later by
+    using the provided link.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Payment Link
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-payment-link-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-processing-orders-api
+  name: Deutsche Bank Processing Orders API
+  description: The Processing Orders API from Deutsche Bank — 2 operation(s) for processing orders.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Processing Orders
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-processing-orders-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-reachability-status-api
+  name: Deutsche Bank Reachability Status API
+  description: Verifies if the provided IBAN is reachable for an SEPA Instant Credit Transfer
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Reachability Status
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-reachability-status-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-risk-management-api
+  name: Deutsche Bank Risk Management API
+  description: >-
+    The Risk Management API contains endpoints to add and remove risk list entries and to calculate a
+    risk score.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Risk Management
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-risk-management-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-second-factor-retry-api
+  name: Deutsche Bank Second Factor Retry API
+  description: Use these endpoints for Second Factory Retry of existing SEPA Instant Credit Transfers.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Second Factor Retry
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-second-factor-retry-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-security-statics-api
+  name: Deutsche Bank Security Statics API
+  description: Get static data on Securities
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Security Statics
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-security-statics-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-support-api
+  name: Deutsche Bank Support API
+  description: Get price information for a given security
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Support
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-support-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-swaggers-api
+  name: Deutsche Bank Swaggers API
+  description: Swaggers/OpenAPI repository
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - swaggers
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-swaggers-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-tenants-api
+  name: Deutsche Bank Tenants API
+  description: Tenants
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - tenants
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-tenants-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-transaction-analysis-api
+  name: Deutsche Bank Transaction Analysis API
+  description: >-
+    Provides an easy and accurate way to prove recent income and rent payments to describe the financial
+    situation of a customer.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Transaction Analysis
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-transaction-analysis-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-transaction-authorization-api
+  name: Deutsche Bank Transaction Authorization API
+  description: >-
+    The Transaction Authorization API from Deutsche Bank — 4 operation(s) for transaction authorization.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Transaction Authorization
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-transaction-authorization-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-transaction-subscription-api
+  name: Deutsche Bank Transaction Subscription API
+  description: Transactions Subscription Api
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Transaction Subscription
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-transaction-subscription-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
+- aid: deutsche-bank:deutsche-bank-transactions-api
+  name: Deutsche Bank Transactions API
+  description: >-
+    Provides all transactions information from your customers' savings and current accounts for the last
+    13 months.
+  humanURL: https://developer.db.com/
+  baseURL: https://api.db.com/gw/dbapi
+  tags:
+  - Transactions
+  properties:
+  - type: OpenAPI
+    url: openapi/deutsche-bank-transactions-api-openapi.yml
+  - type: Documentation
+    url: https://developer.db.com/apidocumentation
+  - type: APIReference
+    url: https://developer.db.com/apiexplorer
+  - type: GettingStarted
+    url: https://developer.db.com/apidocumentation/apigettingstartedguide/introduction
+  - type: Authentication
+    url: authentication/deutsche-bank-authentication.yml
+  - type: OAuthScopes
+    url: scopes/deutsche-bank-scopes.yml
+  - type: Sandbox
+    url: sandbox/deutsche-bank-sandbox.yml
+  - type: Webhooks
+    url: asyncapi/deutsche-bank-webhooks.yml
+  - type: Documentation
+    url: https://developer.db.com/products/payment-acceptance
 common:
 - type: DeveloperPortal
   name: Deutsche Bank Developer Portal
