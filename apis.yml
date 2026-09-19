@@ -20,7 +20,7 @@ tags:
 - PSD2
 - Payments
 - SEPA
-- Investments
+- Investment
 - Credit Cards
 - Merchant Solutions
 - Germany
@@ -563,7 +563,8 @@ apis:
     bulk payments.
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
-  tags:
+  tags: []
+  tags_raw:
   - Get details for SEPA Instant Credit Transfers
   properties:
   - type: OpenAPI
@@ -619,7 +620,8 @@ apis:
     and bulk payments.
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
-  tags:
+  tags: []
+  tags_raw:
   - Get status for SEPA Instant Credit Transfers
   properties:
   - type: OpenAPI
@@ -647,7 +649,8 @@ apis:
     whether you're making a single payment or a bulk transfer.
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
-  tags:
+  tags: []
+  tags_raw:
   - Get VoP details for SEPA Credit Transfers
   properties:
   - type: OpenAPI
@@ -675,7 +678,8 @@ apis:
     Transfers, whether you're making a single payment or a bulk transfer.
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
-  tags:
+  tags: []
+  tags_raw:
   - Get VoP details for SEPA Instant Credit Transfers
   properties:
   - type: OpenAPI
@@ -762,6 +766,8 @@ apis:
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
   tags:
+  - Iframe
+  tags_raw:
   - iFrame
   properties:
   - type: OpenAPI
@@ -1051,6 +1057,8 @@ apis:
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
   tags:
+  - Payments
+  tags_raw:
   - Payment
   properties:
   - type: OpenAPI
@@ -1079,6 +1087,8 @@ apis:
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
   tags:
+  - Payment Links
+  tags_raw:
   - Payment Link
   properties:
   - type: OpenAPI
@@ -1289,6 +1299,8 @@ apis:
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
   tags:
+  - Tenants
+  tags_raw:
   - tenants
   properties:
   - type: OpenAPI
@@ -1398,6 +1410,8 @@ apis:
   humanURL: https://developer.db.com/
   baseURL: https://api.db.com/gw/dbapi
   tags:
+  - Transaction
+  tags_raw:
   - Transactions
   properties:
   - type: OpenAPI
