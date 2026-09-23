@@ -1,0 +1,754 @@
+openapi: 3.2.0
+info:
+  title: dbapi-subscriptions Transaction Subscription API
+  description: dbAPI subscription service. Provides an API to manage subscriptions of certains events like transaction creation.
+  termsOfService: https://developer.db.com/#/contact
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v1
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/notifications/subscriptions/v1
+tags:
+- name: Transaction Subscription
+  description: Transactions Subscription Api
+paths:
+  /transactions:
+    get:
+      tags:
+      - Transaction Subscription
+      summary: Gets all transaction subcriptions
+      description: Gets all transaction subcriptions for the current user
+      operationId: transactionsGet
+      parameters:
+      - name: iban
+        in: query
+        description: IBAN representing an account of the current user.
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxLength: 34
+          minLength: 0
+          type: string
+      - name: limit
+        in: query
+        description: the number of items of a page.
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 100
+          minimum: 1
+          type: integer
+          format: int32
+          default: 10
+      - name: offset
+        in: query
+        description: the page to be returned.
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedResultSubscription'
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 1005
+                message: Generic backend error.
+              - code: 1006
+                message: Subscription clientId not found.
+              - code: 1007
+                message: Invalid date format. Please use ISO 8601 format (yyyy-MM-dd).
+              - code: 1008
+                message: A request with the same idempotency key has already been processed.
+              - code: 1009
+                message: Invalid filter criteria provided.
+              - code: 1010
+                message: Invalid expiration date provided.
+              - code: 1011
+                message: Invalid notification URL provided.
+              - code: 1012
+                message: Invalid subscription activation request.
+              - code: 1015
+                message: Too many subscriptions.
+        '404':
+          description: Unsuccessful operation, returns http status 404. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1014
+                message: Subscription not found.
+        '409':
+          description: Unsuccessful operation, returns http status 409. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1013
+                message: Concurrent modification detected. Please retry the request.
+      security:
+      - api_auth_code:
+        - transaction_notifications
+      - api_db_smart_access:
+        - transaction_notifications
+    post:
+      tags:
+      - Transaction Subscription
+      summary: Creates a transaction event subcription
+      description: Creates a subscription for transaction events.
+      operationId: transactionsPost
+      parameters:
+      - name: Idempotency-ID
+        in: header
+        description: Unique identifier that the caller provides to establish idempotency for this request.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      requestBody:
+        description: Input parameters to create a subscription
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPost'
+        required: true
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 1005
+                message: Generic backend error.
+              - code: 1006
+                message: Subscription clientId not found.
+              - code: 1007
+                message: Invalid date format. Please use ISO 8601 format (yyyy-MM-dd).
+              - code: 1008
+                message: A request with the same idempotency key has already been processed.
+              - code: 1009
+                message: Invalid filter criteria provided.
+              - code: 1010
+                message: Invalid expiration date provided.
+              - code: 1011
+                message: Invalid notification URL provided.
+              - code: 1012
+                message: Invalid subscription activation request.
+              - code: 1015
+                message: Too many subscriptions.
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Unsuccessful operation, returns http status 404. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1014
+                message: Subscription not found.
+        '409':
+          description: Unsuccessful operation, returns http status 409. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1013
+                message: Concurrent modification detected. Please retry the request.
+      security:
+      - api_auth_code:
+        - transaction_notifications
+      - api_db_smart_access:
+        - transaction_notifications
+      x-codegen-request-body-name: createSubscription
+  /transactions/{subscriptionId}:
+    delete:
+      tags:
+      - Transaction Subscription
+      summary: Deletes a transaction subcription
+      operationId: transactionsSubscriptionIdDelete
+      parameters:
+      - name: subscriptionId
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '204':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 1005
+                message: Generic backend error.
+              - code: 1006
+                message: Subscription clientId not found.
+              - code: 1007
+                message: Invalid date format. Please use ISO 8601 format (yyyy-MM-dd).
+              - code: 1008
+                message: A request with the same idempotency key has already been processed.
+              - code: 1009
+                message: Invalid filter criteria provided.
+              - code: 1010
+                message: Invalid expiration date provided.
+              - code: 1011
+                message: Invalid notification URL provided.
+              - code: 1012
+                message: Invalid subscription activation request.
+              - code: 1015
+                message: Too many subscriptions.
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Unsuccessful operation, returns http status 404. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1014
+                message: Subscription not found.
+        '409':
+          description: Unsuccessful operation, returns http status 409. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1013
+                message: Concurrent modification detected. Please retry the request.
+      security:
+      - api_auth_code:
+        - transaction_notifications
+      - api_db_smart_access:
+        - transaction_notifications
+    patch:
+      tags:
+      - Transaction Subscription
+      summary: Updates a transaction subcription
+      operationId: transactionsSubscriptionIdPatch
+      parameters:
+      - name: subscriptionId
+        in: path
+        description: ID of the resource
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      requestBody:
+        description: Input parameters to create a subscription
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionPatch'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 1005
+                message: Generic backend error.
+              - code: 1006
+                message: Subscription clientId not found.
+              - code: 1007
+                message: Invalid date format. Please use ISO 8601 format (yyyy-MM-dd).
+              - code: 1008
+                message: A request with the same idempotency key has already been processed.
+              - code: 1009
+                message: Invalid filter criteria provided.
+              - code: 1010
+                message: Invalid expiration date provided.
+              - code: 1011
+                message: Invalid notification URL provided.
+              - code: 1012
+                message: Invalid subscription activation request.
+              - code: 1015
+                message: Too many subscriptions.
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Unsuccessful operation, returns http status 404. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1014
+                message: Subscription not found.
+        '409':
+          description: Unsuccessful operation, returns http status 409. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1013
+                message: Concurrent modification detected. Please retry the request.
+      security:
+      - api_auth_code:
+        - transaction_notifications
+      - api_db_smart_access:
+        - transaction_notifications
+      x-codegen-request-body-name: subscriptionBody
+  /{subscriptionId}:
+    patch:
+      tags:
+      - Transaction Subscription
+      summary: Activates subscription
+      description: Activate subscription of a previously registered notification url.
+      operationId: subscriptionActivation
+      parameters:
+      - name: subscriptionId
+        in: path
+        description: The id of the subscription
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      requestBody:
+        description: The activation id
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivationDTO'
+        required: true
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 1005
+                message: Generic backend error.
+              - code: 1006
+                message: Subscription clientId not found.
+              - code: 1007
+                message: Invalid date format. Please use ISO 8601 format (yyyy-MM-dd).
+              - code: 1008
+                message: A request with the same idempotency key has already been processed.
+              - code: 1009
+                message: Invalid filter criteria provided.
+              - code: 1010
+                message: Invalid expiration date provided.
+              - code: 1011
+                message: Invalid notification URL provided.
+              - code: 1012
+                message: Invalid subscription activation request.
+              - code: 1015
+                message: Too many subscriptions.
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+        '500':
+          description: internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Unsuccessful operation, returns http status 404. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1014
+                message: Subscription not found.
+        '409':
+          description: Unsuccessful operation, returns http status 409. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 1013
+                message: Concurrent modification detected. Please retry the request.
+      security:
+      - api_auth_code:
+        - transaction_notifications
+      - api_db_smart_access:
+        - transaction_notifications
+      x-codegen-request-body-name: activation
+components:
+  schemas:
+    SubscriptionPatch:
+      title: SubscriptionPatch
+      required:
+      - subscriptionDetails
+      type: object
+      properties:
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
+    SubscriptionDetails:
+      title: SubscriptionDetails
+      required:
+      - notificationURL
+      - subscriptionType
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+        isActive:
+          type: boolean
+        notificationURL:
+          type: string
+          description: The URL the notification will be passed towards.
+          format: url
+        subscriptionType:
+          type: string
+          description: Type of subscription
+          enum:
+          - one-time
+          - recurring
+      description: Subscription details
+    SubscriptionPost:
+      title: SubscriptionPost
+      type: object
+      properties:
+        filterCriteria:
+          $ref: '#/components/schemas/SubscriptionFilterCriteria'
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionPostDetails'
+    PagedResultSubscription:
+      title: PagedResultSubscription
+      required:
+      - items
+      - totalItems
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+        totalItems:
+          minimum: 0
+          type: integer
+          description: Total number of items found for your request parameters over all pages of the pagination.
+          format: int32
+    SubscriptionPatchSubscriptionDetails:
+      title: SubscriptionPatchSubscriptionDetails
+      required:
+      - expirationDate
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+      description: Subscription details
+    SubscriptionPostDetails:
+      title: SubscriptionPostDetails
+      required:
+      - notificationURL
+      - subscriptionType
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+        notificationURL:
+          type: string
+          description: The URL the notification will be passed towards.
+          format: url
+        subscriptionType:
+          type: string
+          description: Type of subscription?
+          enum:
+          - one-time
+          - recurring
+      description: Subscription details
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+          format: int32
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    SubscriptionFilterCriteria:
+      title: SubscriptionFilterCriteria
+      required:
+      - iban
+      type: object
+      properties:
+        iban:
+          type: string
+          description: IBAN of the account to subscribe to.
+        incoming:
+          type: boolean
+          description: true, if events shall be filtered for incoming transactions, false if not.
+        maxAmount:
+          type: number
+          description: events will be filtered for a transactions amount, absolute values only.
+        minAmount:
+          type: number
+          description: events will be filtered for a transaction amount, absolute values only.
+        outgoing:
+          type: boolean
+          description: true, if events shall be filtered for outgoing transactions, false if not.
+      description: Filter criteria
+    Subscription:
+      title: Subscription
+      type: object
+      properties:
+        filterCriteria:
+          $ref: '#/components/schemas/SubscriptionFilterCriteria'
+        id:
+          type: string
+          description: ID of the resource
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionDetails'
+    ActivationDTO:
+      title: ActivationDTO
+      type: object
+      properties:
+        activationCode:
+          type: string
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            transaction_notifications: Enable the transaction subscription feature
+            openid: Request access to OpenId Connect functionality
+            investments_orders_status_notification: Enable the investments orders subscription feature
+            offline_access: Request an OAuth2 Refresh Token
+    api_db_smart_access:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            transaction_notifications: Enable the transaction subscription feature
+            investments_orders_status_notification: Enable the investments orders subscription feature
+x-original-swagger-version: '2.0'

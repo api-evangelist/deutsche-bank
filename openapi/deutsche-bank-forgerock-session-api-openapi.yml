@@ -1,0 +1,60 @@
+openapi: 3.2.0
+info:
+  title: GPL-SPA Auth & Authorization API Contract ForgeRock Session…
+  description: 'Consolidated API contract derived from gpl-spa code and runtime config.
+
+
+    Notes:
+
+    - Some ForgeRock endpoints are called through @forgerock/javascript-sdk, so exact wire paths are partially SDK-driven.
+
+    - Paths below use conventional ForgeRock AM/OAuth endpoints based on configured baseUrl/realmPath.'
+  version: 1.0.0
+servers:
+- url: https://simulator-api.db.com:443/gw/public/oneid/
+tags:
+- name: ForgeRock Session
+paths:
+  /am/json/realms/root/realms/{realm}/sessions:
+    post:
+      tags:
+      - ForgeRock Session
+      summary: Logout session
+      description: FRUser.logout() equivalent; commonly invoked with ?_action=logout
+      operationId: logout
+      parameters:
+      - name: realm
+        in: path
+        description: Realm name in ForgeRock path.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - consumer
+          - norisbank
+      - name: _action
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: logout
+      responses:
+        '200':
+          description: Logout acknowledged
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '204':
+          description: Logout completed with no content
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

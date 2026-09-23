@@ -1,0 +1,341 @@
+openapi: 3.2.0
+info:
+  title: dbapi-investments-orders Support API
+  description: 'The Order Service API is a dbAPI platform service that enables developers and customers to create their own investment applications for executing securities orders (stocks, funds, bonds or ETFs) on the German stock exchanges or on the most important foreign stock exchanges.
+
+    The service enables client applications to allow users to create, view, modify or cancel their orders in near real-time in the Deutsche Bank order management system.'
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v1
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/investments/orders/v1
+tags:
+- name: Support
+  description: Get price information for a given security
+paths:
+  /quotes:
+    get:
+      tags:
+      - Support
+      description: This API returns price information for a given security at the given market place. Either WKN or ISIN needs to be provided!
+      operationId: orderQuotes
+      parameters:
+      - name: wkn
+        in: query
+        description: German securities identification code (Wertpapierkennnummer)
+        required: false
+        style: form
+        explode: true
+        schema:
+          pattern: '[A-Z0-9]{6}'
+          type: string
+      - name: isin
+        in: query
+        description: International Securities Identification Number
+        required: false
+        style: form
+        explode: true
+        schema:
+          pattern: '[A-Z]{2}[0-9A-Z]{9}[0-9]'
+          type: string
+      - name: xd020a
+        in: query
+        description: XD020A value of market place
+        required: true
+        style: form
+        explode: true
+        schema:
+          pattern: '[0-9]{3}'
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderQuotesResponse'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 102
+                message: Invalid value for parameter externalOrderReference or securityAccountId.
+              - code: 111
+                message: 2FA method is not ACTIVE.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 601
+                message: Order deletion/modification not allowed due to order state.
+              - code: 602
+                message: Multiple positions exist. Please contact your personal bank advisor.
+              - code: 603
+                message: Insufficient stock
+              - code: 604
+                message: Security data not found
+              - code: 605
+                message: Missing authorization
+              - code: 606
+                message: Quantity not tradeable
+              - code: 607
+                message: No suitable position found
+              - code: 609
+                message: Only one price should be provided for the order limit
+              - code: 610
+                message: 'The order exceeds the maximum available quota: Free quota: {freeQuota}'
+              - code: 611
+                message: Not enough securities with minimum holding period available
+              - code: 613
+                message: Ordering quotas of OEREFs (Open-Ended Real Estate Funds) bought after 21.07.2013 and cannot be returned
+              - code: 614
+                message: Ordering quotas of OEREFs (Open-Ended Real Estate Funds) bought partly after 21.07.2013 and cannot be returned
+              - code: 615
+                message: Security not tradeable
+              - code: 616
+                message: Order not in orderbook
+              - code: 617
+                message: Minimum order amount not reached
+              - code: 620
+                message: CashAccount does not exist
+              - code: 621
+                message: Customer is not allowed to order
+              - code: 622
+                message: Security Account is not valid for orders
+              - code: 623
+                message: Liquidity not sufficient for order
+              - code: 624
+                message: MarketPlace does not exist
+              - code: 633
+                message: SecurityAccount does not exist
+              - code: 634
+                message: ExpiryDate is before current date
+              - code: 635
+                message: Invalid blockingDate
+              - code: 636
+                message: ExpiryDate must be a business day
+              - code: 637
+                message: Setting a limit when ordering over the capital management company is not possible
+              - code: 638
+                message: Setting an expiry date when ordering over the capital management company is not possible
+              - code: 639
+                message: Either WKN or ISIN must be provided
+              - code: 640
+                message: invalid preview Signature
+              - code: 641
+                message: preview Signature expired
+              - code: 642
+                message: preview Signature order parameter mismatch
+              - code: 643
+                message: Unique external order reference missing
+              - code: 654
+                message: Invalid limit price/stop price.
+              - code: 655
+                message: The order is part of a bulk order and cannot be changed.
+              - code: 656
+                message: addOns.expiryDate not allowed with type of addOns.restriction
+              - code: 657
+                message: OTC market place not allowed
+              - code: 658
+                message: Maximum addOns.expiryDate exceeded.
+              - code: 659
+                message: Token doesn't exist
+              - code: 660
+                message: No price returned by PriceModule
+              - code: 661
+                message: BestEx could not be retrieved for holding recommendation
+              - code: 662
+                message: No data for given wkn found
+              - code: 664
+                message: Mismatching ccy for the given security
+              - code: 665
+                message: Security not tradeable with market place
+              - code: 666
+                message: Best Execution stock market could not be determined
+              - code: 667
+                message: Portfolio not found
+              - code: 668
+                message: Security data not found
+              - code: 670
+                message: Market place ID not provided
+              - code: 671
+                message: The order cannot be cancelled, it is already executed.
+              - code: 673
+                message: Investment decider was not provided
+              - code: 699
+                message: reportToken doesn't exist
+              - code: 701
+                message: 'validation not successful: consent information is not available, but required.'
+              - code: 702
+                message: 'validation not successful: consent information cannot be validated completely.'
+              - code: 703
+                message: The user’s investment decision experience rating needs to be updated. The required steps can be performed within the Online Banking.
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+              - code: 644
+                message: Order type is not allowed for user
+              - code: 645
+                message: User not allowed to use (2FA) session
+              - code: 646
+                message: Daily order limit exceeded
+              - code: 647
+                message: 2FA for session renewal required. Limit exceeded
+              - code: 648
+                message: 2FA for session renewal required. Time exceeded
+              - code: 649
+                message: 2FA for session renewal required. Transaction count greater than max transaction count
+              - code: 650
+                message: Business authorisation issue. Cash account not found
+              - code: 651
+                message: Business authorisation issue. Security account not found
+              - code: 652
+                message: Business authorisation issue. Partner ID not found
+              - code: 653
+                message: Business authorisation issue. Client ID setup incorrect
+              - code: 672
+                message: Investment decider rejected
+        '500':
+          description: Unsuccessful operation, returns http status 500. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 669
+                message: Backend responded with an unexpected SA Key
+      security:
+      - api_auth_code:
+        - order_securities
+      summary: Order quotes
+      x-summary-source: derived
+components:
+  schemas:
+    SecurityRate:
+      required:
+      - currency
+      - rate
+      - timeStamp
+      - type
+      - unitPer
+      type: object
+      properties:
+        rate:
+          type: number
+          description: The rate of the security in the respective currency on the respective date/time
+          format: double
+          example: 56.14
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        timeStamp:
+          type: string
+          description: Captures the timestamp of the security rate in ISO 8601 format full-date 'T' full-time without offsets
+          format: date-time
+          example: '2018-12-10T13:45:12Z'
+        type:
+          type: string
+          description: The type of this rate
+          format: string
+          example: ACTUAL
+          enum:
+          - BUY
+          - SELL
+          - INITIAL
+          - ACTUAL
+          - DAY_LOW
+          - DAY_HIGH
+        unitPer:
+          type: number
+          description: Unit/percentage quotation of the security
+          format: double
+          example: 1.0
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
+    MarketPlace_1:
+      required:
+      - numberOfFixings
+      - volume
+      type: object
+      properties:
+        volume:
+          type: number
+          description: Traded volume for the security on this market place
+          format: double
+          example: 2515281.0
+        numberOfFixings:
+          type: number
+          description: Number of price fixings for the security on this market place
+          format: double
+          example: 3078.0
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    OrderQuotesResponse:
+      required:
+      - marketPlaceData
+      - securityRates
+      type: object
+      properties:
+        securityRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityRate'
+        marketPlaceData:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketPlace_1'
+      description: A summary of the order for the order cancellation execution
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            offline_access: Request an OAuth2 Refresh Token
+            openid: Request access to OpenId Connect functionality
+            order_securities: Order Securities
+x-original-swagger-version: '2.0'

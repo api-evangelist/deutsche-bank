@@ -1,0 +1,203 @@
+openapi: 3.2.0
+info:
+  title: GPL-SPA Auth & Authorization API Contract ForgeRock OAuth…
+  description: 'Consolidated API contract derived from gpl-spa code and runtime config.
+
+
+    Notes:
+
+    - Some ForgeRock endpoints are called through @forgerock/javascript-sdk, so exact wire paths are partially SDK-driven.
+
+    - Paths below use conventional ForgeRock AM/OAuth endpoints based on configured baseUrl/realmPath.'
+  version: 1.0.0
+servers:
+- url: https://simulator-api.db.com:443/gw/public/oneid/
+tags:
+- name: ForgeRock OAuth
+paths:
+  /am/oauth2/realms/root/realms/{realm}/authorize:
+    get:
+      tags:
+      - ForgeRock OAuth
+      summary: OAuth authorize endpoint
+      description: Accessed by TokenManager.getTokens(...), may include prompt=none and login_hint.
+      operationId: authorize
+      parameters:
+      - name: realm
+        in: path
+        description: Realm name in ForgeRock path.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - consumer
+          - norisbank
+      - name: client_id
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 163440-1_deutschebank_onlineBankingClient
+      - name: response_type
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: code
+      - name: scope
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: openid
+      - name: redirect_uri
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: state
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: prompt
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          enum:
+          - none
+          - login
+      - name: login_hint
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        '302':
+          description: Redirect with authorization code
+        '200':
+          description: Embedded/SDK-dependent success response
+        4XX:
+          $ref: '#/components/responses/ClientError'
+  /am/oauth2/realms/root/realms/{realm}/access_token:
+    post:
+      tags:
+      - ForgeRock OAuth
+      summary: Exchange authorization data for OAuth tokens
+      description: Called via TokenManager.getTokens(...).
+      operationId: exchangeToken
+      parameters:
+      - name: realm
+        in: path
+        description: Realm name in ForgeRock path.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - consumer
+          - norisbank
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OAuthTokenRequest'
+        required: false
+      responses:
+        '200':
+          description: OAuth tokens
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OAuthTokenResponse'
+        4XX:
+          $ref: '#/components/responses/ClientError'
+        5XX:
+          $ref: '#/components/responses/ServerError'
+components:
+  schemas:
+    OAuthTokenRequest:
+      type: object
+      properties:
+        grant_type:
+          type: string
+          example: authorization_code
+        code:
+          type: string
+        redirect_uri:
+          type: string
+        client_id:
+          type: string
+        code_verifier:
+          type: string
+      additionalProperties: true
+    OAuthTokenResponse:
+      required:
+      - accessToken
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        idToken:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+        scope:
+          type: string
+          example: openid
+        acr:
+          type: string
+          example: '2'
+      additionalProperties: true
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        message:
+          type: string
+      additionalProperties: true
+  responses:
+    ClientError:
+      description: 4xx client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: 5xx server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

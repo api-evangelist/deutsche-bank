@@ -1,0 +1,924 @@
+openapi: 3.2.0
+info:
+  title: Merchant-Server II REST Services Alias API
+  version: v2.1
+  description: The alias API contains endpoints to add, update or delete aliases for means of payment.
+servers:
+- url: https://testmerch.directpos.de/rest-api/services/v2.1/
+security:
+- bearerAuth: []
+tags:
+- name: Alias
+  description: The alias API contains endpoints to add, update or delete aliases for means of payment.
+paths:
+  /alias/bankaccount/{alias}:
+    get:
+      tags:
+      - Alias
+      summary: Retrieves a bank account alias by its name
+      operationId: aliasBankAccountGet
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: alias
+        in: path
+        description: Name of the alias.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: da2c9029-b180-42a7-b473-50d182a01f8a
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the alias. Sensitive bank account data may be masked, depending on the configuration of the merchant's account. If the alias is unknown or in case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+    delete:
+      tags:
+      - Alias
+      summary: Deletes a bank account alias
+      operationId: aliasBankAccountDelete
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: alias
+        in: path
+        description: Name of the alias.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: da2c9029-b180-42a7-b473-50d182a01f8a
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, indicating whether or not the operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+    patch:
+      tags:
+      - Alias
+      summary: Updates the address attached to a bank account alias
+      description: In most SEPA countries, address data is not required for payment processing. However, some countries require addresses in addition to means of payment data for successful authorization. This endpoint provides functionality to update this address data.
+      operationId: aliasBankAccountAddressPatch
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: alias
+        in: path
+        description: Name of the alias.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: da2c9029-b180-42a7-b473-50d182a01f8a
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommonAddress'
+            examples:
+              sample21:
+                summary: Sample SEPA address.
+                description: Sample SEPA address.
+                value:
+                  address_line_1: Rohrteichstr 18
+                  postalCode: '98765'
+                  city: newCity
+                  country: DE
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the updated alias. Sensitive bank account data may be masked, depending on the configuration of the merchant's account. If the alias was unknown or in case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+  /alias/bankaccount:
+    post:
+      tags:
+      - Alias
+      summary: Creates a new bank account alias
+      description: Clients may specify a bank account alias themselves by submitting the desired value in the alias field. If the alias field is left blank, an alias will be generated. Bank account aliases may also be created during payment processing. The bank account field of the request requires an iban to be present. All other fields are optional. In most SEPA countries, address data is not required for payment processing. However, some countries require addresses in addition to means of payment data for successful authorization. This is why this endpoint provides an option to specify additional address data which will be stored along with the new alias if present. Bank accounts and aliases have a 1:1 relation, that is if an alias is assigned to a bank account creating another alias for the same bank account results in an error, as does assigning an existing alias to another bank account.
+      operationId: aliasBankAccountCreatePost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasBankAccountRequest'
+            example:
+              alias: example-dd-alias
+              bank_account:
+                iban: DE39123456790009290701
+                account_holder: Rene Holder
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the created alias. Sensitive bank account data may be masked, depending on the configuration of the merchant's account. In case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+  /alias/bankaccount/get:
+    post:
+      tags:
+      - Alias
+      summary: Retrieves a bank account alias by bank account data
+      description: Due to security reasons, this is a _GET with body payload_ (see https://opensource.zalando.com/restful-api-guidelines/#get-with-body) operation. No resources will be created.
+      operationId: aliasBankAccountGetPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankAccount'
+            example:
+              iban: DE39123456790009290701
+              account_holder: Rene Holder
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the alias. Sensitive bank account data may be masked, depending on the configuration of the merchant's account. In case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+  /alias/creditcard:
+    post:
+      tags:
+      - Alias
+      summary: Creates a new credit card alias
+      description: Clients may specify a card number alias themselves by submitting the desired value in the alias field. If the alias field is left blank, an alias will be generated. Card number aliases may also be created during payment processing. The credit card field of the request requires a number and an expiry date to be present. All other fields are optional. Credit cards and aliases have a 1:1 relation, that is if an alias is assigned to a credit card creating another alias for the same card results in an error, as does assigning an existing alias to another credit card.
+      operationId: aliasCreditCardCreatePost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AliasCreditCardRequest'
+            example:
+              alias: example-cc-alias
+              credit_card:
+                number: '4111111111111111'
+                code: '123'
+                cardHolder: Card T. Holder
+                expiry_date:
+                  year: 2029
+                  month: 11
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the created alias. Sensitive credit card data may be masked, depending on the configuration of the merchant's account. In case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+  /alias/creditcard/{alias}:
+    get:
+      tags:
+      - Alias
+      summary: Retrieves a credit card alias by its name
+      operationId: aliasCreditCardGet
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: alias
+        in: path
+        description: Name of the alias.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: da2c9029-b180-42a7-b473-50d182a01f8a
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the alias. Sensitive credit card data may be masked, depending on the configuration of the merchant's account. In case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+    delete:
+      tags:
+      - Alias
+      summary: Deletes a credit card alias
+      operationId: aliasCreditCardDelete
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: alias
+        in: path
+        description: Name of the alias.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: da2c9029-b180-42a7-b473-50d182a01f8a
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, indicating whether or not the operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+  /alias/creditcard/get:
+    post:
+      tags:
+      - Alias
+      summary: Retrieves a credit card alias by credit card data
+      description: Due to security reasons, this is a _GET with body payload_ (see https://opensource.zalando.com/restful-api-guidelines/#get-with-body) operation. No resources will be created.
+      operationId: aliasCreditCardGetPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditCard'
+            example:
+              number: '4111111111111111'
+              code: '123'
+              cardHolder: Card T. Holder
+              expiry_date:
+                year: 2029
+                month: 11
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the alias. Sensitive credit card data may be masked, depending on the configuration of the merchant's account. If the credit card data did not match a known credit card or in case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+  /alias/{alias}:
+    get:
+      tags:
+      - Alias
+      summary: Retrieves a credit card or bank account alias by its name
+      description: This is a generalized variant of the other GET alias endpoints of this API. May be used by clients that cannot or do not want to decide on the type of alias to be retrieved.
+      operationId: aliasGet
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: alias
+        in: path
+        description: Name of the alias.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: da2c9029-b180-42a7-b473-50d182a01f8a
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, accompanied by information about the alias. Depending on the type of means of payment this alias is connected to, the appropriate fields will be set in the response. Sensitive means of payment data may be masked, depending on the configuration of the merchant's account. If the alias is unknown or in case of a known business or persistence error, only error code and message are provided.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AliasResponse'
+    delete:
+      tags:
+      - Alias
+      summary: Deletes a credit card or bank account alias
+      description: This is a generalized variant of the other DELETE alias endpoints of this API. May be used by clients that cannot or do not want to decide on the type of alias to be deleted.
+      operationId: aliasDelete
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: alias
+        in: path
+        description: Name of the alias.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: da2c9029-b180-42a7-b473-50d182a01f8a
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: A return code and a message, indicating whether or not the operation was successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+components:
+  schemas:
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+    AliasInfo:
+      type: object
+      properties:
+        alias:
+          type: string
+          description: Name of the alias.
+          example: da2c9029-b180-42a7-b473-50d182a01f8a
+        credit_card:
+          $ref: '#/components/schemas/CreditCardInfo'
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+      description: Contains information about the created or updated alias. This field is null if the there was no 'alias_info' in the request.
+    AliasResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        alias_info:
+          $ref: '#/components/schemas/AliasInfo'
+      description: Common response of all alias requests.
+    ExpiryDate:
+      required:
+      - month
+      - year
+      type: object
+      properties:
+        year:
+          maximum: 2099
+          minimum: 2000
+          type: integer
+          description: The credit card expiry year.
+          format: int32
+          example: 2021
+        month:
+          maximum: 12
+          minimum: 1
+          type: integer
+          description: The credit card expiry month.
+          format: int32
+          example: 11
+      description: The credit card expiry date.
+    AliasBankAccountRequest:
+      type: object
+      properties:
+        alias:
+          maxLength: 50
+          minLength: 0
+          type: string
+          description: The alias value. If no value is set an alias is created by the system.
+          example: 221f56ca355d8e6c42517749cf79ceb8
+        token:
+          maxLength: 500
+          minLength: 0
+          pattern: '[a-zA-Z0-9/+=_-]*'
+          type: string
+          description: The token value.
+          example: eyJ0IjoiSFcyaS13cTB3PT0iLCJzIjoiaWIybzFRMHEifQ
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+      description: Contains information used to create an alias for a bank account. Either `token` or `bank_account` must be specified.
+    CommonAddressExtensions:
+      type: object
+      properties:
+        alternative_address_data:
+          $ref: '#/components/schemas/AlternativeAddressData'
+        paydirekt_data:
+          $ref: '#/components/schemas/AddressPaydirektData'
+      description: Service specific address fields.
+    BaseResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+    BankAccount:
+      required:
+      - iban
+      type: object
+      properties:
+        bic:
+          maxLength: 11
+          minLength: 11
+          pattern: '[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}'
+          type: string
+          description: "The business identifier code (BIC) of a bank account. If the branch identifier\n                (positions 9 to 11) is not applicable, it is set to \"XXX\". "
+          example: VZVDDED1XXX
+        iban:
+          maxLength: 34
+          minLength: 15
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}'
+          type: string
+          description: The international bank account number of a bank account.
+          example: DE17215730140403340300
+        account_holder:
+          maxLength: 27
+          minLength: 1
+          pattern: .*
+          type: string
+          description: The account holder of the bank account.
+          example: Max Muster
+        bank_name:
+          type: string
+          description: Name of the bank.
+          example: Musterbank
+      description: Information about a bank account.
+    AddressPaydirektData:
+      type: object
+      properties:
+        addon:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Additional address information.
+          example: Apartment 12A
+      description: Paydirekt specific address fields.
+    CreditCard:
+      required:
+      - expiry_date
+      - number
+      type: object
+      properties:
+        number:
+          maxLength: 19
+          minLength: 10
+          pattern: '[0-9]*'
+          type: string
+          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
+          example: '41111111111111111'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
+        code:
+          maxLength: 4
+          minLength: 3
+          pattern: '[0-9]*'
+          type: string
+          description: Card verification number of the credit card (also CVV or CVC).
+          example: '332'
+        cardholder:
+          maxLength: 27
+          minLength: 1
+          type: string
+          description: The holder of a credit card.
+          example: Max Muster
+      description: Information about a credit card.
+    AliasCreditCardRequest:
+      type: object
+      properties:
+        alias:
+          maxLength: 50
+          minLength: 0
+          type: string
+          description: The alias value. If no value is set an alias is created by the system.
+          example: 221f56ca355d8e6c42517749cf79ceb8
+        token:
+          maxLength: 500
+          minLength: 0
+          pattern: '[a-zA-Z0-9/+=_-]*'
+          type: string
+          description: The token value.
+          example: eyJ0IjoiSFcyaS13cTB3PT0iLCJzIjoiaWIybzFRMHEifQ
+        credit_card:
+          $ref: '#/components/schemas/CreditCard'
+      description: Contains information used to create an alias for a credit card. Either `token` or `credit_card` must be specified.
+    CreditCardInfo:
+      required:
+      - expiry_date
+      - number
+      type: object
+      properties:
+        number:
+          maxLength: 19
+          minLength: 10
+          pattern: '[0-9]*'
+          type: string
+          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
+          example: '41111111111111111'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
+        cardholder:
+          maxLength: 27
+          minLength: 1
+          type: string
+          description: The holder of a credit card.
+          example: Max Muster
+        brand:
+          type: string
+          description: "The credit card brand.  The use of this field requires an explicit activation. Please contact customer support. Possible values:     \n           \n* `AMEX`\n* `DINERS`\n* `JCB`\n* `MAESTRO`\n* `MASTERCARD`\n* `VISA`        \n"
+          example: VISA
+          enum:
+          - AMEX
+          - DINERS
+          - JCB
+          - MAESTRO
+          - MASTERCARD
+          - VISA
+        issuer_country:
+          type: string
+          description: The card issuers country of origin.  The use of this field requires an explicit activation. Please contact customer support.
+      description: Information about a credit card.
+    PhoneContact:
+      required:
+      - phone_number
+      - phone_type
+      type: object
+      properties:
+        phone_type:
+          type: string
+          description: 'The phone type.
+
+
+            * `FAX`
+
+            * `HOME`
+
+            * `MOBILE`
+
+            * `OTHER`
+
+            * `PAGER`
+
+            * `WORK`
+
+            '
+          example: FAX
+          enum:
+          - FAX
+          - HOME
+          - MOBILE
+          - OTHER
+          - PAGER
+          - WORK
+        phone_number:
+          maxLength: 16
+          minLength: 0
+          pattern: \+[1-9]\d{1,14}
+          type: string
+          description: A phone number in its canonical international E.164 numbering plan format.
+          example: '+442071838750'
+      description: A means of contacting a customer by phone.
+      example:
+        phone_type: FAX
+        phone_number: '+442071838750'
+    AlternativeAddressData:
+      type: object
+      properties:
+        street:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: The street.
+          example: Main Street
+        street_number:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: The street number.
+          example: 123a
+      description: Alternative address fields.
+    CommonAddress:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Customer's title.
+          example: Ms
+        first_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: First name of the individual.
+          example: Jane
+        last_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Last name of the individual.
+          example: Doe
+        company_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Name of the company.
+          example: Acme Inc.
+        email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address of the individual.
+          example: test_jane@gmail.com
+        phone_contact:
+          $ref: '#/components/schemas/PhoneContact'
+        address_line_1:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line.
+          example: Main Street 123
+        address_line_2:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line. For 3DS this maps to additional1.
+          example: Building A
+        address_line_3:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line. For 3DS this maps to additional2.
+          example: Apartment 12
+        postal_code:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Postal code of the address.
+          example: '80469'
+        city:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: City of the address.
+          example: Munich
+        state:
+          maxLength: 300
+          minLength: 0
+          type: string
+          description: State or province of the address.
+          example: BY
+        country:
+          maxLength: 2
+          minLength: 2
+          pattern: '[A-Z]{2}'
+          type: string
+          description: The ISO 3166 Alpha-2 country code (upper case) of the individual's homeland.
+          example: DE
+        extensions:
+          $ref: '#/components/schemas/CommonAddressExtensions'
+      description: Address data as applicable to most use cases.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

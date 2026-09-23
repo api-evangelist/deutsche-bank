@@ -1,0 +1,190 @@
+openapi: 3.2.0
+info:
+  title: dbapi-sepaInstantCreditTransfer Cancel SEPA Instant Credit…
+  description: Easily initiate SEPA Instant Credit Transfers, both single and bulk, with complementary operations such as status checks, cancellation, second factor retry and payee verification.
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v3
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/paymentInitiation/payments/v3
+tags:
+- name: Cancel SEPA Instant Credit Transfers
+  description: Use these endpoints to cancel existing SEPA Instant Credit Transfers.
+paths:
+  /sepaInstantCreditTransfer/{paymentId}:
+    delete:
+      tags:
+      - Cancel SEPA Instant Credit Transfers
+      summary: Cancel the SEPA Instant Credit Transfers
+      description: Cancel a previously initiated SEPA Instant Credit Transfer.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of SEPA Instant Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: idempotency-id
+        in: header
+        description: Unique id of the service call. Must be present during retries to avoid multiple processing of the same request
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatusResponse'
+        default:
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_auth_code:
+        - instant_sepa_credit_transfers
+      - api_db_smart_access:
+        - instant_sepa_credit_transfers
+      operationId: deleteSepaInstantCreditTransferByPaymentId
+      x-operation-id-source: derived
+  /sepaInstantCreditTransfer/bulk/{paymentId}:
+    delete:
+      tags:
+      - Cancel SEPA Instant Credit Transfers
+      summary: Cancel the Bulk SEPA Instant Credit Transfers
+      description: Cancel a previously initiated Bulk SEPA Instant Credit Transfer.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of Bulk SEPA Instant Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: idempotency-id
+        in: header
+        description: Unique id of the service call. Must be present during retries to avoid multiple processing of the same request.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentStatusResponse'
+        default:
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_auth_code:
+        - bulk_instant_sepa_credit_transfers
+      - api_db_smart_access:
+        - bulk_instant_sepa_credit_transfers
+      operationId: deleteSepaInstantCreditTransferBulkByPaymentId
+      x-operation-id-source: derived
+components:
+  schemas:
+    PaymentStatusResponse:
+      required:
+      - authId
+      - paymentId
+      - transactionStatus
+      type: object
+      properties:
+        transactionStatus:
+          $ref: '#/components/schemas/TransactionStatus'
+        paymentId:
+          $ref: '#/components/schemas/PaymentId'
+        authId:
+          $ref: '#/components/schemas/AuthId'
+    TransactionStatus:
+      type: string
+      description: 'Transaction Status: Specifies the status of a transaction, in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. PDNG - Pending. The payment is undergoing further validations or waiting for processing. ACCP - AcceptedCustomerProfile. The payment instruction has been accepted after validations. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution. Current-dated SCT instant transactions cannot be cancelled. For SCT instant single, the possible statuses are: RCVD, ACTC, PDNG, ACCP, RJCT, CANC. The typical flow for current-dated SCT instant single transactions is RCVD -> PDNG -> ACCP (with RJCT status possible at any step), while for future-dated SCT instant single transactions the flow is RCVD -> ACTC -> (after execution) PDNG -> ACCP (with RJCT status possible at any step and CANC in case of cancellation of a payment before being executed). For SCT instant bulk the possible statuses are: RCVD, ACTC, RJCT, CANC.'
+      example: ACTC
+      enum:
+      - RCVD
+      - ACTC
+      - PDNG
+      - ACCP
+      - RJCT
+      - CANC
+    AuthId:
+      type: string
+      description: Authentication Id used for update SCA status SEPA payment; it will be valid for 5 minutes.
+      example: 232ed5b7-fc70-4c67-98bb-bf95b3300001
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    PaymentId:
+      type: string
+      description: Resource identification of the generated paymentinitiation resource ('Transaction-ID' from the header which is populated with the Intra Bank ID); should be available at least when status is PDNG or ACCP.
+      example: 232ed5b7-fc70-4c67-98bb-bf95b3300001
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+            openid: Request access to OpenId Connect functionality
+            offline_access: Request an OAuth2 Refresh Token
+    api_db_smart_access:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+x-original-swagger-version: '2.0'

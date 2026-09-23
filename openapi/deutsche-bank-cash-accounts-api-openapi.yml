@@ -1,0 +1,333 @@
+openapi: 3.2.0
+info:
+  title: dbapi-cashAccounts Cash Accounts API
+  description: Gives you an overview of all savings and current accounts of your customers.
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v2
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/banking/cashAccounts/v2
+tags:
+- name: Cash Accounts
+  description: Gives you an overview of all savings and current accounts of your customers. With this api, you can retrieve details such as IBAN, BIC or account type which you can then use for further inquiries on the accounts.
+paths:
+  /:
+    get:
+      tags:
+      - Cash Accounts
+      summary: Reads all cash accounts of a customer
+      description: Reads all accounts of a customer. If given IBAN is not valid or does not represent an account of the current user, an empty result is returned.
+      operationId: getCashAccounts
+      parameters:
+      - name: iban
+        in: query
+        description: IBAN representing an account of the current user.
+        required: false
+        style: form
+        explode: true
+        schema:
+          maxLength: 34
+          minLength: 5
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+          type: string
+      - name: currencyCode
+        in: query
+        description: ISO 4217 Alpha 3 currency code.
+        required: false
+        schema:
+          pattern: '[A-Z]{3}'
+          type: string
+      - name: limit
+        in: query
+        description: the number of items of a page.
+        required: false
+        schema:
+          maximum: 100
+          minimum: 0
+          type: integer
+          format: int32
+          default: 10
+      - name: offset
+        in: query
+        description: the page to be returned.
+        required: false
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+          default: 0
+      - name: accountTypeFilter
+        in: query
+        description: optional - filter the result by account type, default ALL.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          default: ALL
+          enum:
+          - CURRENT_ACCOUNT
+          - DEPOSIT_ACCOUNT
+          - ALL
+      - name: status
+        in: query
+        description: optional - status of an account, default ACTIVE.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          default: ACTIVE
+          enum:
+          - ACTIVE
+          - ALL
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  totalItems:
+                    minimum: 0
+                    type: integer
+                    description: Cumulated number of items across all pages for your request parameters.
+                    format: int32
+                  limit:
+                    minimum: 0
+                    type: integer
+                    description: The number of items of a page.
+                    format: int32
+                  offset:
+                    minimum: 0
+                    type: integer
+                    description: The page to be returned.
+                    format: int32
+                  accounts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CashAccount'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 2
+                message: Invalid IBAN provided.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 9007
+                message: Invalid currency code
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+      security:
+      - api_auth_code:
+        - read_accounts
+        - read_accounts_list
+        - verify_account_ownership
+      - api_db_smart_access:
+        - read_accounts
+        - read_accounts_list
+  /brand:
+    get:
+      tags:
+      - Cash Accounts
+      summary: Retrieves brand information for a given IBAN
+      description: Retrieves the brand for a given IBAN. This endpoint is applicable to specific use-cases only. Please get in touch with us on specifics.
+      operationId: getBrand
+      parameters:
+      - name: iban
+        in: query
+        description: IBAN representing an account of a customer
+        required: true
+        style: form
+        explode: true
+        schema:
+          maxLength: 34
+          minLength: 5
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandResponse'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 2
+                message: Invalid IBAN provided.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 9007
+                message: Invalid currency code
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+      security:
+      - api_client_credential:
+        - read_brand
+components:
+  schemas:
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
+    CashAccount:
+      required:
+      - accountType
+      - iban
+      - productDescription
+      type: object
+      properties:
+        iban:
+          $ref: '#/components/schemas/IBAN'
+        currencyCode:
+          $ref: '#/components/schemas/CurrencyCode'
+        bic:
+          type: string
+          description: BIC of the cash account
+        accountType:
+          type: string
+          description: Type of the cash account
+        currentBalance:
+          type: number
+          description: Booked balance in EUR
+        productDescription:
+          type: string
+          description: Description of the product
+        status:
+          type: string
+          description: Status of the cash account. Available only if your request contains the request parameter "status" with value "ALL".
+          enum:
+          - ACTIVE
+          - CLOSED
+        closureDate:
+          type: string
+          description: Date when the cash account was closed. Available only if your request contains the request parameter "status" with value "ALL". ISO 8601 format YYYY-MM-DD.
+          format: date
+      description: A cash account.
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    BrandResponse:
+      required:
+      - brand
+      type: object
+      properties:
+        brand:
+          type: string
+          description: Brand of the cash account
+          enum:
+          - UNDEFINED
+          - DEUTSCHE_BANK
+          - POSTBANK
+          - DSL_BANK
+          - FYRST
+          - NORISBANK
+          - DB_EUROPE
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            read_accounts: Grants read access to all basic cash account data like the current balance and a general account overview for the given customer.
+            read_accounts_list: Grants read access to basic cash account data and a general account overview for the given customer.
+            verify_account_ownership: Performs account verification for the given customer.
+            openid: Request access to OpenId Connect functionality
+            offline_access: Request an OAuth2 Refresh Token
+    api_client_credential:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            read_brand: Grants permission to get data from the /brand endpoint. Only available with client credential grant flow right now.
+    api_db_smart_access:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            read_accounts: Grants read access to all basic cash account data like the current balance and a general account overview for the given customer.
+            read_accounts_list: Grants read access to basic cash account data and a general account overview for the given customer.
+x-original-swagger-version: '2.0'

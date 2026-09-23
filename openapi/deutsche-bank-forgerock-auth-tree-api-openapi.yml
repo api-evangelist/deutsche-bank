@@ -1,0 +1,142 @@
+openapi: 3.2.0
+info:
+  title: GPL-SPA Auth & Authorization API Contract ForgeRock Auth…
+  description: 'Consolidated API contract derived from gpl-spa code and runtime config.
+
+
+    Notes:
+
+    - Some ForgeRock endpoints are called through @forgerock/javascript-sdk, so exact wire paths are partially SDK-driven.
+
+    - Paths below use conventional ForgeRock AM/OAuth endpoints based on configured baseUrl/realmPath.'
+  version: 1.0.0
+servers:
+- url: https://simulator-api.db.com:443/gw/public/oneid/
+tags:
+- name: ForgeRock Auth Tree
+paths:
+  /am/json/realms/root/realms/{realm}/authenticate:
+    post:
+      tags:
+      - ForgeRock Auth Tree
+      summary: Start/continue authentication tree
+      description: Called indirectly via FRAuth.next(...), with query ForceAuth=true and tree=.
+      operationId: authenticateTreeStep
+      parameters:
+      - name: realm
+        in: path
+        description: Realm name in ForgeRock path.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - consumer
+          - norisbank
+      - name: ForceAuth
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: 'true'
+      - name: tree
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          example: onlineBanking
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgeRockStepRequest'
+        required: false
+      responses:
+        '200':
+          description: Next step or login success
+          content:
+            application/json:
+              schema:
+                oneOf:
+                - $ref: '#/components/schemas/ForgeRockStepResponse'
+                - $ref: '#/components/schemas/ForgeRockLoginSuccess'
+        4XX:
+          $ref: '#/components/responses/ClientError'
+        5XX:
+          $ref: '#/components/responses/ServerError'
+components:
+  responses:
+    ServerError:
+      description: 5xx server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ClientError:
+      description: 4xx client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ForgeRockLoginSuccess:
+      type: object
+      properties:
+        tokenId:
+          type: string
+        successUrl:
+          type: string
+        code:
+          type: string
+        state:
+          type: string
+      additionalProperties: true
+      description: Success shape may vary by SDK/AM config
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        message:
+          type: string
+      additionalProperties: true
+    ForgeRockStepResponse:
+      required:
+      - authId
+      type: object
+      properties:
+        authId:
+          type: string
+        stage:
+          type: string
+          example: UsernamePassword
+        callbacks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+    ForgeRockStepRequest:
+      type: object
+      properties:
+        authId:
+          type: string
+        callbacks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+      description: Generic callback submission body for FRAuth.next
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

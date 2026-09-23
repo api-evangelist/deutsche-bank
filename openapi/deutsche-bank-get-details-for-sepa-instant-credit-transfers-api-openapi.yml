@@ -1,0 +1,494 @@
+openapi: 3.2.0
+info:
+  title: dbapi-sepaInstantCreditTransfer Get details for SEPA…
+  description: Easily initiate SEPA Instant Credit Transfers, both single and bulk, with complementary operations such as status checks, cancellation, second factor retry and payee verification.
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v3
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/paymentInitiation/payments/v3
+tags:
+- name: Get details for SEPA Instant Credit Transfers
+  description: Use these endpoints to retrieve the details of SEPA Instant Credit Transfers, both for single and bulk payments.
+paths:
+  /sepaInstantCreditTransfer/{paymentId}:
+    get:
+      tags:
+      - Get details for SEPA Instant Credit Transfers
+      summary: Retrieve the details of the SEPA Instant Credit Transfer
+      description: Retrieve the details of a previously initiated SEPA Instant Credit Transfer.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of SEPA Instant Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SepaInstantCreditTransferDetails'
+        default:
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_auth_code:
+        - instant_sepa_credit_transfers
+      - api_db_smart_access:
+        - instant_sepa_credit_transfers
+      operationId: getSepaInstantCreditTransferByPaymentId
+      x-operation-id-source: derived
+  /sepaInstantCreditTransfer/bulk/{paymentId}:
+    get:
+      tags:
+      - Get details for SEPA Instant Credit Transfers
+      summary: Retrieve the details of the Bulk SEPA Instant Credit Transfers
+      description: Retrieve the details of a previously initiated Bulk SEPA Instant Credit Transfer.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of Bulk SEPA Instant Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SepaInstantCreditTransferBulkDetails'
+        default:
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_auth_code:
+        - bulk_instant_sepa_credit_transfers
+      - api_db_smart_access:
+        - bulk_instant_sepa_credit_transfers
+      operationId: getSepaInstantCreditTransferBulkByPaymentId
+      x-operation-id-source: derived
+components:
+  schemas:
+    AddressLine:
+      type: object
+      properties:
+        streetAndHouseNumber:
+          maxLength: 70
+          type: string
+          description: Street name and house number
+        zipCodeAndCity:
+          maxLength: 70
+          type: string
+          description: Zip code and city name
+      description: This Object is deprecated and will be completely removed after November 2026. Please use other address fields to submit addresses.
+    SepaInstantCreditTransferBulkDetails:
+      required:
+      - controlSum
+      - paymentInformation
+      type: object
+      properties:
+        controlSum:
+          $ref: '#/components/schemas/ControlSum'
+        paymentInformation:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentInformationDetailsBulk'
+        additionalInfo:
+          $ref: '#/components/schemas/AdditionalInfo'
+        messageId:
+          $ref: '#/components/schemas/MessageIdForGroupHeader'
+        numberOfTransactions:
+          $ref: '#/components/schemas/NumberOfTransactions'
+        creationDateTime:
+          $ref: '#/components/schemas/CreationDateTime'
+        initiatingParty:
+          $ref: '#/components/schemas/InitiatingParty'
+      description: Bulk SEPA Instant Credit Transfers Details
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
+    PaymentInformationDetailsSingle:
+      allOf:
+      - $ref: '#/components/schemas/PaymentInformationBase'
+      - type: object
+        properties:
+          creditTransfers:
+            $ref: '#/components/schemas/CreditTransfersDetails'
+    CreditTransfersDetails:
+      required:
+      - creditor
+      - creditorAccount
+      - instructedAmount
+      - paymentIdentification
+      - paymentInformation
+      type: object
+      properties:
+        paymentIdentification:
+          $ref: '#/components/schemas/PaymentIdentification'
+        creditorAgent:
+          $ref: '#/components/schemas/CreditorAgent'
+        creditorAccount:
+          $ref: '#/components/schemas/CreditorAccount'
+        instructedAmount:
+          $ref: '#/components/schemas/InstructedAmount'
+        creditor:
+          $ref: '#/components/schemas/Creditor'
+        remittanceInformationUnstructured:
+          $ref: '#/components/schemas/RemittanceInformationUnstructured'
+      description: Bulk SEPA Credit Transfers Details
+    DebtorName:
+      maxLength: 140
+      type: string
+    EndToEndIdentification:
+      pattern: '[a-zA-Z0-9.-]{1,35}$'
+      type: string
+      description: Unique identification assigned by the initiating party to unambiguously identify the transaction
+      example: E2E ID from customer
+    DebtorAccount:
+      required:
+      - iban
+      type: object
+      properties:
+        iban:
+          $ref: '#/components/schemas/IBAN'
+        currency:
+          $ref: '#/components/schemas/Currency'
+    RequestedExecutionDate:
+      type: string
+      description: Must match yyyy-MM-dd format, also in CET timezone.
+    InstructedAmount:
+      required:
+      - amount
+      - currency
+      type: object
+      properties:
+        amount:
+          type: number
+          example: 58.13
+        currency:
+          $ref: '#/components/schemas/Currency'
+    Creditor:
+      required:
+      - creditorName
+      type: object
+      properties:
+        creditorName:
+          $ref: '#/components/schemas/CreditorName'
+        creditorPostalAddress:
+          $ref: '#/components/schemas/Address'
+    CategoryPurposeCode:
+      maxLength: 35
+      type: string
+    PaymentInformationId:
+      maxLength: 35
+      type: string
+      description: Unique identification, as assigned by a sending party, to unambiguously identify the payment information.
+    MessageIdForGroupHeader:
+      maxLength: 35
+      type: string
+      description: Customer reference. This field can contain your own reference to assist you in identifying the file.
+      example: Message-ID-4711
+    AdditionalInfo:
+      type: object
+      properties:
+        transactionStatus:
+          $ref: '#/components/schemas/TransactionStatus'
+        paymentId:
+          $ref: '#/components/schemas/PaymentId'
+      description: Additional Info of Bulk SEPA Credit Transfers
+    Address:
+      type: object
+      properties:
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+          example: DE
+        street:
+          type: string
+          description: 'Street name is Optional. If provided, streetAndHouseNumber must be ignored '
+          example: Mainzer Landstrasse 11-17
+        houseNumber:
+          type: string
+          description: 'House number is Optional. If provided, streetAndHouseNumber must be ignored '
+          example: 11-17
+        city:
+          maxLength: 35
+          type: string
+          description: Town/city name.Optional. If provided, zipCodeAndCity must be ignored
+          example: Berlin
+        zipCode:
+          maxLength: 16
+          type: string
+          description: 'Postal Code. Optional. If provided, zipCodeAndCity must be ignored '
+          example: '10115'
+        addressLine:
+          $ref: '#/components/schemas/AddressLine'
+    BatchBooking:
+      type: boolean
+      description: Validated as true or false. If present and contains "true", batch booking is requested. If present and contains "false", booking per transaction is requester. If element is not present, pre-agreed customer-to-PSP conditions apply.
+    PaymentTypeInformation:
+      type: object
+      properties:
+        categoryPurpose:
+          $ref: '#/components/schemas/CategoryPurpose'
+    InitiatingParty:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+    PaymentIdentification:
+      type: object
+      properties:
+        endToEndIdentification:
+          $ref: '#/components/schemas/EndToEndIdentification'
+        instructionId:
+          pattern: '[a-zA-Z0-9.-]{1,35}$'
+          type: string
+          description: Identifier assigned by the initiating party to determine the instruction at the system level
+          example: Instruction ID 345678
+    CreditorName:
+      maxLength: 70
+      type: string
+      description: Name by which a party is known and which is usually used to identify that party.
+    CreditorAccount:
+      required:
+      - currency
+      - iban
+      type: object
+      properties:
+        iban:
+          $ref: '#/components/schemas/IBAN'
+        currency:
+          $ref: '#/components/schemas/Currency'
+    Currency:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
+    ControlSum:
+      type: number
+      description: The total sum of all Instructed Amounts within this request.
+    PaymentInformationDetailsBulk:
+      required:
+      - chargeBearer
+      - creditTransfers
+      - debtor
+      - debtorAccount
+      type: object
+      properties:
+        debtorAccount:
+          $ref: '#/components/schemas/DebtorAccount'
+        chargeBearer:
+          $ref: '#/components/schemas/ChargeBearer'
+        paymentInformationId:
+          $ref: '#/components/schemas/PaymentInformationId'
+        debtorAgent:
+          $ref: '#/components/schemas/DebtorAgent'
+        batchBooking:
+          $ref: '#/components/schemas/BatchBooking'
+        numberOfTransactions:
+          $ref: '#/components/schemas/NumberOfTransactions'
+        controlSum:
+          $ref: '#/components/schemas/ControlSum'
+        requestedExecutionDate:
+          $ref: '#/components/schemas/RequestedExecutionDate'
+        debtor:
+          $ref: '#/components/schemas/Debtor'
+        creditTransfers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditTransfersDetails'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        paymentTypeInformation:
+          $ref: '#/components/schemas/PaymentTypeInformation'
+      description: Bulk SEPA Credit Transfers Payment Information Details
+    PaymentId:
+      type: string
+      description: Resource identification of the generated paymentinitiation resource ('Transaction-ID' from the header which is populated with the Intra Bank ID); should be available at least when status is PDNG or ACCP.
+      example: 232ed5b7-fc70-4c67-98bb-bf95b3300001
+    PaymentInformationBase:
+      required:
+      - creditTransferTransactionInformation
+      - debtor
+      - debtorAccount
+      - paymentInformationId
+      - paymentMethod
+      type: object
+      properties:
+        paymentInformationId:
+          $ref: '#/components/schemas/PaymentInformationId'
+        paymentMethod:
+          $ref: '#/components/schemas/PaymentMethod'
+        paymentTypeInformation:
+          $ref: '#/components/schemas/PaymentTypeInformation'
+        requestedExecutionDate:
+          $ref: '#/components/schemas/RequestedExecutionDate'
+        debtor:
+          $ref: '#/components/schemas/Debtor'
+        debtorAccount:
+          $ref: '#/components/schemas/DebtorAccount'
+        debtorAgent:
+          $ref: '#/components/schemas/DebtorAgent'
+        chargeBearer:
+          $ref: '#/components/schemas/ChargeBearer'
+      description: Details related to the debtor, including account information, requested execution date and other settings defined for the request.
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    Debtor:
+      required:
+      - debtorName
+      type: object
+      properties:
+        debtorName:
+          $ref: '#/components/schemas/DebtorName'
+    DebtorAgent:
+      required:
+      - financialInstitutionId
+      type: object
+      properties:
+        financialInstitutionId:
+          $ref: '#/components/schemas/FinancialInstitutionId'
+      description: Financial institution servicing an account for the debtor. This field is optional but if provided, it must contain a valid financialInstitutionId.
+    CreditorAgent:
+      required:
+      - financialInstitutionId
+      type: object
+      properties:
+        financialInstitutionId:
+          $ref: '#/components/schemas/FinancialInstitutionId'
+      description: Financial institution servicing an account for the creditor. This field is optional but if provided, it must contain a valid financialInstitutionId.
+    NumberOfTransactions:
+      maximum: 500
+      minimum: 1
+      type: integer
+      description: The total number of Payment Instructions within this request.
+    PaymentMethod:
+      maxLength: 35
+      type: string
+      description: Specifies the means of payment that will be used to move the amount of money. Only TRF allowed for now.
+    RemittanceInformationUnstructured:
+      maxLength: 140
+      type: string
+      description: Free text reference related to the business transaction (e.g. invoice number, contract reference, order Id).
+    TransactionStatus:
+      type: string
+      description: 'Transaction Status: Specifies the status of a transaction, in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. PDNG - Pending. The payment is undergoing further validations or waiting for processing. ACCP - AcceptedCustomerProfile. The payment instruction has been accepted after validations. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution. Current-dated SCT instant transactions cannot be cancelled. For SCT instant single, the possible statuses are: RCVD, ACTC, PDNG, ACCP, RJCT, CANC. The typical flow for current-dated SCT instant single transactions is RCVD -> PDNG -> ACCP (with RJCT status possible at any step), while for future-dated SCT instant single transactions the flow is RCVD -> ACTC -> (after execution) PDNG -> ACCP (with RJCT status possible at any step and CANC in case of cancellation of a payment before being executed). For SCT instant bulk the possible statuses are: RCVD, ACTC, RJCT, CANC.'
+      example: ACTC
+      enum:
+      - RCVD
+      - ACTC
+      - PDNG
+      - ACCP
+      - RJCT
+      - CANC
+    Name:
+      maxLength: 70
+      type: string
+      description: Name by which a party is known and which is usually used to identify that party.
+    ChargeBearer:
+      maxLength: 35
+      type: string
+      description: Indicates who bears the transaction charges. Under the SEPA scheme, the only permitted value is SLEV.
+    CategoryPurpose:
+      type: object
+      properties:
+        categoryPurposeCode:
+          $ref: '#/components/schemas/CategoryPurposeCode'
+    CreationDateTime:
+      type: string
+      description: Creation time of SEPA Bulk Credit Transfers.
+      format: date-time
+    FinancialInstitutionId:
+      type: string
+      description: BICFI - Business identifier code for financial institutions. Standard SWIFT code used to uniquely identify banks and other financial institutions. Must be 8 or 11 alphanumeric characters.
+    SepaInstantCreditTransferDetails:
+      required:
+      - paymentInformation
+      type: object
+      properties:
+        paymentInformation:
+          $ref: '#/components/schemas/PaymentInformationDetailsSingle'
+        additionalInfo:
+          $ref: '#/components/schemas/AdditionalInfo'
+        messageId:
+          $ref: '#/components/schemas/MessageIdForGroupHeader'
+        numberOfTransactions:
+          $ref: '#/components/schemas/NumberOfTransactions'
+        creationDateTime:
+          $ref: '#/components/schemas/CreationDateTime'
+        initiatingParty:
+          $ref: '#/components/schemas/InitiatingParty'
+      description: SEPA Instant Credit Transfers Details
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+            openid: Request access to OpenId Connect functionality
+            offline_access: Request an OAuth2 Refresh Token
+    api_db_smart_access:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+x-original-swagger-version: '2.0'

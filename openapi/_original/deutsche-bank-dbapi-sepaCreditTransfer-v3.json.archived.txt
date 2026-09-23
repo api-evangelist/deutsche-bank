@@ -1,0 +1,2 @@
+# x-archived-from: deutsche-bank-dbapi-sepaCreditTransfer-v3.json
+# x-archived-on: 2026-09-16

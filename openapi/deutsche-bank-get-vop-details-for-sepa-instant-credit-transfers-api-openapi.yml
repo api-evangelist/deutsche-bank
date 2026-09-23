@@ -1,0 +1,287 @@
+openapi: 3.2.0
+info:
+  title: dbapi-sepaInstantCreditTransfer Get VoP details for SEPA…
+  description: Easily initiate SEPA Instant Credit Transfers, both single and bulk, with complementary operations such as status checks, cancellation, second factor retry and payee verification.
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v3
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/paymentInitiation/payments/v3
+tags:
+- name: Get VoP details for SEPA Instant Credit Transfers
+  description: Use these endpoints to check the Verification of Payee (VoP) details for your SEPA Instant Credit Transfers, whether you're making a single payment or a bulk transfer.
+paths:
+  /sepaInstantCreditTransfer/{paymentId}/vopDetails:
+    get:
+      tags:
+      - Get VoP details for SEPA Instant Credit Transfers
+      summary: Retrieve the VoP details for a single SEPA Instant Credit Transfer
+      description: Retrieve the Verification of Payee (VoP) details for a single SEPA Instant Credit Transfer. This endpoint confirms whether the beneficiary's name matches the provided IBAN before payment execution. It can be called if the payment initiation did not return a final VoP response and the status is TRY_AGAIN.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of SEPA Instant Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: idempotency-id
+        in: header
+        description: Unique id of the service call. Must be present during retries to avoid multiple processing of the same request.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VopDetailsSingle'
+        default:
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_auth_code:
+        - instant_sepa_credit_transfers
+      - api_db_smart_access:
+        - instant_sepa_credit_transfers
+      operationId: getSepaInstantCreditTransferByPaymentIdVopDetails
+      x-operation-id-source: derived
+  /sepaInstantCreditTransfer/bulk/{paymentId}/vopDetails:
+    get:
+      tags:
+      - Get VoP details for SEPA Instant Credit Transfers
+      summary: Retrieve the VoP details for Bulk SEPA Instant Credit Transfers
+      description: Retrieve the Verification of Payee (VoP) details for Bulk SEPA Instant Credit Transfers. This endpoint confirms whether the beneficiary's name matches the provided IBAN before payment execution. It can be called if the payment initiation did not return a final VoP response and the status is TRY_AGAIN.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of SEPA Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: idempotency-id
+        in: header
+        description: Unique id of the service call. Must be present during retries to avoid multiple processing of the same request.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VopDetailsBulk'
+        default:
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_auth_code:
+        - bulk_instant_sepa_credit_transfers
+      - api_db_smart_access:
+        - bulk_instant_sepa_credit_transfers
+      operationId: getSepaInstantCreditTransferBulkByPaymentIdVopDetails
+      x-operation-id-source: derived
+components:
+  schemas:
+    VopResponseStatusCode:
+      type: string
+      description: 'Status indicating the availability of the result. Possible values: READY - The VoP result is available and returned in the response. TRY_AGAIN - The VoP result is not ready yet. Please try again. NOT_AVAILABLE - VoP service is not available.'
+      example: TRY_AGAIN
+      enum:
+      - READY
+      - TRY_AGAIN
+      - NOT_AVAILABLE
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
+    VopCreditor:
+      required:
+      - name
+      type: object
+      properties:
+        name:
+          $ref: '#/components/schemas/Name'
+        closeMatchName:
+          $ref: '#/components/schemas/CloseMatchName'
+    CloseMatchName:
+      type: string
+      description: The creditor account holder's name as officially registered by the beneficiary's bank, provided when the vopStatus is CLOSE_MATCH.
+    NumberOfTransactions:
+      maximum: 500
+      minimum: 1
+      type: integer
+      description: The total number of Payment Instructions within this request.
+    VopDetailsBulk:
+      required:
+      - status
+      - vopResponse
+      type: object
+      properties:
+        vopResponse:
+          $ref: '#/components/schemas/VopResponseBulk'
+        status:
+          $ref: '#/components/schemas/VopResponseStatusCode'
+        message:
+          type: string
+    Name:
+      maxLength: 70
+      type: string
+      description: Name by which a party is known and which is usually used to identify that party.
+    VopSummary:
+      required:
+      - numberOfTransactions
+      - vopStatus
+      type: object
+      properties:
+        vopStatus:
+          $ref: '#/components/schemas/VopStatus'
+        numberOfTransactions:
+          description: Number of transactions with VoP status value MATCH, NO_MATCH, CLOSE_MATCH and NOT_APPLICABLE
+          allOf:
+          - $ref: '#/components/schemas/NumberOfTransactions'
+    VopResults:
+      required:
+      - creditor
+      - creditorAccount
+      - vopStatus
+      type: object
+      properties:
+        vopStatus:
+          $ref: '#/components/schemas/VopStatus'
+        creditor:
+          $ref: '#/components/schemas/VopCreditor'
+        creditorAccount:
+          $ref: '#/components/schemas/VopCreditorAccount'
+    VopDetailsSingle:
+      required:
+      - status
+      - vopResponse
+      type: object
+      properties:
+        vopResponse:
+          $ref: '#/components/schemas/VopResponseSingle'
+        status:
+          $ref: '#/components/schemas/VopResponseStatusCode'
+        message:
+          type: string
+    VopStatus:
+      type: string
+      description: 'The outcome of the Verification of Payee check, which compares the beneficiary''s name provided in the payment with the name registered at the beneficiary''s bank. Possible values are: MATCH - The beneficiary''s name fully matches. NO_MATCH - The beneficiary''s name does not match. CLOSE_MATCH - The beneficiary''s name is very similar to the one registered at the beneficiary''s bank. NOT_APPLICABLE - The VoP check could not be carried out (e.g. the beneficiary''s bank does not support the service)'
+      example: CLOSE_MATCH
+      enum:
+      - MATCH
+      - NO_MATCH
+      - CLOSE_MATCH
+      - NOT_APPLICABLE
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    VopResponseSingle:
+      required:
+      - creditor
+      - creditorAccount
+      - vopStatus
+      type: object
+      properties:
+        vopStatus:
+          $ref: '#/components/schemas/VopStatus'
+        creditor:
+          $ref: '#/components/schemas/VopCreditor'
+        creditorAccount:
+          $ref: '#/components/schemas/VopCreditorAccount'
+    VopResponseBulk:
+      required:
+      - vopResults
+      - vopSummary
+      type: object
+      properties:
+        numberOfTransactions:
+          description: Total number of transactions in the bulk file for the provided payment id.
+          allOf:
+          - $ref: '#/components/schemas/NumberOfTransactions'
+        vopSummary:
+          type: array
+          items:
+            $ref: '#/components/schemas/VopSummary'
+        vopResults:
+          type: array
+          items:
+            $ref: '#/components/schemas/VopResults'
+    VopCreditorAccount:
+      required:
+      - iban
+      type: object
+      properties:
+        iban:
+          $ref: '#/components/schemas/IBAN'
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+            openid: Request access to OpenId Connect functionality
+            offline_access: Request an OAuth2 Refresh Token
+    api_db_smart_access:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+x-original-swagger-version: '2.0'

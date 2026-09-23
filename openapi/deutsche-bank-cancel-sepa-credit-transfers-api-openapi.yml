@@ -1,0 +1,396 @@
+openapi: 3.2.0
+info:
+  title: dbapi-sepaCreditTransfer Cancel SEPA Credit Transfers API
+  description: Easily initiate SEPA Credit Transfers, both single and bulk, with complementary operations such as status checks, details retrieval, cancellation, second factor retry and payee verification.
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v3
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/paymentInitiation/payments/v3/sepaCreditTransfer
+tags:
+- name: Cancel SEPA Credit Transfers
+  description: Use these endpoints to cancel existing SEPA Credit Transfers.
+paths:
+  /{paymentId}:
+    delete:
+      tags:
+      - Cancel SEPA Credit Transfers
+      summary: Cancel the SEPA Credit Transfers
+      description: Cancel a previously initiated SEPA Credit Transfer.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of SEPA Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: idempotency-id
+        in: header
+        description: Unique id of the service call. Must be present during retries to avoid multiple processing of the same request
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SepaCreditTransferResponse'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 16
+                message: 'OTP invalid challenge response: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 132
+                message: not supported
+              - code: 138
+                message: it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue
+              - code: 139
+                message: it seems that you started a pushTAN challenge. Please use the GET endpoint to continue
+              - code: 6500
+                message: Parameters in the url or content type are incorrect, please check and retry.
+              - code: 6501
+                message: Contracting bank details are Invalid or Missing.
+              - code: 6502
+                message: The accepted instructed amount currency is EUR. Please correct your entry and try again.
+              - code: 6503
+                message: Parameters submitted are missing or invalid.
+              - code: 6505
+                message: Invalid execution date.
+              - code: 6507
+                message: Cancellation is not allowed for this transaction.
+              - code: 6509
+                message: The parameter in the request does not match with the latest Auth id.
+              - code: 6510
+                message: Current status does not allow second factor update with the action provided.
+              - code: 6511
+                message: Invalid execution date.
+              - code: 6515
+                message: The source iban or account type is invalid.
+              - code: 6516
+                message: Cancellation is not allowed for this transaction.
+              - code: 6517
+                message: The accepted creditor account currency is EUR. Please correct your entry and try again.
+              - code: 6518
+                message: The requested collection date should not be a public holiday or in the weekends. Please try again.
+              - code: 6519
+                message: The requested execution date should not be greater than 90 days in the future. Please try again.
+              - code: 6520
+                message: 'Invalid value: requestedExecutionDate must match yyyy-MM-dd format.'
+              - code: 6521
+                message: The accepted debtor account currency is EUR. Please correct your entry and try again.
+              - code: 6523
+                message: There is no legal entity present for the source iban. Please correct your entry and try again.
+              - code: 6524
+                message: You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again.
+              - code: 6525
+                message: The group header control sum does not match the total of all transactions amounts. Please try again.
+              - code: 6526
+                message: 'Invalid value: createDateTime must match yyyy-MM-dd''T''HH:mm:ss format.'
+              - code: 6527
+                message: The payment information control sum does not match the total amount of transactions in this block. Please try again.
+              - code: 6528
+                message: The group header transaction count does not match the total number of transactions provided. Please try again.
+              - code: 6529
+                message: The payment information transaction count does not match the total number of transactions provided in this block. Please try again.
+              - code: 6531
+                message: Amount must have at most 2 decimal places
+              - code: 6532
+                message: The customer is not eligible to opt out of VOP
+              - code: 6533
+                message: Only 'SLEV' is allowed for the charge bearer field. Please update the value and try again.
+              - code: 6534
+                message: MFA session expired for payment creation. Please re-initiate the payment process again.
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+        '404':
+          description: Unsuccessful operation, returns http status 404. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 6504
+                message: The parameters in the request do not match the initial request.
+              - code: 6508
+                message: SEPA payment not found.
+        '409':
+          description: Unsuccessful operation, returns http status 409. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 6506
+                message: The IdempotencyId already being used.
+      security:
+      - api_auth_code:
+        - sepa_credit_transfers
+      - api_db_smart_access:
+        - sepa_credit_transfers
+      operationId: deleteByPaymentId
+      x-operation-id-source: derived
+  /bulk/{paymentId}:
+    delete:
+      tags:
+      - Cancel SEPA Credit Transfers
+      summary: Cancel the Bulk SEPA Credit Transfers
+      description: Cancel a previously initiated Bulk SEPA Credit Transfer.
+      parameters:
+      - name: paymentId
+        in: path
+        description: Payment Id of Bulk SEPA Credit Transfers
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: idempotency-id
+        in: header
+        description: Unique id of the service call. Must be present during retries to avoid multiple processing of the same request.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SepaCreditTransferResponse'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 2
+                message: Invalid value for %s.
+              - code: 3
+                message: 'Invalid value for %s: %s.'
+              - code: 16
+                message: 'OTP invalid challenge response: %s.'
+              - code: 17
+                message: Invalid OTP.
+              - code: 114
+                message: Unable to identify transaction by Id.
+              - code: 127
+                message: Booking date from must precede booking date to.
+              - code: 131
+                message: Invalid value for 'sortBy'. Valid values are 'bookingDate[ASC]' and 'bookingDate[DESC]'.
+              - code: 132
+                message: not supported
+              - code: 138
+                message: it seems that you started a non pushTAN challenge. Please use the PATCH endpoint to continue
+              - code: 139
+                message: it seems that you started a pushTAN challenge. Please use the GET endpoint to continue
+              - code: 6500
+                message: Parameters in the url or content type are incorrect, please check and retry.
+              - code: 6501
+                message: Contracting bank details are Invalid or Missing.
+              - code: 6502
+                message: The accepted instructed amount currency is EUR. Please correct your entry and try again.
+              - code: 6503
+                message: Parameters submitted are missing or invalid.
+              - code: 6505
+                message: Invalid execution date.
+              - code: 6507
+                message: Cancellation is not allowed for this transaction.
+              - code: 6509
+                message: The parameter in the request does not match with the latest Auth id.
+              - code: 6510
+                message: Current status does not allow second factor update with the action provided.
+              - code: 6511
+                message: Invalid execution date.
+              - code: 6515
+                message: The source iban or account type is invalid.
+              - code: 6516
+                message: Cancellation is not allowed for this transaction.
+              - code: 6517
+                message: The accepted creditor account currency is EUR. Please correct your entry and try again.
+              - code: 6518
+                message: The requested collection date should not be a public holiday or in the weekends. Please try again.
+              - code: 6519
+                message: The requested execution date should not be greater than 90 days in the future. Please try again.
+              - code: 6520
+                message: 'Invalid value: requestedExecutionDate must match yyyy-MM-dd format.'
+              - code: 6521
+                message: The accepted debtor account currency is EUR. Please correct your entry and try again.
+              - code: 6523
+                message: There is no legal entity present for the source iban. Please correct your entry and try again.
+              - code: 6524
+                message: You have reached the maximum allowable limit for the day. Please wait until tomorrow to initiate additional transfers or reduce your transfer amount and try again.
+              - code: 6525
+                message: The group header control sum does not match the total of all transactions amounts. Please try again.
+              - code: 6526
+                message: 'Invalid value: createDateTime must match yyyy-MM-dd''T''HH:mm:ss format.'
+              - code: 6527
+                message: The payment information control sum does not match the total amount of transactions in this block. Please try again.
+              - code: 6528
+                message: The group header transaction count does not match the total number of transactions provided. Please try again.
+              - code: 6529
+                message: The payment information transaction count does not match the total number of transactions provided in this block. Please try again.
+              - code: 6531
+                message: Amount must have at most 2 decimal places
+              - code: 6532
+                message: The customer is not eligible to opt out of VOP
+              - code: 6533
+                message: Only 'SLEV' is allowed for the charge bearer field. Please update the value and try again.
+              - code: 6534
+                message: MFA session expired for payment creation. Please re-initiate the payment process again.
+        '401':
+          description: Unsuccessful operation, returns http status 401. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 401
+                message: The requested function requires a SCA Level Authentication.
+        '404':
+          description: Unsuccessful operation, returns http status 404. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 6504
+                message: The parameters in the request do not match the initial request.
+              - code: 6508
+                message: SEPA payment not found.
+        '409':
+          description: Unsuccessful operation, returns http status 409. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 6506
+                message: The IdempotencyId already being used.
+      security:
+      - api_auth_code:
+        - bulk_sepa_credit_transfers
+      - api_db_smart_access:
+        - bulk_sepa_credit_transfers
+      operationId: deleteBulkByPaymentId
+      x-operation-id-source: derived
+components:
+  schemas:
+    TransactionStatus:
+      type: string
+      description: 'Transaction Status: Specifies the status of a transaction in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. ACSP - AcceptedSettlementInProcess. The payment has been accepted for execution and settlement is in progress. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution.'
+      example: ACTC
+      enum:
+      - RJCT
+      - RCVD
+      - ACTC
+      - ACSP
+      - CANC
+    AuthId:
+      type: string
+      description: Authentication Id used for update SCA status SEPA payment; it will be valid for 5 minutes.
+      example: 232ed5b7-fc70-4c67-98bb-bf95b3300001
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    PaymentId:
+      type: string
+      description: Resource identification of the generated paymentinitiation resource ('Transaction-ID' from the header which is populated with the Intra Bank ID); should be available at least when status is PDNG or ACCP.
+      example: 232ed5b7-fc70-4c67-98bb-bf95b3300001
+    SepaCreditTransferResponse:
+      required:
+      - authId
+      - paymentId
+      - transactionStatus
+      type: object
+      properties:
+        transactionStatus:
+          $ref: '#/components/schemas/TransactionStatus'
+        paymentId:
+          $ref: '#/components/schemas/PaymentId'
+        authId:
+          $ref: '#/components/schemas/AuthId'
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            sepa_credit_transfers: Initiate and check status of SEPA Credit Transfers
+            bulk_sepa_credit_transfers: Initiate and check status of Bulk SEPA Credit Transfers
+            openid: Request access to OpenId Connect functionality
+            offline_access: Request an OAuth2 Refresh Token
+    api_db_smart_access:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            sepa_credit_transfers: Initiate and check status of SEPA Credit Transfers
+            bulk_sepa_credit_transfers: Initiate and check status of Bulk SEPA Credit Transfers

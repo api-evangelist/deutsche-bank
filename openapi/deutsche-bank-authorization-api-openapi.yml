@@ -1,0 +1,254 @@
+openapi: 3.2.0
+info:
+  title: Deutsche Bank Authorization API
+  version: 1.0.0
+  description: 'Operations tagged Authorization across 2 of this provider''s published API definitions: deutsche-bank-merchant-solution-security-v2.json, deutsche-bank-oneid-fakerock-v1.json. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://testmerch.directpos.de/rest-api/security/v1/
+- url: https://simulator-api.db.com:443/gw/public/oneid/
+tags:
+- name: Authorization
+paths:
+  /token:
+    post:
+      tags:
+      - Authorization
+      operationId: getToken
+      parameters:
+      - name: X-RandomValue
+        in: header
+        description: A random value; part of the signature input.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 4D-#h+P:I}x:tQ[UUWX)_{2/J/(;2]4wu=y?SipcRV8}B*/V^
+      - name: X-RequestDate
+        in: header
+        description: Current timestamp formatted according to RFC 7231, section 7.1.1.2; part of the signature input.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Fri, 10 Jan 2020 14:41:15 GMT
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AccessTokenRequest'
+        required: true
+      responses:
+        '200':
+          description: Authorization successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenResponse'
+        '401':
+          description: Not authorized, check credentials and implementation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenError'
+        default:
+          description: An error occured during authorization process.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessTokenError'
+      summary: Get token
+      x-summary-source: derived
+    servers:
+    - url: https://testmerch.directpos.de/rest-api/security/v1/
+  /ciam/entitlements/oneids/{oneIdId}/contexts/{contextId}/business-transactions:
+    get:
+      tags:
+      - Authorization
+      summary: Fetch entitlements for a OneID/context
+      operationId: getBusinessTransactionsEntitlements
+      parameters:
+      - name: oneIdId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: contextId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Entitlements payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientAuthenticationState'
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://simulator-api.db.com:443/gw/public/oneid/
+  /ciam/entitlements/oneids/branch-customer-numbers/privileges:
+    post:
+      tags:
+      - Authorization
+      summary: Fetch entitlements by branch customer numbers
+      operationId: getBranchCustomerNumberPrivileges
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+        required: true
+      responses:
+        '200':
+          description: Privileges payload
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/InsufficientAuthenticationState'
+      security:
+      - bearerAuth: []
+    servers:
+    - url: https://simulator-api.db.com:443/gw/public/oneid/
+components:
+  schemas:
+    AccessTokenRequest:
+      required:
+      - client_id
+      - client_secret
+      - grant_type
+      - scope
+      type: object
+      properties:
+        grant_type:
+          type: string
+          description: The grant type of the request. Use fixed value `client_credentials`.
+          enum:
+          - client_credentials
+        client_id:
+          type: string
+          description: The client-id; part of the signature input.
+          example: client_id_value
+        client_secret:
+          type: string
+          description: The calculated client secret. Consult the documentation for implementation details.
+          example: V1:VoKCzVc+Cy0wmwpaqo/98KQheTjFvXL8w0xsfwZG68M=
+        scope:
+          type: string
+          description: The application scope of the request. Use fixed value `ftx`.
+          enum:
+          - ftx
+      description: Perform the request to get an authorization token. Make sure to have URL-encoding applied to the parameter values by your HTTP-client or implementation.
+      format: x-www-form-urlencoded
+    AccessTokenError:
+      required:
+      - cause
+      type: object
+      properties:
+        description:
+          type: string
+          description: A textual description detailing the cause of the failure.
+        cause:
+          type: string
+          description: '* `grant_type_invalid` - Invalid value in property _grant_type_.
+
+            * `request_invalid` - Invalid request.
+
+            * `scope_invalid` - Invalid value in property _scope_.
+
+            * `unauthorized` - Invalid credentials.
+
+            '
+          enum:
+          - request_invalid
+          - grant_type_invalid
+          - scope_invalid
+          - unauthorized
+      description: The response object that is received after a failed authorization.
+    AccessTokenResponse:
+      required:
+      - access_token
+      - expires_in
+      - expires_on
+      - scope
+      - token_type
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: The access token is used as credential for service requests.
+          example: eyJraWQiOiJrMSIsInR5cCI6IkpXVCIsImFsZyI6IkhTMjU2In0...
+        token_type:
+          type: string
+          description: The type of the token.
+          enum:
+          - Bearer
+        expires_in:
+          type: integer
+          description: The duration in seconds the token is valid.
+          example: 3600
+        expires_on:
+          type: integer
+          description: The time the token expires. Format is Unix time.
+          format: int64
+          example: 1579182837
+        scope:
+          type: string
+          description: The application scope of the request. Corresponds to _scope_ in the request.
+          enum:
+          - ftx
+      description: The response object that is received after a successful authorization.
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        message:
+          type: string
+      additionalProperties: true
+  responses:
+    InsufficientAuthenticationState:
+      description: Auth level too low (step-up required)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            title: Authentication for current session is insufficient to execute the request
+            type: /insufficient-authentication-state
+    Unauthorized:
+      description: Missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example: {}
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+x-refined-from:
+- deutsche-bank-merchant-solution-security-v2.json
+- deutsche-bank-oneid-fakerock-v1.json
+x-original-swagger-version: '2.0'

@@ -1,0 +1,716 @@
+openapi: 3.2.0
+info:
+  title: Merchant-Server II REST Services Info API
+  version: v2.1
+  description: Information related operations.
+servers:
+- url: https://testmerch.directpos.de/rest-api/services/v2.1/
+security:
+- bearerAuth: []
+tags:
+- name: Info
+  description: Information related operations.
+paths:
+  /info/banks/psd2:
+    get:
+      tags:
+      - Info
+      summary: Retrieves how banks matching the given search criteria support PSD 2 account…
+      description: 'Finds and returns banks which match the given query parameter.
+
+        Use either _name_ or _bic_ or _bank_code_ or _any_ for filtering. If you use _any_ banks including
+
+        the given value in any of the fields _name_, _bic_ or _bank_code_ will be returned. Searching is
+
+        carried out case-insensitive.'
+      operationId: infoBanksPSD2Get
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: name
+        in: query
+        description: Fragment of bank name.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: Sparkasse
+      - name: bic
+        in: query
+        description: Fragment of BIC (business identifier code).
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: bank_code
+        in: query
+        description: Fragment of German bank code (Bankleitzahl, BLZ).
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: any
+        in: query
+        description: Fragment of either bank name, BIC or bank code.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: offset
+        in: query
+        description: Number of rows to skip at the beginning of the total result set.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: limit
+        in: query
+        description: Maximum number of result items to be returned.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: Paged response with matching banks.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSD2BankResults'
+              example:
+                metadata:
+                  limit: 10
+                  offset: 0
+                  total: 2
+                banks:
+                - name: Sparkasse KölnBonn
+                  town: Köln
+                  bic: COLSDE33XXX
+                  bank_code: '37050198'
+                  psd2_supported: false
+                - id: lsw
+                  name: Stadt- und Kreissparkasse Leipzig
+                  town: Leipzig
+                  bic: WELADE8LXXX
+                  bank_code: '86055592'
+                  psd2_supported: true
+                  capabilities:
+                  - AVAILABLE_ACCOUNTS
+                  - AVAILABLE_ACCOUNTS_WITH_BALANCE
+                  - GLOBAL_CONSENT
+  /info/event/{event_id}/psd2/account_info:
+    get:
+      tags:
+      - Info
+      summary: Retrieves bank account details which were stored in a previous PSD 2 account…
+      operationId: infoPsd2AccountInfoGet
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: Bank account details which were stored in a previous step.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PSD2AccountInfoResponse'
+components:
+  schemas:
+    PSD2TransactionFilter:
+      type: object
+      properties:
+        date_from:
+          type: string
+          description: Starting date of the transaction list. Full-date notation as defined by RFC 3339, section 5.6.
+          format: date
+          example: '2021-07-13'
+        date_to:
+          type: string
+          description: End date of the transaction list. Full-date notation as defined by RFC 3339, section 5.6.
+          format: date
+          example: '2021-07-14'
+        booking_status:
+          type: array
+          description: The requested booking status(es). Not all banks allow `PENDING` or `BOOKED` and `PENDING`.
+          example:
+          - BOOKED
+          items:
+            type: string
+            description: 'Booking status of a transaction
+
+
+              * `BOOKED`
+
+              * `PENDING`'
+            example: BOOKED
+            enum:
+            - BOOKED
+            - PENDING
+      description: 'Contains properties to filter the transactions if `requested_details` includes `TRANSACTIONS`.
+
+        If `booking_status` is not submitted `BOOKED` transactions will be requested from the customer''s bank.'
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+    PSD2Account:
+      type: object
+      properties:
+        iban:
+          maxLength: 34
+          minLength: 15
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}'
+          type: string
+          description: The international bank account number of a bank account.
+          example: DE17215730140403340300
+        bban:
+          type: string
+          description: Used for payment accounts which have no IBAN.
+        pan:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: 'Primary Account Number (PAN) of a card, can be tokenized by the ASPSP due to PCI DSS
+
+            requirements.'
+        masked_pan:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Primary Account Number (PAN) of a card in a masked form.
+        msisdn:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: An alias to access a payment account via a registered mobile phone number.
+        currency:
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+    PSD2AccountDetails:
+      type: object
+      properties:
+        iban:
+          type: string
+          description: The international bank account number of a bank account.
+          example: DE17215730140403340300
+        currency:
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+        name:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Name of the account given by the bank or the PSU in online-banking.
+        owner_name:
+          maxLength: 140
+          minLength: 0
+          type: string
+          description: Name(s) of the account owner(s).
+        product:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Product name of the bank for this account, proprietary definition.
+        status:
+          type: string
+          description: 'Status of the account
+
+
+            * `ENABLED`: account is available
+
+            * `DELETED`: account is terminated
+
+            * `BLOCKED`: account is blocked for example for legal reasons'
+          enum:
+          - ENABLED
+          - DELETED
+          - BLOCKED
+        usage:
+          type: string
+          description: 'Specifies the usage of the account
+
+
+            * `PRIV`: private personal account
+
+            * `ORGA`: professional account
+
+            * `TEST_USAGE`: returned by Sparkassen sandbox'
+          enum:
+          - PRIV
+          - ORGA
+          - TEST_USAGE
+        details:
+          maxLength: 500
+          minLength: 0
+          type: string
+          description: 'Specifications that might be provided by the ASPSP such as characteristics of the account or
+
+            characteristics of the relevant card.'
+        balances:
+          type: array
+          description: Balance(s) of the account. There might be more than one balance with different types.
+          items:
+            $ref: '#/components/schemas/PSD2Balance'
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSD2Transaction'
+      description: Contains details of a customer's bank account.
+    PSD2Transaction:
+      required:
+      - amount
+      - booking_status
+      type: object
+      properties:
+        end_to_end_id:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Unique end to end identifier.
+        mandate_id:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Identification of mandates, for example, a SEPA mandate ID.
+        check_id:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Identification of a check.
+        creditor_id:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Identification of creditors, for example, a SEPA Creditor ID.
+        booking_date:
+          type: string
+          description: The date when an entry is posted to an account on the ASPSPs books.
+          format: date
+        value_date:
+          type: string
+          description: 'Date at which assets become available to the account owner in case
+
+            of a credit entry, or cease to be available to the account owner in case of a debit entry.
+
+            Usage: If entry status is pending and value date is present, then the value date refers to an expected/requested
+
+            value date.'
+          format: date
+        amount:
+          $ref: '#/components/schemas/AmountCurrency'
+        currency_exchange:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSD2CurrencyExchange'
+        creditor_name:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Name of the creditor of a "debited" transaction.
+        creditor_account:
+          $ref: '#/components/schemas/PSD2Account'
+        creditor_agent:
+          maxLength: 11
+          minLength: 11
+          pattern: '[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}'
+          type: string
+          description: A BIC.
+          example: VZVDDED1XXX
+        ultimate_creditor:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Name of the ultimate creditor of a "debited" transaction.
+        debtor_name:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Name of the debtor of a "credited" transaction.
+        debtor_account:
+          $ref: '#/components/schemas/PSD2Account'
+        debtor_agent:
+          maxLength: 11
+          minLength: 11
+          pattern: '[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}'
+          type: string
+          description: A BIC.
+          example: VZVDDED1XXX
+        ultimate_debtor:
+          maxLength: 70
+          minLength: 0
+          type: string
+          description: Name of the ultimate debtor of a "credited" transaction.
+        remittance_information_unstructured:
+          type: array
+          description: Unstructured remittance information.
+          items:
+            type: string
+            description: Unstructured remittance information.
+        remittance_information_structured:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSD2Remittance'
+        entry_reference:
+          type: string
+          description: Entry reference, for example from camt.052 message.
+        additional_information:
+          type: string
+          description: "Might be used by the ASPSP to transport additional transaction related\n    information to the PSU."
+        purpose_code:
+          type: string
+          description: ExternalPurpose1Code according to ISO 20022.
+        bank_transaction_code:
+          type: string
+          description: 'Bank transaction code as used by the ASPSP and using the sub-elements of
+
+            this structured code defined by ISO20022.'
+        proprietary_bank_transaction_code:
+          type: string
+          description: 'Proprietary bank transaction code as used within a community or within an
+
+            ASPSP, for example for MT94x based transaction reports.'
+        balance_after_transaction:
+          $ref: '#/components/schemas/PSD2Balance'
+        booking_status:
+          type: string
+          description: 'Booking status of a transaction
+
+
+            * `BOOKED`
+
+            * `PENDING`'
+          example: BOOKED
+          enum:
+          - BOOKED
+          - PENDING
+      description: A transaction of a bank account.
+    PSD2AccountInfoResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        accounts_as_of:
+          type: string
+          description: 'Date and time of the account information request. Date-time notation as defined by RFC 3339,
+
+            section 5.6.'
+          format: date-time
+          example: '2021-07-14T08:59:12Z'
+        transaction_filter:
+          $ref: '#/components/schemas/PSD2TransactionFilter'
+        accounts:
+          type: array
+          description: Bank account details which were stored in a previous step.
+          items:
+            $ref: '#/components/schemas/PSD2AccountDetails'
+    PSD2CapabilityEnum:
+      type: string
+      description: " * `AVAILABLE_ACCOUNTS`: PSD2 account information service AIS can be used to find all the customer's accounts with this bank.\n * `AVAILABLE_ACCOUNTS_WITH_BALANCE`: AIS can be used to find all the customer's account including the balances\n * `BANK_OFFERED_CONSENT`: AIS can be used to find the customer's accounts with this bank. If the customer has more than one account the bank will display the list of accounts and the customer chooses the accounts for which she/he wants to grant access.\n * `GLOBAL_CONSENT`: AIS can be used to get the customer's consent to access all accounts."
+      enum:
+      - AVAILABLE_ACCOUNTS
+      - AVAILABLE_ACCOUNTS_WITH_BALANCE
+      - BANK_OFFERED_CONSENT
+      - GLOBAL_CONSENT
+    PSD2Remittance:
+      type: object
+      properties:
+        reference:
+          maxLength: 35
+          minLength: 0
+          type: string
+        reference_type:
+          maxLength: 35
+          minLength: 0
+          type: string
+        reference_issuer:
+          maxLength: 35
+          minLength: 0
+          type: string
+    PSD2CurrencyExchange:
+      type: object
+      properties:
+        source_currency:
+          type: string
+          description: Currency from which an amount is to be converted in a currency conversion.
+          example: USD
+        exchange_rate:
+          type: string
+          description: 'Factor used to convert an amount from one currency into another. This reflects the
+
+            price at which one currency was bought with another currency.'
+        unit_currency:
+          pattern: '[A-Z]{3}'
+          type: string
+          description: 'Currency in which the rate of exchange is expressed in a currency exchange. In the
+
+            example 1 EUR = xxx CUR, the unit currency is EUR.'
+          example: EUR
+        target_currency:
+          pattern: '[A-Z]{3}'
+          type: string
+          description: Currency into which an amount is to be converted in a currency conversion.
+          example: EUR
+        quotation_date:
+          type: string
+          description: Date at which an exchange rate is quoted.
+          format: date
+        contract_identification:
+          type: string
+          description: Unique identification to unambiguously identify the foreign exchange contract.
+    PSD2Balance:
+      required:
+      - amount
+      - type
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/AmountCurrency'
+        type:
+          type: string
+          description: 'The following balance types are excluding credit limits unless the `credit_limit_included` element
+
+            is present and equals true in the corresponding balance element.
+
+            This definition is following ISO20022 logic for defining balance types.
+
+
+            * `CLOSING_BOOKED`: Balance of the account at the end of the pre-agreed account reporting
+
+            period. It is the sum of the opening booked balance at the beginning of
+
+            the period and all entries booked to the account during the pre-agreed
+
+            account reporting period. For card-accounts, this is composed of invoiced, but not yet paid entries
+
+            * `EXPECTED`: Balance composed of booked entries and pending items known at the
+
+            time of calculation, which projects the end of day balance if everything
+
+            is booked on the account and no other entry is posted.
+
+            For card accounts, this is composed of invoiced, but not yet paid entries,
+
+            not yet invoiced but already booked entries and pending items (not yet booked),
+
+            * `OPENING_BOOKED`: Book balance of the account at the beginning of the account reporting
+
+            period. It always equals the closing book balance from the previous
+
+            report.
+
+            * `INTERIM_AVAILABLE`: Available balance calculated in the course of the account servicer’s
+
+            business day, at the time specified, and subject to further changes during the business day. The interim balance is calculated on the basis
+
+            of booked credit and debit items during the calculation time/period
+
+            specified.
+
+            For card-accounts, this is composed of invoiced, but not yet paid entries and not yet invoiced but already booked entries
+
+            * `INTERIM_BOOKED`: Balance calculated in the course of the account servicer''s business day,
+
+            at the time specified, and subject to further changes during the business
+
+            day. The interim balance is calculated on the basis of booked credit and
+
+            debit items during the calculation time/period specified.
+
+            * `FORWARD_AVAILABLE`: Forward available balance of money that is at the disposal of the
+
+            account owner on the date specified.
+
+            * `NON_INVOICED`: Only for card accounts, to be defined yet.
+
+            * `PREVIOUSLY_CLOSED`: Balance of the account at the previously closed account reporting period.'
+          example: CLOSING_BOOKED
+          enum:
+          - CLOSING_BOOKED
+          - EXPECTED
+          - OPENING_BOOKED
+          - INTERIM_AVAILABLE
+          - INTERIM_BOOKED
+          - FORWARD_AVAILABLE
+          - NON_INVOICED
+          - PREVIOUSLY_CLOSED
+        credit_limit_included:
+          type: boolean
+          description: "A flag indicating if the credit limit of the corresponding account is included in\n                    the calculation of the balance, where applicable."
+        last_change:
+          type: string
+          description: 'This data element might be used to indicate for example with the expected or
+
+            booked balance that no action is known on the account, which is not yet booked.
+
+            Date-time notation as defined by RFC 3339, section 5.6.'
+          format: date-time
+          example: '2021-07-14T08:59:12Z'
+        reference_date:
+          type: string
+          description: Indicates the date of the balance. Full-date notation as defined by RFC 3339, section 5.6.
+          format: date
+          example: '2021-07-14'
+    PSD2BankResults:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PagedMetadata'
+        banks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSD2Bank'
+    PSD2Bank:
+      required:
+      - name
+      - psd2_supported
+      type: object
+      properties:
+        id:
+          type: string
+          description: Temporary system identifier for this bank - if PSD2 is supported.
+        name:
+          type: string
+          description: Name of the bank.
+        town:
+          type: string
+          description: Town where the bank is located.
+        bic:
+          maxLength: 11
+          minLength: 8
+          pattern: '[A-Z]{6}[A-Z2-9][A-NP-Z0-9]([A-Z0-9]{3})?'
+          type: string
+          description: BIC (business identifier code).
+        bank_code:
+          type: string
+          description: German bank code (Bankleitzahl, BLZ).
+        psd2_supported:
+          type: boolean
+          description: If true this bank can be used for the PSD2 account information and payment initiation services.
+        capabilities:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSD2CapabilityEnum'
+      description: Contains bank details.
+    PagedMetadata:
+      type: object
+      properties:
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+    AmountCurrency:
+      required:
+      - amount
+      - currency
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: Minor currency value of an amount of money.
+          format: int64
+          example: 200
+        currency:
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+      description: An amount and a currency.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

@@ -1,0 +1,2328 @@
+openapi: 3.2.0
+info:
+  title: Merchant-Server II REST Services E Score API
+  version: v2.1
+  description: The eScore API contains endpoints to minimize non-payment risk.
+servers:
+- url: https://testmerch.directpos.de/rest-api/services/v2.1/
+security:
+- bearerAuth: []
+tags:
+- name: eScore
+  description: The eScore API contains endpoints to minimize non-payment risk.
+paths:
+  /escore/event/{event_id}/addresscheck:
+    post:
+      tags:
+      - eScore
+      summary: Performs an Address Verification (ES0013)
+      description: 'Two scenarios of use are possible:
+
+
+        1. The address details of a customer are verified with the address verification. If an address is supplied wrongly the customer is requested to correct it. Thereafter the address is verified again. After a successful address verification further information has to be collated via credit assessment.
+
+
+        2. The transaction “integrated address verification, credit assessment and scoring” is carried out.
+
+
+        IMPORTANT: The address verification may only be carried out in connection with the credit assessment. Using the address verification on its own is not permissible for contractual reasons.
+
+
+        With the address verification the supplied address (name, town of residence, post code and street) is verified. This means that as a rule the address verification is related to the person.
+
+
+        The basis for the query is the post directory of the Deutsche Post Direkt GmbH (German mail) with roughly 95 m validated consumer addresses. The correction function is differentiated according to the individual address components and can provide evidence for their coherence and correct wrong details respectively.'
+      operationId: escoreAddressVerificationPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EScoreRequest'
+            example:
+              reason: ABK
+              billing_address:
+                title: MRS
+                first_name: KATJA
+                last_name: KOPLIN
+                postal_code: '10407'
+                city: BERLIN
+                country: DE
+                extensions:
+                  alternative_address_data:
+                    street: DANZIGER STR.
+                    street_number: '67'
+              basket:
+                basket_id: basketId1641228398709
+              customer_information:
+                customer_id: 5x14120ffrG
+                date_of_birth: '1979-10-27'
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: If the query could be carried out you receive the return value `rc=0` as response independent from the outcome of the address verification. The outcome of the address verification is returned in the field `address_note`. Where applicable, the address fields of the response include the address components, which could be corrected. If possible you will receive the freight routing code for the corrected address in the field `freight_routing_code`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EScoreAddresscheckResponse'
+              example:
+                address_note: PPB
+                freight_routing_code: '10435003067'
+                rc: '0'
+                message: Transaction successful.
+                event_id: 9184bf11-75ed-4a11-b9e6-557c11bd3853
+                tx_id: 2yYJ5nYkDIGuTdjWgCkJoK
+                action: addresscheck
+                basket_id: basketId1641293516625
+                scoring_rc: G
+                reason: ABK
+                billing_address:
+                  title: MRS
+                  first_name: KATJA
+                  last_name: KOPLIN
+                  date_of_birth: '1979-10-27'
+                  postal_code: '10407'
+                  city: BERLIN
+                  country: DE
+                  extensions:
+                    alternative_address_data:
+                      street: DANZIGER STR.
+                      street_number: '67'
+  /escore/event/{event_id}/creditassessment:
+    post:
+      tags:
+      - eScore
+      summary: Performs a Credit Assessment (ES0012)
+      description: 'The credit assessment provides information about the customers'' negative features. From the result the possible general payment behaviour and the creditworthiness of a purchaser may be deduced.
+
+
+        Upon entering the customer details during the order process it is verified in the background whether there is a negative feature related to this person resulting from extra judicial or judicial collection proceedings, enforcement by writ or affidavit.'
+      operationId: escoreCreditAssessmentPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EScoreRequest'
+            example:
+              reason: ABK
+              billing_address:
+                title: MRS
+                first_name: KATJA
+                last_name: KOPLIN
+                postal_code: '10407'
+                city: BERLIN
+                country: DE
+                extensions:
+                  alternative_address_data:
+                    street: DANZIGER STR.
+                    street_number: '67'
+              basket:
+                basket_id: basketId1641228398709
+              customer_information:
+                customer_id: 5x14120ffrG
+                date_of_birth: '1979-10-27'
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: "\nDepending on the negative features found you will receive in the field `scoring_rc` a classification of the data record following the traffic light system 'green', 'yellow/amber' and 'red' (This classification only takes place if the address was rectifiable postally, otherwise you will receive the return value `rc=1538`). The negative features are divided into the categories 'soft', 'medium' and 'hard'.\n\nThe allocation of the negative features to the traffic light values is as follows:\n \n• `G`: green - There are no negative features.\n\n• `Y`: yellow/amber - There are no negative features.\n\n• `R`: red - There are no negative features.\n\nThe field score provides you with a more subtly graduated result of the credit assessment. \n\nIn addition to the traffic light values and score all negative features are returned, which were relevant for the generation of the traffic light value.\n                    "
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EScoreCreditassessmentResponse'
+              example:
+                customer_id: 5x14120ffrG
+                score: '100'
+                negative_criteria:
+                - kind: LP
+                  date: '2021-01-08'
+                  doc_reference: 8IN303
+                - kind: VB
+                  date: '2021-12-07'
+                  doc_reference: 8IN306
+                rc: '0'
+                message: Transaction successful.
+                event_id: 9dd00d1d-7888-4679-af78-7dc95eef052d
+                tx_id: fC1DpbpWZeELL6tzmoHcKL
+                action: creditassessment
+                basket_id: basketId1641293519408
+                scoring_rc: R
+                reason: ABK
+                billing_address:
+                  title: MRS
+                  first_name: KATJA
+                  last_name: KOPLIN
+                  date_of_birth: '1979-10-27'
+                  postal_code: '10407'
+                  city: BERLIN
+                  country: DE
+                  extensions:
+                    alternative_address_data:
+                      street: DANZIGER STR.
+                      street_number: '67'
+  /escore/event/{event_id}/bankaccount:
+    post:
+      tags:
+      - eScore
+      summary: Performs an RPP Check (ES0024)
+      description: 'This service checks bank details for plausibility and current return debit notes.
+
+
+        The “return debit note prevention pool” (RPP) is a data pool where bank details are saved for which return debit notes are currently known. The pool primarily serves the prevention of cash loss for direct debits.'
+      operationId: escoreRppPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EScoreRPPRequest'
+            example:
+              bank_account:
+                bic: PZHSDE66XXX
+                iban: DE84666500855073321010
+              basket:
+                basket_id: basketId1641228398709
+              customer_information:
+                customer_id: 5x14120ffrG
+                date_of_birth: '1979-10-27'
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: "\nIn addition to information on return debit notes the following data are available:\n\n• data of stolen or lost EC cards (for example from the KUNO database)\n\n• data about publicly known bank details (NCA = non consumer account)\n\n• customer specific negative and positive lists\n\nNo personal data are saved in the RPP. This means it is not known who is the account holder.\n\nThe return debit note service is currently available for Germany.\n\nThe bank account details in the response possibly include corrections or additional information, for example    IBAN and BIC when you submitted account number and bank code in the request.\n                    "
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EScoreRPPResponse'
+              example:
+                bank_account:
+                  bic: PZHSDE66XXX
+                  iban: DE84666500855073321010
+                  bank_name: Sparkasse Pforzheim Calw
+                bank_account_validation_result: '00'
+                bank_account_validation_message: The bank account is valid.
+                rpp_match: '0'
+                rc: '0'
+                message: Transaction successful.
+                event_id: abf1ccf6-a9d6-4904-99d3-cadb6521ee90
+                tx_id: np5yYhvMr2dZQqWNub0BGj
+                action: bankaccount
+                basket_id: basketId1641293501021
+                scoring_rc: G
+  /escore/event/{event_id}/scoring:
+    post:
+      tags:
+      - eScore
+      summary: Performs an integrated Address Verification, Credit Assessment, and Scoring…
+      description: This kind of transaction consists of address verification, credit assessment, and scoring.
+      operationId: escoreScoringPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EScoreRequest'
+            example:
+              reason: ABK
+              billing_address:
+                title: MRS
+                first_name: KATJA
+                last_name: KOPLIN
+                postal_code: '10407'
+                city: BERLIN
+                country: DE
+                extensions:
+                  alternative_address_data:
+                    street: DANZIGER STR.
+                    street_number: '67'
+              basket:
+                basket_id: basketId1641228398709
+              customer_information:
+                customer_id: 5x14120ffrG
+                date_of_birth: '1979-10-27'
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: "\nIf there are no negative entries for a person's given name the probability of non-payments may be determined in a further step with help of the INFORMA score. The INFORMA score collates information from various socio-demographic parameters, such as details about the social structure of the town of residence. According to the risk assessment a recommendation for proceeding is provided. This value is included as essential component in the parameter `score`.                        \n                    "
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EScoreScoringResponse'
+              example:
+                customer_id: 5x14120ffrG
+                address_note: PPB
+                freight_routing_code: '10435003067'
+                score: '980'
+                informa_score_value: '670'
+                rc: '0'
+                message: Transaction successful.
+                event_id: f66400e4-40f2-4fdf-8229-d6e7dca3bf4d
+                tx_id: pXKc6vH91ASi0QrYfH7Ch7
+                action: scoring
+                basket_id: basketId1641293520741
+                scoring_rc: G
+                reason: ABK
+                billing_address:
+                  title: MRS
+                  first_name: KATJA
+                  last_name: KOPLIN
+                  date_of_birth: '1979-10-27'
+                  postal_code: '10407'
+                  city: BERLIN
+                  country: DE
+                  extensions:
+                    alternative_address_data:
+                      street: DANZIGER STR.
+                      street_number: '67'
+components:
+  schemas:
+    CommonAddressExtensions:
+      type: object
+      properties:
+        alternative_address_data:
+          $ref: '#/components/schemas/AlternativeAddressData'
+        paydirekt_data:
+          $ref: '#/components/schemas/AddressPaydirektData'
+      description: Service specific address fields.
+    NegativeCriterionResponse:
+      required:
+      - date
+      - kind
+      type: object
+      properties:
+        kind:
+          type: string
+          description: 'The codes of the negative features supplied in the response. The following values are valid:
+
+
+            **Soft Negative Features:**
+
+
+            `IA`: Debt-collecting delinquency procedure initiated.
+
+
+            `AM`: Ongoing extra judicial debt-collecting delinquency procedure after partial payment or in the case of payments in instalments.
+
+
+            `IE`: Suspension of the extra judicial debt-collecting delinquency procedure due to futility.
+
+
+            **Medium Negative Features:**
+
+
+            `MB`: Application for default summons.
+
+
+            `VB`: Application for enforcement order.
+
+
+            `TR`: Payer by instalments after claims entitlement.
+
+
+            `ZWA`: Enforcement by writ of movables.
+
+
+            `ZWI`: Enforcement by writ of immovables.
+
+
+            `FRP`: Effectless attachment.
+
+
+            `FRP`: Effectless attachment.
+
+
+            `LP`: Attachment of salary or other claims due to a garnishee order.
+
+
+            `UBV`: Address unknown (having left liabilities of monetary or goods credits).
+
+
+            **Hard Negative Features:**
+
+
+            `HB`: Arrest warrant to enforce affidavit.
+
+
+            `HV`: Execution of arrest warrant to enforce affidavit.
+
+
+            `EV`: Affidavit (“oath of manifestation”).
+
+
+            `EEV`: Amendment of affidavit.
+
+
+            `WEV`: Repeated affidavit, § 903 ZPO (Code of Civil Procedure).
+
+
+            `SVV`: Refusal of asset information according to §882c para. 1 no. 1 ZPO.
+
+
+            `SAV`: Recognisable futility of enforcement according to §882c para. 1 no. 2 ZPO.
+
+
+            `SNZ`: Non-payer according to §882c para. 1 no. 3 ZPO.
+
+
+            `IVE`: Attempt of out-of-court settlement within the scope of insolvency proceedings.
+
+
+            `ISP`: Settlement of debts procedure initiated / application for initiation of insolvency proceedings.
+
+
+            `IVS`: Order of preliminary measures of protection in the insolvency proceedings.
+
+
+            `IVA`: Repeal of preliminary measures of protection in the insolvency proceedings.
+
+
+            `IBE`: Initiation of insolvency proceedings / decree.
+
+
+            `IBA`: Dismissal or suspension of the insolvency proceedings for lack of assets, § 26 Para. 2 InsO (Insolvency Statute).
+
+
+            `IWP`: Repeal of insolvency proceedings.
+
+
+            `IRB`: Issuance of waiver of remaining debts.
+
+
+            `IRV`: Refusal of waiver of remaining debts.
+
+
+            `KON`: Dismissal of application for initiation of insolvency proceedings for lack of assets, §107 KO (Bankruptcy Act).
+
+
+            `KER`: Initiation of bankruptcy proceedings, § 108 KO (Bankruptcy Act).
+
+
+            `KEM`: Suspension of bankruptcy proceedings for lack of assets, §§ 202, 204 KO (Bankruptcy Act).
+
+
+            `KAS`: Repeal of bankruptcy proceedings (after closing date), § 163 KO (Bankruptcy Act)
+
+
+            `VGE`: Initiation of composition procedure, § 11 ff VerglO (Rules of conciliation).
+
+
+            `VGA`: Dismissal of application for initiation of composition procedure.
+
+
+            `VEM`: Suspension of composition procedure after repealing the scheme of arrangement, §99 ff VerglO (Rules of conciliation).
+
+
+            `VAS`: Repeal of composition procedure, § 90 ff VerglO (Rules of conciliation).
+
+
+            `GVA`: Dismissal of application for initiation of general enforcement for lack of assets, §4 Abs. 2 GesO (General enforcement policy).
+
+
+            `GVE`: Initiation or order of general enforcement, § 5 GesO (General enforcement policy).
+
+
+            `GEM`: Suspension of general enforcement proceedings.
+
+
+            `GAS`: Repeal of general enforcement proceedings.
+
+
+            **Other Negative Features:**
+
+
+            `*`: Respective negative feature stated, if the claim based on the collection operation has been cleared effectively – that is by payment.
+
+
+            `AE`: Note regarding address.
+
+
+            `+++`: Person deceased.
+
+
+            `HI`: Notes regarding person or company.
+
+
+            `HA`: Notes regarding address.
+
+            '
+          example: IA
+        date:
+          type: string
+          format: date
+          example: '2007-09-23'
+        doc_reference:
+          maxLength: 14
+          minLength: 0
+          pattern: .*
+          type: string
+          description: File reference of the feature.
+          example: DFS-sf-12345
+        completion_date:
+          type: string
+          description: Clearing date of a feature.
+          format: date
+          example: '2007-09-23'
+        completion_flag:
+          type: boolean
+          description: Clearing sign of the feature.
+      description: If `scoring_rc`=`Y` or `scoring_rc`=`R`, several possible.
+    TaxInfo:
+      required:
+      - tax_id
+      - tax_id_type
+      type: object
+      properties:
+        tax_id:
+          type: string
+          description: The customer's tax ID value.
+          example: 867.226.847-41
+        tax_id_type:
+          type: string
+          description: 'Type of tax ID. May be country specific. Different types may adhere to different patterns.
+
+
+            * `BR_CPF` : Brazilian individual tax id type.
+
+            * `BR_CNPJ` : Brazilian business tax id type.
+
+            * `OTHER` : None of the above.
+
+            '
+          example: BR_CPF
+          enum:
+          - BR_CPF
+          - BR_CNPJ
+          - OTHER
+      description: Legal tax information of the payer.
+    BankAccount:
+      required:
+      - iban
+      type: object
+      properties:
+        bic:
+          maxLength: 11
+          minLength: 11
+          pattern: '[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}'
+          type: string
+          description: "The business identifier code (BIC) of a bank account. If the branch identifier\n                (positions 9 to 11) is not applicable, it is set to \"XXX\". "
+          example: VZVDDED1XXX
+        iban:
+          maxLength: 34
+          minLength: 15
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}'
+          type: string
+          description: The international bank account number of a bank account.
+          example: DE17215730140403340300
+        account_holder:
+          maxLength: 27
+          minLength: 1
+          pattern: .*
+          type: string
+          description: The account holder of the bank account.
+          example: Max Muster
+        bank_name:
+          type: string
+          description: Name of the bank.
+          example: Musterbank
+      description: Information about a bank account.
+    EScoreAddresscheckResponse:
+      required:
+      - event_id
+      - message
+      - rc
+      - reason
+      - tx_id
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        event_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: A unique ID for the event.
+          example: E5686585867636541231230
+        tx_id:
+          type: string
+          description: Unique transaction identifier. Can be used to reference this transaction.
+          example: 020LMG10jxSI8FN0OC4vLR
+        scoring_rc:
+          type: string
+          description: 'Traffic light value that allows you a basic estimate of a customer''s credit-worthiness. The following values are valid:
+
+
+            `G`: green - There are no negative features.
+
+
+            `Y`: yellow/amber - There is a soft negative feature.
+
+
+            `R`: red - There are more than one soft negative features or at least one medium or hard negative feature.
+
+
+            `U`: unknown
+
+            '
+          example: G
+          default: U
+          enum:
+          - G
+          - Y
+          - R
+          - U
+        reason:
+          type: string
+          description: 'Codes for the classification of the credit assessments. The following values are valid:
+
+
+            `ABK`: Request for credit assessment before concluding a purchase contract (in particular purchase on account or by instalments.
+
+
+            `ABV`: Request for credit assessment before concluding an insurance contract.
+
+
+            `BZV`: Credit assessment within the scope of evaluating the reliability of an insurance broker or an insurance field representative.
+
+
+            `BMT`: Credit assessment before opening or installing a mobile telecommunication account.
+
+
+            `BFT`: Request for credit assessment before or in connection with the initiation or carrying out of debt-collecting measures.
+
+
+            `ABI`: Request for credit assessment before takeover/purchase of a claim or before assuming del credere liability.
+
+
+            `ABF`: Request for credit assessment before concluding a service contract.
+
+
+            `ABD`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABW`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABL`: Request for credit assessment before concluding a lease or rental contract (chattels).
+
+
+            `BKV`: Credit assessment before granting of credit.
+
+
+            `BKE`: Credit assessment before opening an account.
+
+
+            `BKA`: Credit assessment due to a credit or customer card application.
+
+
+            `BBS`: Credit assessment before concluding a building loan contract.
+
+
+            `BMV`: Credit assessment before concluding a rental contract (real estate).
+
+
+            `BFV`: Credit assessment before concluding a franchising contract.
+
+
+            `BER`: Credit assessment due to ascertainment order (credit agency company).
+
+            '
+          example: ABD
+          default: ABK
+          enum:
+          - ABK
+          - ABV
+          - BZV
+          - BMT
+          - BFT
+          - ABI
+          - ABF
+          - ABD
+          - ABW
+          - ABL
+          - BKV
+          - BKE
+          - BKA
+          - BBS
+          - BMV
+          - BFV
+          - BER
+        customer_information:
+          $ref: '#/components/schemas/CustomerInformation'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+        address_note:
+          type: string
+          description: 'Possible features for the result of address verification. The following values are valid:
+
+
+            `PPB`: Confirmation on personal level. The address supplied (incl. name and first name) was completely correct or could be corrected completely. In this case only the freight routing code and possibly the corrected fields are returned to the initiator.
+
+
+            `PHB`: Confirmation on household level. The address supplied (incl. name without first name) could be corrected completely or was completely correct on household level and had a first name, which is not rectifiable/known. In this case the corrected fields except the first name are returned to the initiator, as the first name could not be confirmed. The existence of the first name at this address could not be confirmed. In addition the field eScoreFreightRoutingCode is returned to the initiator as long as the freight routing code is available.
+
+
+            `PAB`: Confirmation on address level. The address supplied (without name, without first name) could be corrected completely or on address level was already complete and had not rectifiable/known personal data. In this case the corrected fields except the first name and surname are returned to the initiator, as the first name and surname could not be confirmed. The existence of the first name and surname at this address could not be confirmed. In addition the field eScoreFreightRoutingCode is returned to the initiator as long as the freight routing code is available.
+
+
+            `PNZ`: The person at the address supplied is known, but at this address is not or no longer deliverable. This corresponds to a confirmation on address level (PAB), however, with the above-mentioned limitation, that the person queried is undeliverable there.
+
+
+            `PPV`: The person at the address supplied is deceased according to the Deutsche Post (German mail).
+
+
+            `PKI`: The response of the Deutsche Post (German mail) is possibly contradictory and/or ambiguous. Therefore the person/address is not assessed!
+
+
+            `PPF`: The address is postally wrong.
+
+
+            `PNP`: The address cannot be checked because it contains structural errors, for example the name is missing.
+
+
+            `PUG`: The address is formally correct, but the building is not known.
+
+
+            `PUZ`: Outdated address. The person moved away, but the new address is known.
+
+            '
+          example: PPB
+          enum:
+          - PPB
+          - PHB
+          - PAB
+          - PNZ
+          - PPV
+          - PKI
+          - PPF
+          - PNP
+          - PUG
+          - PUZ
+        freight_routing_code:
+          maxLength: 12
+          minLength: 0
+          pattern: .*
+          type: string
+          description: Freight routing code of the Deutsche Post AG (German mail).
+          example: 04109056012
+    BasketItem:
+      type: object
+      properties:
+        name:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: Descriptive name of the order item. Mandatory for PayPal.
+          example: A fine shirt
+        description:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: Used for storing merchant's internal order number or other reference.
+          example: BI123456
+        reference:
+          maxLength: 64
+          minLength: 0
+          type: string
+          description: Article number, SKU or similar.
+          example: UGG-BB-PUR-06
+        quantity:
+          $ref: '#/components/schemas/Quantity'
+        unit_price:
+          $ref: '#/components/schemas/TaxedAmountCurrency'
+        item_discount:
+          $ref: '#/components/schemas/TaxedAmountCurrency'
+        extensions:
+          $ref: '#/components/schemas/BasketItemExtensions'
+      description: A purchasable item that is part of a shopping basket's list of items.
+    PhoneContact:
+      required:
+      - phone_number
+      - phone_type
+      type: object
+      properties:
+        phone_type:
+          type: string
+          description: 'The phone type.
+
+
+            * `FAX`
+
+            * `HOME`
+
+            * `MOBILE`
+
+            * `OTHER`
+
+            * `PAGER`
+
+            * `WORK`
+
+            '
+          example: FAX
+          enum:
+          - FAX
+          - HOME
+          - MOBILE
+          - OTHER
+          - PAGER
+          - WORK
+        phone_number:
+          maxLength: 16
+          minLength: 0
+          pattern: \+[1-9]\d{1,14}
+          type: string
+          description: A phone number in its canonical international E.164 numbering plan format.
+          example: '+442071838750'
+      description: A means of contacting a customer by phone.
+      example:
+        phone_type: FAX
+        phone_number: '+442071838750'
+    MerchantInformationKlarnaData:
+      type: object
+      properties:
+        custom_payment_method_ids:
+          type: array
+          description: List of custom payment method ids.
+          example:
+          - klarna_invoice
+          - klarna_installments
+          items:
+            type: string
+            description: List of custom payment method ids.
+            example: '["klarna_invoice","klarna_installments"]'
+      description: Klarna specific MerchantInformation fields.
+    CommonAddress:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Customer's title.
+          example: Ms
+        first_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: First name of the individual.
+          example: Jane
+        last_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Last name of the individual.
+          example: Doe
+        company_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Name of the company.
+          example: Acme Inc.
+        email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address of the individual.
+          example: test_jane@gmail.com
+        phone_contact:
+          $ref: '#/components/schemas/PhoneContact'
+        address_line_1:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line.
+          example: Main Street 123
+        address_line_2:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line. For 3DS this maps to additional1.
+          example: Building A
+        address_line_3:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line. For 3DS this maps to additional2.
+          example: Apartment 12
+        postal_code:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Postal code of the address.
+          example: '80469'
+        city:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: City of the address.
+          example: Munich
+        state:
+          maxLength: 300
+          minLength: 0
+          type: string
+          description: State or province of the address.
+          example: BY
+        country:
+          maxLength: 2
+          minLength: 2
+          pattern: '[A-Z]{2}'
+          type: string
+          description: The ISO 3166 Alpha-2 country code (upper case) of the individual's homeland.
+          example: DE
+        extensions:
+          $ref: '#/components/schemas/CommonAddressExtensions'
+      description: Address data as applicable to most use cases.
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+    Basket:
+      type: object
+      properties:
+        basket_id:
+          maxLength: 140
+          minLength: 0
+          type: string
+          description: 'Dependent on the backend services the value might be shortened or special characters might be removed before sending.
+
+
+            giropay: Will be displayed by giropay at the first row of the remittance information on the giropay form. Values longer than 27 characters will be cut off.'
+          example: basket123456
+        invoice_id:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: The API caller-provided external invoice number for this order.
+          example: RE123345
+        soft_descriptor:
+          type: string
+          description: Dynamic text used to construct the statement descriptor that appears on a payer's card statement.
+          example: 800-123-1234
+        shipping_costs:
+          $ref: '#/components/schemas/AmountCurrency'
+        basket_discount:
+          $ref: '#/components/schemas/AmountCurrency'
+        basket_type:
+          type: string
+          description: 'Type of a shopping basket. Mandatory for PayPal.
+
+
+            * `DIGITAL`: Basket contains digital items only.
+
+            * `MIXED`: Basket contains items of various types.
+
+            * `PHYSICAL`: Basket contains physical items only.
+
+            '
+          example: DIGITAL
+          enum:
+          - DIGITAL
+          - MIXED
+          - PHYSICAL
+        extensions:
+          $ref: '#/components/schemas/BasketExtensions'
+        basket_items:
+          type: array
+          description: An array of items that the customer purchases from the merchant.
+          items:
+            $ref: '#/components/schemas/BasketItem'
+      description: A generalized shopping basket.
+    BasketItemKlarnaData:
+      type: object
+      properties:
+        product_url:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Product's URL in the merchant's webshop. May be used in communication between Klarna and the customer.
+          example: https://www.exampleobjects.com/products/123456789
+        image_url:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Product image URL in the merchant's webshop. May be used to embed the image into communication between Klarna and the customer.
+          example: https://www.exampleobjects.com/product-image-1200x1200.jpg
+        product_identifiers:
+          type: array
+          description: Additional information identifying the basket item.
+          items:
+            $ref: '#/components/schemas/KlarnaProductIdentifier'
+      description: Service specific basket item fields for Klarna related use cases.
+    CustomerExtensionPayPalData:
+      type: object
+      properties:
+        payer_id:
+          maxLength: 13
+          minLength: 0
+          type: string
+          example: 23456789ABCDE
+        tax_info:
+          $ref: '#/components/schemas/TaxInfo'
+      description: PayPal specific customer information fields.
+    Contacts:
+      type: object
+      properties:
+        phone_contacts:
+          type: array
+          description: A means of contacting a customer by phone.
+          example:
+            phone_type: FAX
+            phone_number: '+442071838750'
+          items:
+            $ref: '#/components/schemas/PhoneContact'
+      description: Means of contacting the customer.
+      example:
+        phone_contacts:
+        - phone_type: FAX
+          phone_number: '+442071838750'
+    KlarnaProductIdentifier:
+      type: object
+      properties:
+        brand:
+          type: string
+          description: The product's brand name as generally recognized by consumers. If no brand is available for a product, do not supply any value.
+          example: Intel
+        category_path:
+          maxLength: 750
+          minLength: 0
+          type: string
+          description: The product's category path as used in the merchant's webshop. Include the full and most detailed category and separate the segments with '>'.
+          example: Electronics Store > Computers & Tablets > Desktops
+        gtin:
+          pattern: '[a-zA-Z0-9]*'
+          type: string
+          description: The product's Global Trade Item Number (GTIN). Common types of GTIN are EAN, ISBN or UPC. Dashes and spaces must be omitted.
+          example: '735858293167'
+        mpn:
+          type: string
+          description: The product's Manufacturer Part Number (MPN), which - together with the brand - uniquely identifies a product. Only submit MPNs assigned by a manufacturer and use the most specific MPN possible.
+          example: BOXNUC5CPYH
+      description: Klarna specific unique identification attributes of a product.
+    TaxedAmountCurrency:
+      required:
+      - currency
+      - gross
+      - net
+      - tax
+      type: object
+      properties:
+        net:
+          type: integer
+          description: Amount of money excl. tax in the minor currency unit.
+          format: int64
+          example: 100
+        gross:
+          type: integer
+          description: Amount of money incl. tax in the minor currency unit.
+          format: int64
+          example: 100
+        currency:
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+        tax:
+          maximum: 10000
+          minimum: 0
+          type: integer
+          description: Tax percentage. Non-negative value. The percentage value is represented with two implicit decimals.
+          format: int32
+          example: 1900
+      description: Net and gross money amount accompanied by a tax percentage and currency.
+    EScoreScoringResponse:
+      required:
+      - address_note
+      - event_id
+      - message
+      - rc
+      - reason
+      - tx_id
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        event_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: A unique ID for the event.
+          example: E5686585867636541231230
+        tx_id:
+          type: string
+          description: Unique transaction identifier. Can be used to reference this transaction.
+          example: 020LMG10jxSI8FN0OC4vLR
+        scoring_rc:
+          type: string
+          description: 'Traffic light value that allows you a basic estimate of a customer''s credit-worthiness. The following values are valid:
+
+
+            `G`: green - There are no negative features.
+
+
+            `Y`: yellow/amber - There is a soft negative feature.
+
+
+            `R`: red - There are more than one soft negative features or at least one medium or hard negative feature.
+
+
+            `U`: unknown
+
+            '
+          example: G
+          default: U
+          enum:
+          - G
+          - Y
+          - R
+          - U
+        reason:
+          type: string
+          description: 'Codes for the classification of the credit assessments. The following values are valid:
+
+
+            `ABK`: Request for credit assessment before concluding a purchase contract (in particular purchase on account or by instalments.
+
+
+            `ABV`: Request for credit assessment before concluding an insurance contract.
+
+
+            `BZV`: Credit assessment within the scope of evaluating the reliability of an insurance broker or an insurance field representative.
+
+
+            `BMT`: Credit assessment before opening or installing a mobile telecommunication account.
+
+
+            `BFT`: Request for credit assessment before or in connection with the initiation or carrying out of debt-collecting measures.
+
+
+            `ABI`: Request for credit assessment before takeover/purchase of a claim or before assuming del credere liability.
+
+
+            `ABF`: Request for credit assessment before concluding a service contract.
+
+
+            `ABD`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABW`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABL`: Request for credit assessment before concluding a lease or rental contract (chattels).
+
+
+            `BKV`: Credit assessment before granting of credit.
+
+
+            `BKE`: Credit assessment before opening an account.
+
+
+            `BKA`: Credit assessment due to a credit or customer card application.
+
+
+            `BBS`: Credit assessment before concluding a building loan contract.
+
+
+            `BMV`: Credit assessment before concluding a rental contract (real estate).
+
+
+            `BFV`: Credit assessment before concluding a franchising contract.
+
+
+            `BER`: Credit assessment due to ascertainment order (credit agency company).
+
+            '
+          example: ABD
+          default: ABK
+          enum:
+          - ABK
+          - ABV
+          - BZV
+          - BMT
+          - BFT
+          - ABI
+          - ABF
+          - ABD
+          - ABW
+          - ABL
+          - BKV
+          - BKE
+          - BKA
+          - BBS
+          - BMV
+          - BFV
+          - BER
+        customer_information:
+          $ref: '#/components/schemas/CustomerInformation'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+        address_note:
+          type: string
+          description: 'Possible features for the result of address verification. The following values are valid:
+
+
+            `PPB`: Confirmation on personal level. The address supplied (incl. name and first name) was completely correct or could be corrected completely. In this case only the freight routing code and possibly the corrected fields are returned to the initiator.
+
+
+            `PHB`: Confirmation on household level. The address supplied (incl. name without first name) could be corrected completely or was completely correct on household level and had a first name, which is not rectifiable/known. In this case the corrected fields except the first name are returned to the initiator, as the first name could not be confirmed. The existence of the first name at this address could not be confirmed. In addition the field eScoreFreightRoutingCode is returned to the initiator as long as the freight routing code is available.
+
+
+            `PAB`: Confirmation on address level. The address supplied (without name, without first name) could be corrected completely or on address level was already complete and had not rectifiable/known personal data. In this case the corrected fields except the first name and surname are returned to the initiator, as the first name and surname could not be confirmed. The existence of the first name and surname at this address could not be confirmed. In addition the field eScoreFreightRoutingCode is returned to the initiator as long as the freight routing code is available.
+
+
+            `PNZ`: The person at the address supplied is known, but at this address is not or no longer deliverable. This corresponds to a confirmation on address level (PAB), however, with the above-mentioned limitation, that the person queried is undeliverable there.
+
+
+            `PPV`: The person at the address supplied is deceased according to the Deutsche Post (German mail).
+
+
+            `PKI`: The response of the Deutsche Post (German mail) is possibly contradictory and/or ambiguous. Therefore the person/address is not assessed!
+
+
+            `PPF`: The address is postally wrong.
+
+
+            `PNP`: The address cannot be checked because it contains structural errors, for example the name is missing.
+
+
+            `PUG`: The address is formally correct, but the building is not known.
+
+
+            `PUZ`: Outdated address. The person moved away, but the new address is known.
+
+            '
+          example: PPB
+          enum:
+          - PPB
+          - PHB
+          - PAB
+          - PNZ
+          - PPV
+          - PKI
+          - PPF
+          - PNP
+          - PUG
+          - PUZ
+        freight_routing_code:
+          maxLength: 12
+          minLength: 0
+          pattern: .*
+          type: string
+          description: Freight routing code of the Deutsche Post AG (German mail).
+          example: 04109056012
+        score:
+          type: string
+          description: "Subtly graduated result of the credit assessment. The following values are valid:\n\n**score - Performs a Credit Assessment (ES0012).:**\n\n`550`: There are no negative features., scoring_rc = G, credit assessment = KI\n\n`540`: A soft feature, cleared., scoring_rc = G, credit assessment = Feature cleared\n\n`340`: Medium feature(s), cleared or more than one soft feature cleared., scoring_rc = Y, credit assessment = Feature cleared\n\n`320`: A message with reservations, soft., scoring_rc = Y, credit assessment = Mwr\n\n`310`: A soft feature., scoring_rc = Y, credit assessment = Feature\n\n`250`: Message with reservations marked a) hard/medium or b) more than one data record exist., scoring_rc = Y, credit assessment = Mwr\n\n`120`: Person registered as deceased., scoring_rc = R, credit assessment = +++\n\n`110`: Requested address is registered as risk address., scoring_rc = R, credit assessment = TKZ 5\n\n`100`: Person with negative feature(s) medium or hard or more than one soft., scoring_rc = R, credit assessment = Features\n\n**score - Performs an integrated Address Verification, Credit Assessment, and Scoring (ES0015).:**\n\n`980`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PPB\n\n`970`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PHB\n\n`960`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PPB\n\n`950`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PHB\n\n`760`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PAB\n\n`750`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PAB\n\n`560`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PKI\n\n`550`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PKI\n\n`540`: A soft feature, cleared., scoring_rc = G, credit assessment = Feature cleared, address verification = Any\n\n`530`: No negative features, score not possible., scoring_rc = G, credit assessment = KI, address verification = Any\n\n`460`: No negative features, score >=500., scoring_rc = G, credit assessment = KI, address verification = PPF\n\n`450`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PPF\n\n`370`: No negative features, score >=500., scoring_rc = Y, credit assessment = KI, address verification = PNZ\n\n`360`: No negative features, score >450 <500., scoring_rc = Y, credit assessment = KI, address verification = PNZ\n\n`350`: No negative features, score <=450., scoring_rc = Y, credit assessment = KI, address verification = Any\n\n`340`: Medium feature(s), cleared or more than one soft feature, cleared., scoring_rc = Y, credit assessment = Feature cleared, address verification = Any\n\n`320`: A message with reservations, soft., scoring_rc = Y, credit assessment = Mwr, address verification = Any\n\n`310`: A soft feature., scoring_rc = Y, credit assessment = Feature, address verification = Any\n\n`250`: Message with reservations marked a) hard/medium or b) more than one data record exist., scoring_rc = Y, credit assessment = Mwr, address verification = Any\n\n`120`: Person registered as deceased., scoring_rc = R, credit assessment = +++, address verification = Any\n\n`110`: Requested address is registered as risk address., scoring_rc = R, credit assessment = TKZ 5, address verification = Any\n\n`100`: Person with negative feature(s)medium or hard or more than one soft., scoring_rc = R, credit assessment = Features, address verification = Any\n                "
+          example: '550'
+        informa_score_value:
+          maxLength: 3
+          minLength: 0
+          pattern: .*
+          type: string
+          description: Generated scoring value of the InFoScore Consumer Data GmbH.
+          example: '480'
+        negative_criteria:
+          type: array
+          description: If `scoring_rc`=`Y` or `scoring_rc`=`R`, several possible.
+          items:
+            $ref: '#/components/schemas/NegativeCriterionResponse'
+    EScoreCreditassessmentResponse:
+      required:
+      - event_id
+      - message
+      - rc
+      - reason
+      - tx_id
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        event_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: A unique ID for the event.
+          example: E5686585867636541231230
+        tx_id:
+          type: string
+          description: Unique transaction identifier. Can be used to reference this transaction.
+          example: 020LMG10jxSI8FN0OC4vLR
+        scoring_rc:
+          type: string
+          description: 'Traffic light value that allows you a basic estimate of a customer''s credit-worthiness. The following values are valid:
+
+
+            `G`: green - There are no negative features.
+
+
+            `Y`: yellow/amber - There is a soft negative feature.
+
+
+            `R`: red - There are more than one soft negative features or at least one medium or hard negative feature.
+
+
+            `U`: unknown
+
+            '
+          example: G
+          default: U
+          enum:
+          - G
+          - Y
+          - R
+          - U
+        reason:
+          type: string
+          description: 'Codes for the classification of the credit assessments. The following values are valid:
+
+
+            `ABK`: Request for credit assessment before concluding a purchase contract (in particular purchase on account or by instalments.
+
+
+            `ABV`: Request for credit assessment before concluding an insurance contract.
+
+
+            `BZV`: Credit assessment within the scope of evaluating the reliability of an insurance broker or an insurance field representative.
+
+
+            `BMT`: Credit assessment before opening or installing a mobile telecommunication account.
+
+
+            `BFT`: Request for credit assessment before or in connection with the initiation or carrying out of debt-collecting measures.
+
+
+            `ABI`: Request for credit assessment before takeover/purchase of a claim or before assuming del credere liability.
+
+
+            `ABF`: Request for credit assessment before concluding a service contract.
+
+
+            `ABD`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABW`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABL`: Request for credit assessment before concluding a lease or rental contract (chattels).
+
+
+            `BKV`: Credit assessment before granting of credit.
+
+
+            `BKE`: Credit assessment before opening an account.
+
+
+            `BKA`: Credit assessment due to a credit or customer card application.
+
+
+            `BBS`: Credit assessment before concluding a building loan contract.
+
+
+            `BMV`: Credit assessment before concluding a rental contract (real estate).
+
+
+            `BFV`: Credit assessment before concluding a franchising contract.
+
+
+            `BER`: Credit assessment due to ascertainment order (credit agency company).
+
+            '
+          example: ABD
+          default: ABK
+          enum:
+          - ABK
+          - ABV
+          - BZV
+          - BMT
+          - BFT
+          - ABI
+          - ABF
+          - ABD
+          - ABW
+          - ABL
+          - BKV
+          - BKE
+          - BKA
+          - BBS
+          - BMV
+          - BFV
+          - BER
+        customer_information:
+          $ref: '#/components/schemas/CustomerInformation'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+        score:
+          type: string
+          description: "Subtly graduated result of the credit assessment. The following values are valid:\n\n**score - Performs a Credit Assessment (ES0012).:**\n\n`550`: There are no negative features., scoring_rc = G, credit assessment = KI\n\n`540`: A soft feature, cleared., scoring_rc = G, credit assessment = Feature cleared\n\n`340`: Medium feature(s), cleared or more than one soft feature cleared., scoring_rc = Y, credit assessment = Feature cleared\n\n`320`: A message with reservations, soft., scoring_rc = Y, credit assessment = Mwr\n\n`310`: A soft feature., scoring_rc = Y, credit assessment = Feature\n\n`250`: Message with reservations marked a) hard/medium or b) more than one data record exist., scoring_rc = Y, credit assessment = Mwr\n\n`120`: Person registered as deceased., scoring_rc = R, credit assessment = +++\n\n`110`: Requested address is registered as risk address., scoring_rc = R, credit assessment = TKZ 5\n\n`100`: Person with negative feature(s) medium or hard or more than one soft., scoring_rc = R, credit assessment = Features\n\n**score - Performs an integrated Address Verification, Credit Assessment, and Scoring (ES0015).:**\n\n`980`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PPB\n\n`970`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PHB\n\n`960`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PPB\n\n`950`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PHB\n\n`760`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PAB\n\n`750`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PAB\n\n`560`: No negative features, score >= 500., scoring_rc = G, credit assessment = KI, address verification = PKI\n\n`550`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PKI\n\n`540`: A soft feature, cleared., scoring_rc = G, credit assessment = Feature cleared, address verification = Any\n\n`530`: No negative features, score not possible., scoring_rc = G, credit assessment = KI, address verification = Any\n\n`460`: No negative features, score >=500., scoring_rc = G, credit assessment = KI, address verification = PPF\n\n`450`: No negative features, score >450 <500., scoring_rc = G, credit assessment = KI, address verification = PPF\n\n`370`: No negative features, score >=500., scoring_rc = Y, credit assessment = KI, address verification = PNZ\n\n`360`: No negative features, score >450 <500., scoring_rc = Y, credit assessment = KI, address verification = PNZ\n\n`350`: No negative features, score <=450., scoring_rc = Y, credit assessment = KI, address verification = Any\n\n`340`: Medium feature(s), cleared or more than one soft feature, cleared., scoring_rc = Y, credit assessment = Feature cleared, address verification = Any\n\n`320`: A message with reservations, soft., scoring_rc = Y, credit assessment = Mwr, address verification = Any\n\n`310`: A soft feature., scoring_rc = Y, credit assessment = Feature, address verification = Any\n\n`250`: Message with reservations marked a) hard/medium or b) more than one data record exist., scoring_rc = Y, credit assessment = Mwr, address verification = Any\n\n`120`: Person registered as deceased., scoring_rc = R, credit assessment = +++, address verification = Any\n\n`110`: Requested address is registered as risk address., scoring_rc = R, credit assessment = TKZ 5, address verification = Any\n\n`100`: Person with negative feature(s)medium or hard or more than one soft., scoring_rc = R, credit assessment = Features, address verification = Any\n                "
+          example: '550'
+        negative_criteria:
+          type: array
+          description: If `scoring_rc`=`Y` or `scoring_rc`=`R`, several possible.
+          items:
+            $ref: '#/components/schemas/NegativeCriterionResponse'
+    EScoreRPPRequest:
+      required:
+      - bank_account
+      type: object
+      properties:
+        billing_address:
+          $ref: '#/components/schemas/CommonAddress'
+        basket:
+          $ref: '#/components/schemas/Basket'
+        device_information:
+          $ref: '#/components/schemas/DeviceInformation'
+        shipping_address:
+          $ref: '#/components/schemas/CommonAddress'
+        merchant_information:
+          $ref: '#/components/schemas/MerchantInformation'
+        customer_information:
+          $ref: '#/components/schemas/CustomerInformation'
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+    BasketExtensions:
+      type: object
+      properties:
+        paypal_data:
+          $ref: '#/components/schemas/BasketPayPalData'
+      description: Service specific basket fields.
+    RppResultResponse:
+      type: object
+      properties:
+        content_type:
+          maxLength: 2
+          minLength: 0
+          pattern: '[0-9]+'
+          type: string
+          description: 'Type of the notice. Is returned if `rpp_match=1`, that is if a return debit note is present. The following values are valid:
+
+
+            `0`: Open return debit note.
+
+
+            `1`: Settled return debit note.
+
+
+            `2`: Historical return debit note.
+
+
+            `3`: Institution/public bank details
+
+
+            `5`: Client related negative list.
+
+
+            `6`: Client related positive list.
+
+
+            `7`: Cards blocked.
+
+
+            `14`: Personal Account Protection (PAP).
+
+            '
+        content_description:
+          maxLength: 30
+          minLength: 0
+          pattern: .*
+          type: string
+          description: Content description, for example RLS for a return debit note or NCA for publicly known bank details ("non consumer account").
+          example: NCA
+        content_code:
+          maxLength: 2
+          minLength: 0
+          pattern: '[0-9]+'
+          type: string
+          description: "Reason of the notice. The following values are valid:\n\nIf eScoreContentType=0 (open/settled/historical return debit note):                            \n\n`1`: For want of cover / not paid.\n\n`2`: Account wrong.\n\n`3`: Objection.\n\n`5`: Account expired.\n\n`6`: other\n\n`7`: No information.\n\n`8`: No valid mandate.\n\nIf eScoreContentType=3 (institution/public bank details):\n\n`0`: Unclassified.\n\n`1`: Donations and aid organisations.\n\n`2`: Offices and public facilities.\n\n`3`: Societies.\n\n`4`: educational institutions and church\n\n`5`: Recreational institutions & tourism.\n\n`6`: Associations and foundations.\n\n`7`: Companies.\n\n`9`: eBay seller.\n\n`12`: Private person.\n\n`31`: Credit accounts.\n\nIf eScoreContentType=7 (cards locked):\n\n`0`: Debit card of the bank account was reported stolen/lost.\n\n`1`: There is an entry in the KUNO database for this bank account.\n\nIf eScoreContentType=14 (PAP):\n\n`1`: Donations and aid organisations.\n\n`2`: offices and public facilities\n\n`3`: Societies.\n\n`4`: Educational institutions and church.\n\n`5`: Recreational institutions & tourism.\n\n`6`: Associations and foundations.\n\n`7`: Companies.\n"
+          example: '1'
+        no_of_matches:
+          maxLength: 1
+          minLength: 0
+          pattern: '[0-9]+'
+          type: string
+          description: Number of matches.
+          example: '1'
+        first_notice_date:
+          type: string
+          description: Date of the first notice.
+          format: date
+          example: '2007-08-24'
+        last_notice_date:
+          type: string
+          description: Date of the last notice.
+          format: date
+          example: '2007-08-24'
+      description: Result of an RPP check.
+    BasketPayPalData:
+      type: object
+      properties:
+        custom_id:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: The API caller-provided external ID. Used to reconcile client transactions with PayPal transactions. Appears in transaction and settlement reports but is not visible to the payer.
+          example: CUSTOMID123
+      description: Service specific basket fields for PayPal.
+    MerchantInformation:
+      type: object
+      properties:
+        locale:
+          type: string
+          description: Language of the form to be displayed according to ISO 639-1.
+          example: en
+        merchant_data_1:
+          type: string
+          description: The first merchant data field.
+          example: '123456789'
+        merchant_data_2:
+          type: string
+          description: The second merchant data field.
+          example: '123456789'
+        merchant_data_3:
+          type: string
+          description: The third merchant data field.
+          example: '123456789'
+        extensions:
+          $ref: '#/components/schemas/MerchantInformationExtensions'
+    Quantity:
+      required:
+      - quantity_amount
+      - quantity_unit
+      type: object
+      properties:
+        quantity_amount:
+          minimum: 0
+          type: integer
+          description: Amount of units.
+          format: int64
+          example: 5
+        quantity_unit:
+          maxLength: 8
+          minLength: 0
+          type: string
+          description: Unit used to describe the quantity.
+          example: pcs
+      description: A quantity.
+    BasketItemPayPalData:
+      required:
+      - paypal_type
+      type: object
+      properties:
+        paypal_type:
+          type: string
+          description: "PayPal specific type of an order item.\n\n    * `DIGITAL_GOODS`: Goods that are stored, delivered, and used in electronic format.\n    * `PHYSICAL_GOODS`: A tangible item that can be shipped with proof of delivery.\n    * `DONATION`: A contribution or gift for which no good or service is exchanged.\n    "
+          example: PHYSICAL_GOODS
+          enum:
+          - DIGITAL_GOODS
+          - PHYSICAL_GOODS
+          - DONATION
+      description: Service specific basket item fields for PayPal.
+    EScoreRPPResponse:
+      required:
+      - bank_account
+      - event_id
+      - message
+      - rc
+      - tx_id
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        event_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: A unique ID for the event.
+          example: E5686585867636541231230
+        tx_id:
+          type: string
+          description: Unique transaction identifier. Can be used to reference this transaction.
+          example: 020LMG10jxSI8FN0OC4vLR
+        scoring_rc:
+          type: string
+          description: 'Traffic light value that allows you a basic estimate of a customer''s credit-worthiness. The following values are valid:
+
+
+            `G`: green - There are no negative features.
+
+
+            `Y`: yellow/amber - There is a soft negative feature.
+
+
+            `R`: red - There are more than one soft negative features or at least one medium or hard negative feature.
+
+
+            `U`: unknown
+
+            '
+          example: G
+          default: U
+          enum:
+          - G
+          - Y
+          - R
+          - U
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+        bank_account_validation_result:
+          maxLength: 2
+          minLength: 0
+          pattern: '[0-9]+'
+          type: string
+          description: 'Result of the validation. The following values are valid:
+
+
+            `00`: The bank account details are valid.
+
+
+            `01`: The bank account details are valid but the bank code belongs to a subsidiary of the Bundesbank.
+
+
+            `02`: The bank code is marked as deleted and was replaced by the successor bank code.
+
+
+            `03`: The BIC does not match the bank code included in the IBAN.
+
+
+            `04`: The bank code does not match the bank code included in the IBAN.
+
+
+            `05`: The account number does not match the account number included in the IBAN.
+
+
+            `06`: The country code does not match the country code included in the IBAN.
+
+
+            `07`: The IBAN could not be determined unambiguously or the account number could not be validated unambiguously. If possible, the bank account details should be verified manually.
+
+
+            `08`: The BIC could not be determined.
+
+
+            `10`: The IBAN check sum is invalid.
+
+
+            `11`: The country code in the IBAN is invalid.
+
+
+            `12`: The IBAN format is invalid.
+
+
+            `13`: The BIC is invalid.
+
+
+            `14`: The bank code is invalid.
+
+
+            `15`: The IBAN cannot be determined.
+
+
+            `16`: The account number is invalid.
+
+            '
+          example: 08
+        bank_account_validation_message:
+          maxLength: 30
+          minLength: 0
+          pattern: .*
+          type: string
+          description: Description of the validation result.
+        rpp_match:
+          pattern: '[01]'
+          type: string
+          description: 'Hit in RPP. The following values are valid:
+
+
+            `0`: no hit
+
+
+            `1`: hit(s)
+
+            '
+          example: '1'
+          enum:
+          - '0'
+          - '1'
+        rpp_result:
+          type: array
+          description: Result of an RPP check.
+          items:
+            $ref: '#/components/schemas/RppResultResponse'
+        error_code_name:
+          maxLength: 33
+          minLength: 0
+          pattern: .*
+          type: string
+          description: Error code of the RPP check.
+          example: parsingError
+        error_description:
+          maxLength: 50
+          minLength: 0
+          pattern: .*
+          type: string
+          description: Error description of the RPP check.
+    BasketItemExtensions:
+      type: object
+      properties:
+        paypal_data:
+          $ref: '#/components/schemas/BasketItemPayPalData'
+        riskcheck_data:
+          $ref: '#/components/schemas/BasketItemRiskCheckData'
+        klarna_data:
+          $ref: '#/components/schemas/BasketItemKlarnaData'
+      description: Service specific basket item fields.
+    AmountCurrency:
+      required:
+      - amount
+      - currency
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: Minor currency value of an amount of money.
+          format: int64
+          example: 200
+        currency:
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+      description: An amount and a currency.
+    PersonalIdentification:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'Type of identification.
+
+
+            * `NATIONAL`
+
+            * `PASSPORT`
+
+            * `CPF`
+
+            * `CNPJ`
+
+            * `CURP`
+
+            * `SSN`
+
+            * `DRIVERS_LICENSE`
+
+            '
+          example: PASSPORT
+          enum:
+          - NATIONAL
+          - PASSPORT
+          - CPF
+          - CNPJ
+          - CURP
+          - SSN
+          - DRIVERS_LICENSE
+        id:
+          maxLength: 26
+          minLength: 0
+          type: string
+          description: The value of the identification type. For 'PASSPORT', this is the customer's passport number. For 'CPF', set this field to the Cadastro de Pessoas Fisicas.
+          example: T220001297
+        issued_by:
+          type: string
+          description: The government agency that issued the identification. For 'DRIVERS_LICENSE', this is the administrative area where it was issued. For 'PASSPORT', this is the country that issued the passport. Use the two-character state, province or territory codes respectively for United States and Canada.
+          example: DE
+      description: Customer's legal ID data.
+    CustomerInformationExtensions:
+      type: object
+      properties:
+        paypal_data:
+          $ref: '#/components/schemas/CustomerExtensionPayPalData'
+      description: Service specific customer information fields.
+    RiskCheckPassenger:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'Passenger classification as indicated by the price discount class of the ticket. The following values are valid:
+
+
+            * `ADT`: Adult
+
+            * `CNN`: Child
+
+            * `INF`: Infant
+
+            * `YTH`: Youth
+
+            * `STU`: Student
+
+            * `SCR`: Senior Citizen
+
+            * `MIL`: Military
+
+            '
+          example: ADT
+          enum:
+          - ADT
+          - CNN
+          - INF
+          - YTH
+          - STU
+          - SCR
+          - MIL
+        status:
+          maxLength: 32
+          minLength: 0
+          type: string
+          description: Merchant specific passenger classification, such as standard, gold, or platinum.
+          example: standard
+        phone:
+          $ref: '#/components/schemas/PhoneContact'
+        first_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: First name of the individual.
+          example: Jane
+        last_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Last name of the individual.
+          example: Doe
+        id:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: ID of the passenger to whom a ticket was issued. For example, this field may contain the frequent flyer number.
+          example: B7564
+        email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address of the individual.
+          example: test_jane@gmail.com
+        country:
+          maxLength: 2
+          minLength: 2
+          pattern: '[A-Z]{2}'
+          type: string
+          description: The ISO 3166 Alpha-2 country code (upper case) of the individual's homeland.
+          example: DE
+      description: A (plane) passenger as modelled from the point of view of a risk check service.
+    DeviceInformation:
+      type: object
+      properties:
+        cookies_accepted:
+          type: boolean
+          description: Whether or not the browser accepts cookies.
+          example: true
+        http_accept_browser_value:
+          maxLength: 2048
+          minLength: 0
+          type: string
+          description: 'Value of the ''Accept'' header sent by the customer''s web browser. Note: If the customer''s browser provides a value, you must include it with your request.'
+          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+        http_accept_content:
+          maxLength: 2048
+          minLength: 0
+          type: string
+          description: The exact content of the HTTP accept header.
+          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+        color_depth:
+          type: string
+          description: "The bit depth of the color palette for displaying images, in bits per pixel. See https://en.wikipedia.org/wiki/Color_depth. Possible values:\n\n* `B1`\n* `B4`\n* `B8`\n* `B15`\n* `B16`\n* `B24`\n* `B32`\n* `B48`\n\n    "
+          example: B24
+          enum:
+          - B1
+          - B4
+          - B8
+          - B15
+          - B16
+          - B24
+          - B32
+          - B48
+        http_browser_email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address set in the customer's browser. May differ from customer's actual email.
+          example: mustermann@example.com
+        http_browser_java_enabled:
+          type: boolean
+          description: Is the browser able to execute Java. Value is taken from the navigator.javaEnabled property.
+          example: false
+        http_browser_java_script_enabled:
+          type: boolean
+          description: 'Is the browser able to execute JavaScript. Background: Merchants may want to fingerprint a cardholder''s browser.'
+          example: false
+        http_browser_language:
+          maxLength: 8
+          minLength: 0
+          type: string
+          description: Browser language as defined in IETF BCP47. See https://en.wikipedia.org/wiki/IETF_language_tag.
+          example: en-US
+        http_browser_screen_height:
+          minimum: 0
+          type: integer
+          description: Total height of the client's screen in pixels.
+          format: int32
+          example: 864
+        http_browser_screen_width:
+          minimum: 0
+          type: integer
+          description: Total width of the client's screen in pixels.
+          format: int32
+          example: 1536
+        http_browser_time_difference:
+          maximum: 1440
+          minimum: -1440
+          type: integer
+          description: Time difference between UTC time and the client's browser's local time in minutes.
+          format: int32
+          example: 300
+        ip_address:
+          maxLength: 45
+          minLength: 0
+          pattern: ((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))
+          type: string
+          description: IP address of the client. Both IPv4 and IPv6 are supported.
+          example: 192.168.0.1
+        user_agent:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: Client's browser as identified by the HTTP header data.
+          example: Mozilla
+        user_agent_browser_value:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Value of the User-Agent header sent by the client's browser.
+          example: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
+      description: Technical details of a client.
+    BasketItemRiskCheckData:
+      type: object
+      properties:
+        riskcheck_type:
+          type: string
+          description: 'Riskcheck specific type of an order item.
+
+
+            * `ADULT_CONTENT`: Adult content.
+
+            * `COUPON`: Coupon applied to the entire order.
+
+            * `DEFAULT`: Default value for the product code. This value is used if a request message does not include a value for the product code.
+
+            * `ELECTRONIC_GOOD`: Electronic product other than software.
+
+            * `ELECTRONIC_SOFTWARE`: Software distributed electronically rather than on physical media.
+
+            * `GIFT_CERTIFICATE`: Gift certificate.
+
+            * `HANDLING_ONLY`: A fee that covers the merchant''s administrative selling costs.
+
+            * `SERVICE`: An arbitrary service that a merchant performs for customers.
+
+            * `SHIPPING_ONLY`: Charge for transporting tangible personal property from the merchant to the customer.
+
+            * `SHIPPING_AND_HANDLING`: Handling & Shipping fees combined.
+
+            * `SUBSCRIPTION`: Subscription to a website or other type of subscribable content.'
+          example: SHIPPING_ONLY
+          enum:
+          - ADULT_CONTENT
+          - COUPON
+          - DEFAULT
+          - ELECTRONIC_GOOD
+          - ELECTRONIC_SOFTWARE
+          - GIFT_CERTIFICATE
+          - HANDLING_ONLY
+          - SERVICE
+          - SHIPPING_ONLY
+          - SHIPPING_AND_HANDLING
+          - SUBSCRIPTION
+        distributor_product_sku:
+          maxLength: 15
+          minLength: 0
+          type: string
+          description: Product's identifier code.
+          example: '12345678'
+        gift_card_currency:
+          type: string
+          description: If riskcheck_type is GIFT_CERTIFICATE, this field must contain the ISO-4217-3 alpha-numeric currency code used for the gift card purchase.
+          example: EUR
+        product_risk:
+          type: string
+          description: 'Indicates the product''s risk level. This field may contain one of the following values:
+
+
+            * `LOW`: The product is associated with a low number of chargebacks.
+
+            * `NORMAL`: The product is associated with a normal number of chargebacks.
+
+            * `HIGH`: The product is associated with a high number of chargebacks.
+
+            '
+          example: NORMAL
+          enum:
+          - LOW
+          - NORMAL
+          - HIGH
+        risk_check_passenger:
+          $ref: '#/components/schemas/RiskCheckPassenger'
+        shipping_destination_types:
+          type: string
+          description: "Destination to where the item will be shipped.\n                \n* `COMMERCIAL`\n* `RESIDENTIAL`\n* `STORE`\n"
+          example: RESIDENTIAL
+          enum:
+          - COMMERCIAL
+          - RESIDENTIAL
+          - STORE
+        is_gift:
+          type: boolean
+          description: 'If billing and shipping addresses are different:
+
+
+            true: Order risk increases slightly.
+
+            false: Order risk increases significantly.
+
+            '
+          example: true
+      description: Service specific basket item fields for riskcheck related use cases.
+    AddressPaydirektData:
+      type: object
+      properties:
+        addon:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Additional address information.
+          example: Apartment 12A
+      description: Paydirekt specific address fields.
+    CustomerInformation:
+      type: object
+      properties:
+        customer_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: Technical identification number of a customer.
+          example: C1234-AX
+        date_of_birth:
+          type: string
+          description: Customer's date of birth.
+          format: date
+          example: '1975-06-30'
+        gender:
+          type: string
+          description: "Customer's gender.\n                \n* `DIVERSE`\n* `FEMALE`\n* `MALE`\n"
+          example: FEMALE
+          enum:
+          - DIVERSE
+          - FEMALE
+          - MALE
+        title:
+          type: string
+          description: Customer's title.
+          example: Ms
+        personal_identifications:
+          type: array
+          description: Customer's available identifications.
+          items:
+            $ref: '#/components/schemas/PersonalIdentification'
+        contacts:
+          $ref: '#/components/schemas/Contacts'
+        extensions:
+          $ref: '#/components/schemas/CustomerInformationExtensions'
+      description: Details of a customer.
+    EScoreRequest:
+      type: object
+      properties:
+        billing_address:
+          $ref: '#/components/schemas/CommonAddress'
+        basket:
+          $ref: '#/components/schemas/Basket'
+        device_information:
+          $ref: '#/components/schemas/DeviceInformation'
+        shipping_address:
+          $ref: '#/components/schemas/CommonAddress'
+        merchant_information:
+          $ref: '#/components/schemas/MerchantInformation'
+        customer_information:
+          $ref: '#/components/schemas/CustomerInformation'
+        reason:
+          type: string
+          description: 'Codes for the classification of the credit assessments. The following values are valid:
+
+
+            `ABK`: Request for credit assessment before concluding a purchase contract (in particular purchase on account or by instalments.
+
+
+            `ABV`: Request for credit assessment before concluding an insurance contract.
+
+
+            `BZV`: Credit assessment within the scope of evaluating the reliability of an insurance broker or an insurance field representative.
+
+
+            `BMT`: Credit assessment before opening or installing a mobile telecommunication account.
+
+
+            `BFT`: Request for credit assessment before or in connection with the initiation or carrying out of debt-collecting measures.
+
+
+            `ABI`: Request for credit assessment before takeover/purchase of a claim or before assuming del credere liability.
+
+
+            `ABF`: Request for credit assessment before concluding a service contract.
+
+
+            `ABD`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABW`: Request for credit assessment before concluding a contract for work and labour.
+
+
+            `ABL`: Request for credit assessment before concluding a lease or rental contract (chattels).
+
+
+            `BKV`: Credit assessment before granting of credit.
+
+
+            `BKE`: Credit assessment before opening an account.
+
+
+            `BKA`: Credit assessment due to a credit or customer card application.
+
+
+            `BBS`: Credit assessment before concluding a building loan contract.
+
+
+            `BMV`: Credit assessment before concluding a rental contract (real estate).
+
+
+            `BFV`: Credit assessment before concluding a franchising contract.
+
+
+            `BER`: Credit assessment due to ascertainment order (credit agency company).
+
+            '
+          example: ABD
+          default: ABK
+          enum:
+          - ABK
+          - ABV
+          - BZV
+          - BMT
+          - BFT
+          - ABI
+          - ABF
+          - ABD
+          - ABW
+          - ABL
+          - BKV
+          - BKE
+          - BKA
+          - BBS
+          - BMV
+          - BFV
+          - BER
+    AlternativeAddressData:
+      type: object
+      properties:
+        street:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: The street.
+          example: Main Street
+        street_number:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: The street number.
+          example: 123a
+      description: Alternative address fields.
+    MerchantInformationExtensions:
+      type: object
+      properties:
+        klarna_data:
+          $ref: '#/components/schemas/MerchantInformationKlarnaData'
+      description: Service specific merchant information fields.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

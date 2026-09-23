@@ -1,0 +1,106 @@
+openapi: 3.2.0
+info:
+  title: dbapi-sepaInstantCreditTransfer Reachability Status API
+  description: Easily initiate SEPA Instant Credit Transfers, both single and bulk, with complementary operations such as status checks, cancellation, second factor retry and payee verification.
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v3
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/paymentInitiation/payments/v3
+tags:
+- name: Reachability Status
+  description: Verifies if the provided IBAN is reachable for an SEPA Instant Credit Transfer
+paths:
+  /creditorAccounts/{iban}/reachabilityStatus:
+    get:
+      tags:
+      - Reachability Status
+      summary: Verifies if the provided IBAN is reachable for an SEPA Instant Credit Transfer
+      description: Verifies if the provided IBAN is reachable for an SEPA Instant Credit Transfer.
+      operationId: getReachabilityStatus
+      parameters:
+      - name: iban
+        in: path
+        description: International Bank Account Number
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 34
+          minLength: 5
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReachabilityResponse'
+        default:
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      security:
+      - api_auth_code:
+        - instant_sepa_credit_transfers
+      - api_db_smart_access:
+        - instant_sepa_credit_transfers
+components:
+  schemas:
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    ReachabilityResponse:
+      required:
+      - isInstantPaymentReachable
+      type: object
+      properties:
+        isInstantPaymentReachable:
+          type: boolean
+          description: IBAN is reachable for SEPA Instant credit transfers
+  securitySchemes:
+    api_auth_code:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/authorize
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+            openid: Request access to OpenId Connect functionality
+            offline_access: Request an OAuth2 Refresh Token
+    api_db_smart_access:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            instant_sepa_credit_transfers: Initiate and check status of Instant SEPA Credit Transfers
+            bulk_instant_sepa_credit_transfers: Initiate and check status of Bulk Instant SEPA Credit Transfers
+x-original-swagger-version: '2.0'

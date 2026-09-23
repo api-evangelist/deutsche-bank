@@ -1,0 +1,567 @@
+openapi: 3.2.0
+info:
+  title: dbapi-investments-espSecuritiesAccounts Employee Share Plan…
+  description: Lets you open Employee Share Plan accounts on your customer's behalf
+  termsOfService: https://developer.db.com/termsandconditions
+  contact:
+    url: https://developer.db.com/contact
+    email: bank.api@db.com
+  version: v1
+servers:
+- url: https://simulator-api.db.com:443/gw/dbapi/investments/espSecuritiesAccounts/v1
+tags:
+- name: Employee Share Plan Securities Account Opening
+paths:
+  /:
+    post:
+      tags:
+      - Employee Share Plan Securities Account Opening
+      summary: Initiate an ESP securities account opening
+      description: Initiate an ESP securities account opening request
+      operationId: espSecuritiesAccountOpening
+      parameters:
+      - name: idempotency-id
+        in: header
+        description: Unique id of the service call. Should be resent during retries to avoid multiple processing of the same request
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      requestBody:
+        description: Request an opening of an ESP securities account
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ESPSecuritiesAccountOpeningRequest'
+            examples:
+              ESPSecuritiesAccountOpeningMinimumRequest:
+                $ref: '#/components/examples/ESPSecuritiesAccountOpeningMinimumRequest'
+              ESPSecuritiesAccountOpeningMaximumRequest:
+                $ref: '#/components/examples/ESPSecuritiesAccountOpeningMaximumRequest'
+        required: true
+      responses:
+        '201':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESPSecuritiesAccountOpeningResponse'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 7001
+                message: The client should have a German address.
+              - code: 7002
+                message: The client should be a German citizen.
+              - code: 7003
+                message: The client should be at least 18 years old.
+              - code: 7004
+                message: The client cannot have US citizenship, US green card, or be born in the US.
+              - code: 7005
+                message: The client should be German or non-German taxpayer.
+              - code: 7006
+                message: Taxpayer information not set for a non-German taxpayer.
+              - code: 7007
+                message: Non-German taxpayer information set for a Germany-only taxpayer.
+              - code: 7008
+                message: Taxpayer information not set for a German taxpayer.
+              - code: 7009
+                message: German taxpayer information set for a non-German taxpayer.
+      security:
+      - api_client_credential:
+        - open_esp_securities_account
+  /{recordId}:
+    get:
+      tags:
+      - Employee Share Plan Securities Account Opening
+      summary: Retrieve ESP securities account opening request status
+      description: Retrieve status of a previously initiated ESP securities account opening request by the recordId
+      operationId: espSecuritiesAccountOpeningStatus
+      parameters:
+      - name: recordId
+        in: path
+        description: Identifier of the ESP securities account opening
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ESPSecuritiesAccountOpeningStatusResponse'
+        '400':
+          description: Unsuccessful operation, returns http status 400. See 'example' property for possible values.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+              - code: 7001
+                message: The client should have a German address.
+              - code: 7002
+                message: The client should be a German citizen.
+              - code: 7003
+                message: The client should be at least 18 years old.
+              - code: 7004
+                message: The client cannot have US citizenship, US green card, or be born in the US.
+              - code: 7005
+                message: The client should be German or non-German taxpayer.
+              - code: 7006
+                message: Taxpayer information not set for a non-German taxpayer.
+              - code: 7007
+                message: Non-German taxpayer information set for a Germany-only taxpayer.
+              - code: 7008
+                message: Taxpayer information not set for a German taxpayer.
+              - code: 7009
+                message: German taxpayer information set for a non-German taxpayer.
+      security:
+      - api_client_credential:
+        - open_esp_securities_account
+components:
+  examples:
+    ESPSecuritiesAccountOpeningMaximumRequest:
+      summary: Maximal example of an ESP securities account opening request
+      value:
+        returnUrl: https://uat-dwebge.www.deutsche-bank.de/opra4/pfb/employee-share-program/#/laas-thank-you
+        processData:
+          clients:
+          - affiliateData:
+              employeeId: Telekom456
+            naturalPerson:
+              academicTitle: DR
+              firstName: Maximilian
+              lastName: Schmidt
+              birthName: Mustermann
+              sex: MALE
+              nationality: DE
+              maritalStatus: SINGLE
+              dateOfBirth: '2000-10-10'
+              placeOfBirth: Berlin
+              salutation: Herr
+            address:
+              city: Frankfurt
+              country: DE
+              street: Zeilstraße
+              houseNumber: '1'
+              zipCode: '60313'
+            contactData:
+              email: maximilian-schmidt@gmail.com
+              phoneNumber:
+                areaCode: ''
+                internationalAreaCode: 0049
+                telephoneNumber: '1234567891'
+            taxInformation:
+              isGermanTaxPayer: true
+              isNonGermanTaxPayer: true
+              nonGermanTaxPayerCountry1: FR
+              nonGermanTaxId1: '12345678910'
+              nonGermanTaxPayerCountry2: ES
+              nonGermanTaxId2: '12345678910'
+              nonGermanTaxPayerCountry3: CH
+              nonGermanTaxId3: '12345678910'
+              tin: '12345678910'
+              selfEmployedTaxId: '10987654321'
+              isBornInTheUS: false
+              isSecondNationalityUS: false
+              hasUSGreencard: false
+            optIns:
+              allowPhone: true
+              allowEmail: true
+    ESPSecuritiesAccountOpeningMinimumRequest:
+      summary: Minimal example of an ESP securities account opening request
+      value:
+        returnUrl: https://uat-dwebge.www.deutsche-bank.de/opra4/pfb/employee-share-program/#/laas-thank-you
+        processData:
+          clients:
+          - affiliateData:
+              employeeId: Telekom456
+            naturalPerson:
+              firstName: Maximilian
+              lastName: Schmidt
+              sex: MALE
+              nationality: DE
+              maritalStatus: SINGLE
+              dateOfBirth: '2000-10-10'
+              placeOfBirth: Berlin
+              salutation: Herr
+            address:
+              city: Frankfurt
+              country: DE
+              street: Zeilstraße
+              houseNumber: '1'
+              zipCode: '60313'
+            contactData:
+              email: maximilian-schmidt@gmail.com
+              phoneNumber:
+                areaCode: ''
+                internationalAreaCode: 0049
+                telephoneNumber: '1234567891'
+            taxInformation:
+              isGermanTaxPayer: true
+              isNonGermanTaxPayer: false
+              isBornInTheUS: false
+              isSecondNationalityUS: false
+              hasUSGreencard: false
+            optIns:
+              allowPhone: true
+              allowEmail: true
+  schemas:
+    ESPSecuritiesAccountOpeningRequest:
+      required:
+      - processData
+      - returnUrl
+      type: object
+      properties:
+        returnUrl:
+          type: string
+          description: Frontend to redirect to after the product was opened
+        processData:
+          $ref: '#/components/schemas/ProcessData'
+    ContactData:
+      required:
+      - email
+      - phoneNumber
+      type: object
+      properties:
+        email:
+          pattern: ([^@\s]+@[^@]+\.[^@\s\.]{2,})
+          type: string
+          description: Email address
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+      description: Contact data of the customer
+    ESPSecuritiesAccountOpeningStatusResponse:
+      required:
+      - applicationStatus
+      - legitimationType
+      - responseType
+      type: object
+      properties:
+        applicationStatus:
+          type: string
+          description: Overall status of the fulfillment
+        legitimationType:
+          type: string
+          description: Type of legitimation used
+        responseType:
+          type: string
+          description: Further information on the overall status
+        accountIban:
+          type: string
+          description: (Optional) Iban, only present if product was fully automatically opened
+        accountBic:
+          type: string
+          description: (Optional) BIC, only present if product was fully automatically opened
+        accountNumber:
+          type: string
+          description: (Optional) account number, only present if product was fully automatically opened
+        subAccountNumber:
+          type: string
+          description: (Optional) sub account number, only present if product was fully automatically opened
+        branchNumber:
+          type: string
+          description: (Optional) branch number, only present if product was fully automatically opened
+    AffiliateData:
+      required:
+      - employeeId
+      type: object
+      properties:
+        employeeId:
+          type: string
+          description: Company ID of the employee
+      description: Company data required to open the product
+    TaxInformation:
+      required:
+      - hasUSGreencard
+      - isBornInTheUS
+      - isGermanTaxPayer
+      - isNonGermanTaxPayer
+      - isSecondNationalityUS
+      type: object
+      properties:
+        isGermanTaxPayer:
+          type: boolean
+          description: Is the customer a taxpayer in Germany
+        isNonGermanTaxPayer:
+          type: boolean
+          description: Is the customer a taxpayer outside of Germany
+        nonGermanTaxPayerCountry1:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: A country (1) where the customer is a taxpayer (other than Germany). ISO 3166-1 alpha-2 country code
+        nonGermanTaxId1:
+          type: string
+          description: Tax-ID valid in the tax country (1)
+        nonGermanTaxPayerCountry2:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: A country (2) where the customer is a taxpayer (other than Germany). ISO 3166-1 alpha-2 country code
+        nonGermanTaxId2:
+          type: string
+          description: Tax-ID valid in the tax country (2)
+        nonGermanTaxPayerCountry3:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: A country (3) where the customer is a taxpayer (other than Germany). ISO 3166-1 alpha-2 country code
+        nonGermanTaxId3:
+          type: string
+          description: Tax-ID valid in the tax country (3)
+        tin:
+          maxLength: 11
+          minLength: 11
+          type: string
+          description: Customer tax ID
+        selfEmployedTaxId:
+          type: string
+          description: Self-employed customer tax ID
+        isBornInTheUS:
+          type: boolean
+          description: Is the customer born in the United States of America?
+        isSecondNationalityUS:
+          type: boolean
+          description: Is customer's second nationality United States of America?
+        hasUSGreencard:
+          type: boolean
+          description: Does the customer have US greencard?
+      description: Description of the customer's tax situation
+    Client:
+      required:
+      - address
+      - affiliateData
+      - contactData
+      - naturalPerson
+      - optIns
+      - taxInformation
+      type: object
+      properties:
+        taxInformation:
+          $ref: '#/components/schemas/TaxInformation'
+        address:
+          $ref: '#/components/schemas/Address'
+        naturalPerson:
+          $ref: '#/components/schemas/NaturalPerson'
+        contactData:
+          $ref: '#/components/schemas/ContactData'
+        affiliateData:
+          $ref: '#/components/schemas/AffiliateData'
+        optIns:
+          $ref: '#/components/schemas/OptIns'
+      description: Client data for opening the ESP securities account
+    ProcessData:
+      required:
+      - clients
+      type: object
+      properties:
+        clients:
+          type: array
+          description: A list of clients
+          items:
+            $ref: '#/components/schemas/Client'
+      description: Request information for opening the ESP securities account
+    NaturalPerson:
+      required:
+      - dateOfBirth
+      - firstName
+      - lastName
+      - maritalStatus
+      - nationality
+      - placeOfBirth
+      - salutation
+      - sex
+      type: object
+      properties:
+        academicTitle:
+          type: string
+          description: Academic title of the customer
+          enum:
+          - DR
+          - PROF
+          - PROF_DR
+        firstName:
+          type: string
+          description: First name of the customer
+        lastName:
+          type: string
+          description: Last name of the customer
+        birthName:
+          type: string
+          description: Birth name of the customer
+        sex:
+          type: string
+          description: Sex of the customer
+          enum:
+          - MALE
+          - FEMALE
+        nationality:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: Nationality of the customer. Only one nationality is entered here. ISO 3166-1 alpha-2 country code
+        dateOfBirth:
+          pattern: ([0-9]{4}-[0-9]{2}-[0-9]{2})
+          type: string
+          description: Birth date of the customer. In the format YYYY-MM-DD.
+        maritalStatus:
+          type: string
+          description: Marital status of the customer
+          enum:
+          - UNKNOWN
+          - SINGLE
+          - MARRIED_SEPARATE_TAX_ASSESSMENT
+          - DIVORCED
+          - WIDOWED
+          - SINGLE_LIVING_IN_COHABITATION
+          - MARRIED_SEPARATED
+          - MARRIED_JOINT_TAX_ASSESSMENT
+          - CIVIL_UNION_JOINT_TAX_ASSESSMENT
+          - CIVIL_UNION_SEPARATE_TAX_ASSESSMENT
+          - CIVIL_UNION_SEPARATED
+        placeOfBirth:
+          pattern: ([^!§$%=?*;<>#+]{1,70})
+          type: string
+          description: Birth place of the customer
+        salutation:
+          pattern: ([^!§$%=?*;<>#+]{1,70})
+          type: string
+          description: Salutation of the customer
+      description: Personal information of the customer
+    Address:
+      required:
+      - city
+      - country
+      - houseNumber
+      - street
+      - zipCode
+      type: object
+      properties:
+        city:
+          type: string
+          description: City
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+        street:
+          type: string
+          description: Street
+        houseNumber:
+          type: string
+          description: The number of the house
+        zipCode:
+          type: string
+          description: Zip Code
+      description: Address information of the customer
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    PhoneNumber:
+      required:
+      - areaCode
+      - internationalAreaCode
+      - telephoneNumber
+      type: object
+      properties:
+        internationalAreaCode:
+          type: string
+          description: International area code
+        areaCode:
+          type: string
+          description: Area code
+        telephoneNumber:
+          type: string
+          description: Phone number
+      description: Phone number information
+    ESPSecuritiesAccountOpeningResponse:
+      required:
+      - recordId
+      - redirectionUrl
+      - vviList
+      type: object
+      properties:
+        redirectionUrl:
+          type: string
+          description: URL to LaaS
+        recordId:
+          type: string
+          description: ID of the underlying case. Can be used in the status call to get further information after fulfillment
+        vviList:
+          type: array
+          description: List of vviItems, which contain name and link to the vvi documents
+          items:
+            $ref: '#/components/schemas/VviItem'
+      description: Employee Share Plan Securities Account Opening Response
+    VviItem:
+      required:
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the vvi item
+        url:
+          type: string
+          description: Url to the vvi item
+    OptIns:
+      required:
+      - allowEmail
+      - allowPhone
+      type: object
+      properties:
+        allowPhone:
+          type: boolean
+          description: Whether the customer can be contacted by phone
+        allowEmail:
+          type: boolean
+          description: Whether the customer can be contacted by email
+      description: Permissions to contact the customer
+  securitySchemes:
+    api_client_credential:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://simulator-api.db.com:443/gw/oidc/oauth2/token
+          scopes:
+            open_esp_securities_account: Open ESP securities accounts

@@ -1,0 +1,2 @@
+# x-archived-from: deutsche-bank-merchant-solution-callback-v2.json
+# x-archived-on: 2026-09-16

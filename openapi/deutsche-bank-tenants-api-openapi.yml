@@ -1,0 +1,185 @@
+openapi: 3.2.0
+info:
+  title: dbapi-swaggers-v1 Tenants API
+  description: swagger/API definition service
+  contact: {}
+  license: {}
+  version: v1
+servers:
+- url: https://simulator-api.db.com:443/gw/public/dbapi/swaggers/v1
+tags:
+- name: Tenants
+  description: Tenants
+paths:
+  /tenants/:
+    get:
+      tags:
+      - Tenants
+      summary: Return all tenant definitions
+      operationId: getAllTenants
+      parameters:
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content: {}
+        '403':
+          description: Forbidden
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      deprecated: false
+  /tenants/default:
+    get:
+      tags:
+      - Tenants
+      summary: Returns the default tenant definition
+      operationId: getDefaultTenant
+      parameters:
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content: {}
+        '403':
+          description: Forbidden
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      deprecated: false
+  /tenants/{tenant-id}:
+    get:
+      tags:
+      - Tenants
+      summary: Returns a tenant definition
+      operationId: getTenantById
+      parameters:
+      - name: tenant-id
+        in: path
+        description: the unique resource id
+        required: true
+        schema:
+          type: string
+      - name: Correlation-Id
+        in: header
+        description: Free form key controlled by the caller e.g. uuid
+        required: false
+        schema:
+          maxLength: 50
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '400':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content: {}
+        '403':
+          description: Forbidden
+          content: {}
+        '404':
+          description: Not Found
+          content: {}
+        '500':
+          description: unsuccessful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      deprecated: false
+components:
+  schemas:
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+          format: int32
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    Tenant:
+      title: Tenant
+      type: object
+      properties:
+        authorizationUrl:
+          type: string
+        defaultTenant:
+          type: boolean
+        description:
+          type: string
+        gatewayUrl:
+          type: string
+        id:
+          type: string
+        tokenUrl:
+          type: string
+x-original-swagger-version: '2.0'

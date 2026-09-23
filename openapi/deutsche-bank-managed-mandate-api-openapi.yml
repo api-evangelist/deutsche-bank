@@ -1,0 +1,108 @@
+openapi: 3.2.0
+info:
+  title: Merchant-Server II REST Services Managed Mandate API
+  version: v2.1
+  description: The Managed Mandate API contains endpoints to work with managed mandates.
+servers:
+- url: https://testmerch.directpos.de/rest-api/services/v2.1/
+security:
+- bearerAuth: []
+tags:
+- name: Managed Mandate
+  description: The Managed Mandate API contains endpoints to work with managed mandates.
+paths:
+  /managedmandate/{mandate_id}/{action}:
+    post:
+      tags:
+      - Managed Mandate
+      summary: Manages a SDD mandate
+      operationId: managedmandateDiscardPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: mandate_id
+        in: path
+        description: Mandate ID.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 57e1bf82d3764e58b3b04a1c249e1282
+      - name: action
+        in: path
+        description: Action.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          description: "Actions for ManagedMandate service.\n            | * 'discard' - discard a mandate.\n        "
+          example: discard
+          enum:
+          - discard
+        example: discard
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: Mandate is successfully changed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaseResponse'
+components:
+  schemas:
+    BaseResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

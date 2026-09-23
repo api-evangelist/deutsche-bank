@@ -1,0 +1,2449 @@
+openapi: 3.2.0
+info:
+  title: Merchant-Server II REST Services Headless 3-D Secure API
+  version: v2.1
+  description: The Headless 3-D Secure API contains endpoints to conduct headless 3-D Secure transactions.
+servers:
+- url: https://testmerch.directpos.de/rest-api/services/v2.1/
+security:
+- bearerAuth: []
+tags:
+- name: Headless 3-D Secure
+  description: The Headless 3-D Secure API contains endpoints to conduct headless 3-D Secure transactions.
+paths:
+  /headless3DSecure/event/{event_id}/final:
+    post:
+      tags:
+      - Headless 3-D Secure
+      summary: 'Step 3 of a headless 3-D Secure transaction: finalizes transaction'
+      operationId: headless3DSecureFinalPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event. Use the same value as in the predecessor transaction the current transaction relates to.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Headless3DSecureFinalRequest'
+            example:
+              cres: ew0KICAiZXhhbXBsZSIgOiAicmVxdWVzdCINCn0=
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: Information about the outcome of the transaction.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+              example:
+                amount_total:
+                  amount: 100
+                  currency: EUR
+                event_id: id1628241998006
+                kind: CREDITCARD_3DS20
+                tx_action: preauthorization
+                tx_id: 7P6cconB5vYqBQqGjyO8yR
+                back_rc: '00'
+                transaction_info:
+                  type: creditcard
+                  transaction_creditcard_info:
+                    credit_card:
+                      number: 401200******4444
+                      expiry_date:
+                        year: 2034
+                        month: 12
+                      cardholder: Card Holder
+                rc: '0'
+                message: Transaction successful.
+  /headless3DSecure/event/{event_id}/{tx_action}/initialize:
+    post:
+      tags:
+      - Headless 3-D Secure
+      summary: Step 1 of a headless 3-D Secure transaction (authorization, pre-authorization…
+      operationId: headless3DSecureInitializePost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      - name: tx_action
+        in: path
+        description: The action of an initial transaction.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          enum:
+          - authorization
+          - preauthorization
+          - credit
+          - verify-mop
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Headless3DSecureInitializeRequest'
+            examples:
+              sample21:
+                summary: Sample headless 3-D Secure initial request.
+                description: Sample headless 3-D Secure initial request.
+                value:
+                  means_of_payment:
+                    credit_card:
+                      number: '4012001037167778'
+                      expiry_date:
+                        year: 2034
+                        month: 12
+                      code: '123'
+                      cardholder: Card Holder
+                  tds_20_data:
+                    communication_data:
+                      method_notification_url: https://example.com/method_notification_url
+                      cres_notification_url: https://example.com/cres_notification_url
+                  merchant_risk_indicators:
+                    delivery_email_address: delivery@example.com
+                    delivery_timeframe: ELECTRONIC
+                    gift_card_amount: '900'
+                    gift_card_count: '1'
+                    gift_card_currency: EUR
+                    pre_order_date: '2021-10-25'
+                    pre_order_purchase_indicator: AVAILABLE
+                    reordered_items_indicator: FIRST
+                    shipping_indicator: DIGITAL
+                  device_information:
+                    cookies_accepted: 'true'
+                    http_accept_browser_value: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+                    http_accept_content: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+                    color_depth: B24
+                    http_browser_email: mustermann@example.com
+                    http_browser_java_enabled: 'true'
+                    http_browser_java_script_enabled: 'true'
+                    http_browser_language: de-DE
+                    http_browser_screen_height: '1080'
+                    http_browser_screen_width: '1920'
+                    http_browser_time_difference: '60'
+                    ip_address: 192.168.0.1
+                    user_agent: Mozilla
+                    user_agent_browser_value: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
+                  amount_total:
+                    amount: 100
+                    currency: EUR
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: Information about the outcome of the transaction.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Headless3DSecureResponse'
+              examples:
+                sample_response_to_initial_request_-_transaction_processed:
+                  summary: Transaction has been processed, no further actions required.
+                  description: Transaction has been processed, no further actions required.
+                  value:
+                    outcome: PROCESSED
+                    processed:
+                      amount_total:
+                        amount: 100
+                        currency: EUR
+                      event_id: id1628241502404
+                      kind: CREDITCARD_3DS20
+                      tx_action: preauthorization
+                      tx_id: fCDszGoUje8piOUC2tVVU9
+                      back_rc: '00'
+                      transaction_info:
+                        type: creditcard
+                        transaction_creditcard_info:
+                          credit_card:
+                            number: 401200******7778
+                            expiry_date:
+                              year: 2034
+                              month: 12
+                            cardholder: Card Holder
+                      rc: '0'
+                      message: Transaction successful.
+                    rc: '0'
+                    message: Transaction successful.
+                sample_response_to_initial_request_-_method_flow_required:
+                  summary: Proceed with 3-D Secure method flow.
+                  description: Proceed with 3-D Secure method flow.
+                  value:
+                    outcome: METHOD_REQUIRED
+                    method_required:
+                      method_request: ew0KICAiY29udGVudCIgOiAiZHVtbXkiDQp9
+                    rc: '1548'
+                    message: Transaction is pending.
+                sample_response_to_initial_request_-_challenge_flow_required:
+                  summary: Proceed with 3-D Secure challenge flow.
+                  description: Proceed with 3-D Secure challenge flow.
+                  value:
+                    outcome: CHALLENGE_REQUIRED
+                    challenge_required:
+                      acs_url: https://acs.example.com/acs/challenge/ew0KICAiZHVtbXkiIDogImR1bW15Ig0KfQ==
+                      creq: ew0KICAiZHVtbXkiIDogImNvbnRlbnQiDQp9
+                    rc: '1548'
+                    message: Transaction is pending.
+  /headless3DSecure/event/{event_id}/method_completed/{completed}:
+    post:
+      tags:
+      - Headless 3-D Secure
+      summary: 'Step 2 of a headless 3-D Secure transaction: processes method completion'
+      operationId: headless3DSecureMethodCompletedPost
+      parameters:
+      - name: Merchant-ID
+        in: header
+        description: Unique identification of the merchant for whom the transaction is carried out. This parameter is  required if the `Merchant-ID` cannot be derived from the `client_id` you used for authentication.
+        required: false
+        style: simple
+        explode: false
+        schema:
+          maxLength: 10
+          minLength: 10
+          pattern: '[0-9]+'
+          type: string
+      - name: event_id
+        in: path
+        description: A unique ID for the event. Use the same value as in the predecessor transaction the current transaction relates to.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+      - name: completed
+        in: path
+        description: Indicates if the shop has received a request from the ACS to the methodNotificationURL within 10 seconds (true) or not (false).
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: boolean
+      responses:
+        '400':
+          description: Response in case of an error. Includes a response code and an error message.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '401':
+          description: Unauthorized request. Response body may be empty.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorModel'
+        '200':
+          description: Information about the outcome of the transaction.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Headless3DSecureResponse'
+              examples:
+                sample_response_to_method_request_-_transaction_processed:
+                  summary: Transaction has been processed, no further actions required.
+                  description: Transaction has been processed, no further actions required.
+                  value:
+                    outcome: PROCESSED
+                    processed:
+                      amount_total:
+                        amount: 100
+                        currency: EUR
+                      event_id: id1628241502404
+                      kind: CREDITCARD_3DS20
+                      tx_action: preauthorization
+                      tx_id: fCDszGoUje8piOUC2tVVU9
+                      back_rc: '00'
+                      transaction_info:
+                        type: creditcard
+                        transaction_creditcard_info:
+                          credit_card:
+                            number: 401200******7778
+                            expiry_date:
+                              year: 2034
+                              month: 12
+                            cardholder: Card Holder
+                      rc: '0'
+                      message: Transaction successful.
+                    rc: '0'
+                    message: Transaction successful.
+                sample_response_to_method_request_-_challenge_flow_required:
+                  summary: Proceed with 3-D Secure challenge flow.
+                  description: Proceed with 3-D Secure challenge flow.
+                  value:
+                    outcome: CHALLENGE_REQUIRED
+                    challenge_required:
+                      acs_url: https://acs.example.com/acs/challenge/ew0KICAiZHVtbXkiIDogImR1bW15Ig0KfQ==
+                      creq: ew0KICAiZHVtbXkiIDogImNvbnRlbnQiDQp9
+                    rc: '1548'
+                    message: Transaction is pending.
+components:
+  schemas:
+    AliasInfo:
+      type: object
+      properties:
+        alias:
+          type: string
+          description: Name of the alias.
+          example: da2c9029-b180-42a7-b473-50d182a01f8a
+        credit_card:
+          $ref: '#/components/schemas/CreditCardInfo'
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+      description: Contains information about the created or updated alias. This field is null if the there was no 'alias_info' in the request.
+    Headless3DSecureFinalRequest:
+      type: object
+      properties:
+        PaRes:
+          type: string
+          description: 3-D Secure Payer Authentication Response received from the ACS.
+        cres:
+          type: string
+          description: 3-D Secure challenge response data received from the ACS.
+      description: 3-D Secure challenge response data. Make sure only one of the attributes are set depending on the 3-D Secure version.
+    ExpiryDate:
+      required:
+      - month
+      - year
+      type: object
+      properties:
+        year:
+          maximum: 2099
+          minimum: 2000
+          type: integer
+          description: The credit card expiry year.
+          format: int32
+          example: 2021
+        month:
+          maximum: 12
+          minimum: 1
+          type: integer
+          description: The credit card expiry month.
+          format: int32
+          example: 11
+      description: The credit card expiry date.
+    Headless3DSecure20MethodRequiredResponse:
+      type: object
+      properties:
+        method_request:
+          type: string
+        method_url:
+          type: string
+    CommonAddressExtensions:
+      type: object
+      properties:
+        alternative_address_data:
+          $ref: '#/components/schemas/AlternativeAddressData'
+        paydirekt_data:
+          $ref: '#/components/schemas/AddressPaydirektData'
+      description: Service specific address fields.
+    MerchantInformationExtensions:
+      type: object
+      properties:
+        klarna_data:
+          $ref: '#/components/schemas/MerchantInformationKlarnaData'
+      description: Service specific merchant information fields.
+    BankAccount:
+      required:
+      - iban
+      type: object
+      properties:
+        bic:
+          maxLength: 11
+          minLength: 11
+          pattern: '[A-Z]{6}[A-Z2-9][A-NP-Z0-9][A-Z0-9]{3}'
+          type: string
+          description: "The business identifier code (BIC) of a bank account. If the branch identifier\n                (positions 9 to 11) is not applicable, it is set to \"XXX\". "
+          example: VZVDDED1XXX
+        iban:
+          maxLength: 34
+          minLength: 15
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}'
+          type: string
+          description: The international bank account number of a bank account.
+          example: DE17215730140403340300
+        account_holder:
+          maxLength: 27
+          minLength: 1
+          pattern: .*
+          type: string
+          description: The account holder of the bank account.
+          example: Max Muster
+        bank_name:
+          type: string
+          description: Name of the bank.
+          example: Musterbank
+      description: Information about a bank account.
+    TaxInfo:
+      required:
+      - tax_id
+      - tax_id_type
+      type: object
+      properties:
+        tax_id:
+          type: string
+          description: The customer's tax ID value.
+          example: 867.226.847-41
+        tax_id_type:
+          type: string
+          description: 'Type of tax ID. May be country specific. Different types may adhere to different patterns.
+
+
+            * `BR_CPF` : Brazilian individual tax id type.
+
+            * `BR_CNPJ` : Brazilian business tax id type.
+
+            * `OTHER` : None of the above.
+
+            '
+          example: BR_CPF
+          enum:
+          - BR_CPF
+          - BR_CNPJ
+          - OTHER
+      description: Legal tax information of the payer.
+    BasketItem:
+      type: object
+      properties:
+        name:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: Descriptive name of the order item. Mandatory for PayPal.
+          example: A fine shirt
+        description:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: Used for storing merchant's internal order number or other reference.
+          example: BI123456
+        reference:
+          maxLength: 64
+          minLength: 0
+          type: string
+          description: Article number, SKU or similar.
+          example: UGG-BB-PUR-06
+        quantity:
+          $ref: '#/components/schemas/Quantity'
+        unit_price:
+          $ref: '#/components/schemas/TaxedAmountCurrency'
+        item_discount:
+          $ref: '#/components/schemas/TaxedAmountCurrency'
+        extensions:
+          $ref: '#/components/schemas/BasketItemExtensions'
+      description: A purchasable item that is part of a shopping basket's list of items.
+    RiskmanagementInfoResponse:
+      type: object
+      properties:
+        case_priority:
+          type: string
+          description: Riskcheck information regarding the case priority.
+          example: '1'
+        error_information:
+          $ref: '#/components/schemas/RiskmanErrorInformation'
+        event_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: A unique ID for the event.
+          example: E5686585867636541231230
+        infocodes_address:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the address risk check. See user guide for details and all possible values.
+            example: '["COR-BA","COR-SA","MM-A","MM-Z"]'
+        infocodes_customerlist:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the customer list risk check.  See user guide for details and all possible values.
+            example: '["CONPOSNEG","NEG-BCO"]'
+        infocodes_device_behaviour:
+          type: array
+          items:
+            type: string
+            description: Indicates the device behavior information code(s) returned from device fingerprinting. See user guide for details and all possible values.
+            example: '["MouseOffPageDetected"]'
+        infocodes_globalvelocity:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the velocity risk check. See user guide for details and all possible values.
+            example: '["VEL-ADDR","VELS-FP"]'
+        infocodes_identitychange:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the identity change. See user guide for details and all possible values.
+            example: '["ID-M-HPOS"]'
+        infocodes_internet:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the internet check. See user guide for details and all possible values.
+            example: '["FREE-EM"]'
+        infocodes_phone:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the phone risk check. See user guide for details and all possible values.
+            example: '["MMACBST, "UNV-PH" ]'
+        infocodes_suspicious:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding suspicious risk. See user guide for details and all possible values.
+            example: '["BAD-FP","MUL-EM"]'
+        infocodes_velocity:
+          type: array
+          items:
+            type: string
+            description: 'List of information codes triggered by the order. These information codes were generated when you created
+
+              the order and product velocity rules and are returned so that you can associate them with the rules. See user guide for details and all possible values.'
+            example: '["GVEL-R20","GVEL-R21"]'
+        localtime:
+          type: string
+          description: Riskcheck information regarding the local time of the risk check.
+          example: '55083'
+        profile_destination_queue:
+          type: string
+          description: Riskcheck information regarding the profile destination queue of the risk check.
+          example: dst-queue
+        profile_name:
+          type: string
+          description: Riskcheck information regarding the profile of the risk check.
+          example: example-profile
+        profile_selectorrule:
+          type: string
+          description: Riskcheck information regarding the profile selector rule risk check.
+          example: example-rule
+        providers:
+          type: array
+          items:
+            type: string
+            description: Providers used to calculate the risk.
+            example: '["provider1","provider2"]'
+        rules:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the matched rules in risk check.
+            example: '["example-rule"]'
+        score:
+          type: string
+          description: Calculated risk score of request data.
+          example: '14'
+        score_factor_codes:
+          type: array
+          items:
+            type: string
+            description: Riskcheck information regarding the profile factor codes of the risk check. See user guide for all possible values.
+            example: '["G","H","Y","Z"]'
+        score_model_used:
+          type: string
+          description: Name of the score model used for the transaction. This field contains the name of risk management’s selected model.
+          example: default_eu
+        travel_actual_final_dst_country:
+          type: string
+          description: Actual country of final destination of the travel.
+          example: US
+        travel_actual_final_dst_locality:
+          type: string
+          description: Actual city of final destination of the travel.
+          example: Chicago
+        travel_first_departure_country:
+          type: string
+          description: First departure country of the travel.
+          example: US
+        travel_first_departure_locality:
+          type: string
+          description: First departure city of the travel.
+          example: San Francisco
+        tx_risk_status:
+          type: string
+          description: Status result of an external risk management transaction. See user guide for all possible values.
+          example: ACCEPTED
+        tx_scoring_id:
+          type: string
+          description: Unique scoring transaction identifier. Can be used to reference the depending scoring transaction.
+          example: '6373172383866963604006'
+        utc_time:
+          type: string
+          description: Riskcheck information regarding the UTC time of the risk check, used in error cases.
+          example: '2021-12-21T14:18:04Z'
+    CreditCardInfo:
+      required:
+      - expiry_date
+      - number
+      type: object
+      properties:
+        number:
+          maxLength: 19
+          minLength: 10
+          pattern: '[0-9]*'
+          type: string
+          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
+          example: '41111111111111111'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
+        cardholder:
+          maxLength: 27
+          minLength: 1
+          type: string
+          description: The holder of a credit card.
+          example: Max Muster
+        brand:
+          type: string
+          description: "The credit card brand.  The use of this field requires an explicit activation. Please contact customer support. Possible values:     \n           \n* `AMEX`\n* `DINERS`\n* `JCB`\n* `MAESTRO`\n* `MASTERCARD`\n* `VISA`        \n"
+          example: VISA
+          enum:
+          - AMEX
+          - DINERS
+          - JCB
+          - MAESTRO
+          - MASTERCARD
+          - VISA
+        issuer_country:
+          type: string
+          description: The card issuers country of origin.  The use of this field requires an explicit activation. Please contact customer support.
+      description: Information about a credit card.
+    PhoneContact:
+      required:
+      - phone_number
+      - phone_type
+      type: object
+      properties:
+        phone_type:
+          type: string
+          description: 'The phone type.
+
+
+            * `FAX`
+
+            * `HOME`
+
+            * `MOBILE`
+
+            * `OTHER`
+
+            * `PAGER`
+
+            * `WORK`
+
+            '
+          example: FAX
+          enum:
+          - FAX
+          - HOME
+          - MOBILE
+          - OTHER
+          - PAGER
+          - WORK
+        phone_number:
+          maxLength: 16
+          minLength: 0
+          pattern: \+[1-9]\d{1,14}
+          type: string
+          description: A phone number in its canonical international E.164 numbering plan format.
+          example: '+442071838750'
+      description: A means of contacting a customer by phone.
+      example:
+        phone_type: FAX
+        phone_number: '+442071838750'
+    MerchantInformationKlarnaData:
+      type: object
+      properties:
+        custom_payment_method_ids:
+          type: array
+          description: List of custom payment method ids.
+          example:
+          - klarna_invoice
+          - klarna_installments
+          items:
+            type: string
+            description: List of custom payment method ids.
+            example: '["klarna_invoice","klarna_installments"]'
+      description: Klarna specific MerchantInformation fields.
+    CommonAddress:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Customer's title.
+          example: Ms
+        first_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: First name of the individual.
+          example: Jane
+        last_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Last name of the individual.
+          example: Doe
+        company_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Name of the company.
+          example: Acme Inc.
+        email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address of the individual.
+          example: test_jane@gmail.com
+        phone_contact:
+          $ref: '#/components/schemas/PhoneContact'
+        address_line_1:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line.
+          example: Main Street 123
+        address_line_2:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line. For 3DS this maps to additional1.
+          example: Building A
+        address_line_3:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: An address line. For 3DS this maps to additional2.
+          example: Apartment 12
+        postal_code:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Postal code of the address.
+          example: '80469'
+        city:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: City of the address.
+          example: Munich
+        state:
+          maxLength: 300
+          minLength: 0
+          type: string
+          description: State or province of the address.
+          example: BY
+        country:
+          maxLength: 2
+          minLength: 2
+          pattern: '[A-Z]{2}'
+          type: string
+          description: The ISO 3166 Alpha-2 country code (upper case) of the individual's homeland.
+          example: DE
+        extensions:
+          $ref: '#/components/schemas/CommonAddressExtensions'
+      description: Address data as applicable to most use cases.
+    TDS20PhoneNumber:
+      type: object
+      properties:
+        country:
+          type: string
+          description: The country code of the phone number.
+        regional:
+          type: string
+          description: The regional part of the phone number.
+      description: Phone number with country code.
+    RiskmanErrorFieldInformation:
+      type: object
+      properties:
+        field:
+          type: string
+          description: The name of the field which was the reason of the request rejection.
+          example: orderInformation.billTo.firstName
+        reason:
+          type: string
+          description: The reason why the request was rejected.
+          example: MISSING_FIELD
+      description: Field name and reason why the request was rejected.
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+    RiskCheckTravelInformation:
+      type: object
+      properties:
+        actual_final_destination:
+          maxLength: 3
+          minLength: 0
+          type: string
+          description: 'IATA Code for the actual final destination that the customer intends to travel to.
+
+            It should be a destination on the complete_route.'
+          example: SFO
+        complete_route:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Concatenation of individual travel legs in the format ORIG1-DEST1[:ORIG2-DEST2...:ORIGn-DESTn]
+          example: SFO-JFK:JFK-LHR:LHR-CDG
+        departure_time:
+          type: string
+          description: Departure date and time of the first leg of the trip.
+          format: date-time
+        journey_type:
+          type: string
+          description: "Type of travel, for example one way or round trip.\n                \n* `ONEWAY`\n* `ROUNDTRIP`\n"
+          example: ONEWAY
+          enum:
+          - ONEWAY
+          - ROUNDTRIP
+        legs:
+          maxItems: 60
+          minItems: 0
+          type: array
+          description: Single legs of the complete journey.
+          items:
+            $ref: '#/components/schemas/RiskmanagementTravelInformationLeg'
+        number_of_passengers:
+          type: string
+          description: Number of passengers for whom the ticket was issued.
+          example: '1'
+        passengers:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskmanagementTravelInformationPassenger'
+      description: Travel information of the order.
+    MeansOfPaymentCreditCard:
+      type: object
+      properties:
+        token:
+          maxLength: 500
+          minLength: 0
+          pattern: '[a-zA-Z0-9/+=_-]*'
+          type: string
+          description: The token value.
+          example: eyJ0IjoiSFcyaS13cTB3PT0iLCJzIjoiaWIybzFRMHEifQ
+        alias:
+          type: string
+          description: A previously registered alias.
+          example: 221f56ca355d8e6c42517749cf79ceb8
+        credit_card:
+          $ref: '#/components/schemas/CreditCard'
+      description: The means of payment that will be used. Exactly one of the given means is valid.
+    Basket:
+      type: object
+      properties:
+        basket_id:
+          maxLength: 140
+          minLength: 0
+          type: string
+          description: 'Dependent on the backend services the value might be shortened or special characters might be removed before sending.
+
+
+            giropay: Will be displayed by giropay at the first row of the remittance information on the giropay form. Values longer than 27 characters will be cut off.'
+          example: basket123456
+        invoice_id:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: The API caller-provided external invoice number for this order.
+          example: RE123345
+        soft_descriptor:
+          type: string
+          description: Dynamic text used to construct the statement descriptor that appears on a payer's card statement.
+          example: 800-123-1234
+        shipping_costs:
+          $ref: '#/components/schemas/AmountCurrency'
+        basket_discount:
+          $ref: '#/components/schemas/AmountCurrency'
+        basket_type:
+          type: string
+          description: 'Type of a shopping basket. Mandatory for PayPal.
+
+
+            * `DIGITAL`: Basket contains digital items only.
+
+            * `MIXED`: Basket contains items of various types.
+
+            * `PHYSICAL`: Basket contains physical items only.
+
+            '
+          example: DIGITAL
+          enum:
+          - DIGITAL
+          - MIXED
+          - PHYSICAL
+        extensions:
+          $ref: '#/components/schemas/BasketExtensions'
+        basket_items:
+          type: array
+          description: An array of items that the customer purchases from the merchant.
+          items:
+            $ref: '#/components/schemas/BasketItem'
+      description: A generalized shopping basket.
+    BasketItemKlarnaData:
+      type: object
+      properties:
+        product_url:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Product's URL in the merchant's webshop. May be used in communication between Klarna and the customer.
+          example: https://www.exampleobjects.com/products/123456789
+        image_url:
+          maxLength: 1024
+          minLength: 0
+          type: string
+          description: Product image URL in the merchant's webshop. May be used to embed the image into communication between Klarna and the customer.
+          example: https://www.exampleobjects.com/product-image-1200x1200.jpg
+        product_identifiers:
+          type: array
+          description: Additional information identifying the basket item.
+          items:
+            $ref: '#/components/schemas/KlarnaProductIdentifier'
+      description: Service specific basket item fields for Klarna related use cases.
+    CustomerExtensionPayPalData:
+      type: object
+      properties:
+        payer_id:
+          maxLength: 13
+          minLength: 0
+          type: string
+          example: 23456789ABCDE
+        tax_info:
+          $ref: '#/components/schemas/TaxInfo'
+      description: PayPal specific customer information fields.
+    TDSInfo:
+      type: object
+      properties:
+        tds_auth_level:
+          type: string
+          description: "The 3D-Secure transaction status.\n        \n* `FULL`: Full 3-D Secure Authentification\n* `ATTEMPT`: 3-D Secure Authentification attempted\n"
+          example: ATTEMPT
+          enum:
+          - FULL
+          - ATTEMPT
+        tds_version:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: 3-D Secure version.
+        tds_ares_cardholder_info:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: ARes card holder information.'
+        tds_ares_error_code:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: ARes error code.'
+        tds_ares_error_component:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: ARes error component.'
+        tds_ares_trans_status:
+          maxLength: 1
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: ARes transaction status.'
+          example: Y
+        tds_ares_trans_status_reason:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: reason for the ARes transaction status.'
+          example: MediumConfidence
+        tds_rreq_challenge_cancel_indicator:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: Optional 3-D Secure 2 response parameter.
+          example: CardholderCancel
+        tds_rreq_error_code:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: RReq error code.'
+        tds_rreq_error_component:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: RReq error component.'
+        tds_rreq_trans_status:
+          maxLength: 1
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: RReq transaction status.'
+        tds_rreq_trans_status_reason:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: reason for the RReq transaction status.'
+          example: MediumConfidence
+        tds_ares_error_description:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: ARes error description.'
+        tds_ares_error_detail:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: ARes error detail.'
+        tds_rreq_error_description:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: RReq error description.'
+        tds_rreq_error_detail:
+          maxLength: 80
+          minLength: 0
+          type: string
+          description: '3-D Secure 2: RReq error detail.'
+      description: Contains 3-D Secure response data.  The use of this field requires an explicit activation. Please contact customer support.
+    TransactionCreditCardInfo:
+      type: object
+      properties:
+        credit_card:
+          $ref: '#/components/schemas/CreditCardInfo'
+        tds_info:
+          $ref: '#/components/schemas/TDSInfo'
+        recurring_payment:
+          maxLength: 50
+          minLength: 1
+          pattern: '[/0-9a-zA-Z_.:,+*$%-]+'
+          type: string
+          description: Identifier of a recurring credit card payment.
+          example: 07H987Tx3PF9VxL5G7RfNp
+        cvc_result:
+          type: string
+          description: "Response code of the verification of the card verification code\n         according to the response of a backend system.  This value is available on some backend systems.  The use of this field requires an explicit activation. Please contact customer support.  \n         Possible values:\n        \n* `CVC_MATCH`\n* `CVC_NO_MATCH`\n* `CVC_NO_RESPONSE_RECEIVED`\n* `CVC_NOT_PROCESSED`\n* `CVC_NOT_PROVIDED`\n* `CVC_SHOULD_BE_ON_CARD`\n* `CVC_VERIFICATION_UNAVAILABLE`\n\n"
+          example: CVC_MATCH
+          enum:
+          - CVC_MATCH
+          - CVC_NO_MATCH
+          - CVC_NO_RESPONSE_RECEIVED
+          - CVC_NOT_PROCESSED
+          - CVC_NOT_PROVIDED
+          - CVC_SHOULD_BE_ON_CARD
+          - CVC_VERIFICATION_UNAVAILABLE
+        avs_result:
+          type: string
+          description: "Response code of the address verification according to the response of a backend system. \n         This value is available on some backend systems.  The use of this field requires an explicit activation. Please contact customer support.  Possible values:\n        \n* `MATCH`\n* `NO_MATCH`\n"
+          example: MATCH
+          enum:
+          - MATCH
+          - NO_MATCH
+    Contacts:
+      type: object
+      properties:
+        phone_contacts:
+          type: array
+          description: A means of contacting a customer by phone.
+          example:
+            phone_type: FAX
+            phone_number: '+442071838750'
+          items:
+            $ref: '#/components/schemas/PhoneContact'
+      description: Means of contacting the customer.
+      example:
+        phone_contacts:
+        - phone_type: FAX
+          phone_number: '+442071838750'
+    KlarnaProductIdentifier:
+      type: object
+      properties:
+        brand:
+          type: string
+          description: The product's brand name as generally recognized by consumers. If no brand is available for a product, do not supply any value.
+          example: Intel
+        category_path:
+          maxLength: 750
+          minLength: 0
+          type: string
+          description: The product's category path as used in the merchant's webshop. Include the full and most detailed category and separate the segments with '>'.
+          example: Electronics Store > Computers & Tablets > Desktops
+        gtin:
+          pattern: '[a-zA-Z0-9]*'
+          type: string
+          description: The product's Global Trade Item Number (GTIN). Common types of GTIN are EAN, ISBN or UPC. Dashes and spaces must be omitted.
+          example: '735858293167'
+        mpn:
+          type: string
+          description: The product's Manufacturer Part Number (MPN), which - together with the brand - uniquely identifies a product. Only submit MPNs assigned by a manufacturer and use the most specific MPN possible.
+          example: BOXNUC5CPYH
+      description: Klarna specific unique identification attributes of a product.
+    TaxedAmountCurrency:
+      required:
+      - currency
+      - gross
+      - net
+      - tax
+      type: object
+      properties:
+        net:
+          type: integer
+          description: Amount of money excl. tax in the minor currency unit.
+          format: int64
+          example: 100
+        gross:
+          type: integer
+          description: Amount of money incl. tax in the minor currency unit.
+          format: int64
+          example: 100
+        currency:
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+        tax:
+          maximum: 10000
+          minimum: 0
+          type: integer
+          description: Tax percentage. Non-negative value. The percentage value is represented with two implicit decimals.
+          format: int32
+          example: 1900
+      description: Net and gross money amount accompanied by a tax percentage and currency.
+    Headless3DSecureInitializeRequest:
+      required:
+      - amount_total
+      - means_of_payment
+      - tds_20_data
+      type: object
+      properties:
+        billing_address:
+          $ref: '#/components/schemas/CommonAddress'
+        basket:
+          $ref: '#/components/schemas/Basket'
+        device_information:
+          $ref: '#/components/schemas/DeviceInformation'
+        shipping_address:
+          $ref: '#/components/schemas/CommonAddress'
+        merchant_information:
+          $ref: '#/components/schemas/MerchantInformation'
+        account_information:
+          $ref: '#/components/schemas/AccountInformation'
+        customer_information:
+          $ref: '#/components/schemas/CustomerInformation'
+        merchant_risk_indicators:
+          $ref: '#/components/schemas/MerchantRiskIndicators'
+        merchant_defined_information:
+          type: array
+          items:
+            $ref: '#/components/schemas/RiskCheckMerchantDefinedInformation'
+        travel_information:
+          $ref: '#/components/schemas/RiskCheckTravelInformation'
+        risk_check_additional_information:
+          $ref: '#/components/schemas/RiskCheckAdditionalInformation'
+        amount_total:
+          $ref: '#/components/schemas/AmountCurrency'
+        alias_action:
+          $ref: '#/components/schemas/AliasAction'
+        means_of_payment:
+          $ref: '#/components/schemas/MeansOfPaymentCreditCard'
+        recurring_payment:
+          maxLength: 50
+          minLength: 1
+          pattern: '[/0-9a-zA-Z_.:,+*$%-]+'
+          type: string
+          description: Identifier of a recurring credit card payment.
+          example: 07H987Tx3PF9VxL5G7RfNp
+        series_flag:
+          type: string
+          description: 'Designates a payment as part of a series of payments.
+
+
+            * `INSTALMENT`: for example in the case of paying a fixed sum in multiple partial payments.
+
+            * `RECURRING`: for example in the case of a subscription or standing order.
+
+            * `UCOF`: when a card number alias is created for future payments with the same credit card. In this case use _alias_action_ with _action_ `CREATE` with the first payment and the card number alias with the following payments. You can use the _tx_action_ `verify-mop` with the first UCOF transaction to register a card number alias without a payment.'
+          enum:
+          - INSTALMENT
+          - RECURRING
+          - UCOF
+        sequence_type:
+          type: string
+          description: "If this payment is part of a sequence of payments\n\n * `FIRST`: first payment of a sequence\n * `RECURRING`: follow-up payment\n * `FINAL`: last payment of a sequence\n"
+          enum:
+          - FINAL
+          - FIRST
+          - RECURRING
+        tds_20_data:
+          $ref: '#/components/schemas/TDS20Data'
+        processing_options:
+          uniqueItems: true
+          type: array
+          description: Defines an additional processing option for headless 3-D Secure transactions.
+          example:
+          - FALLBACK_ON_SSL
+          - RISKCHECK
+          items:
+            type: string
+            description: "Additional processing option for headless 3-D Secure transactions.\n\n* `FALLBACK_ON_SSL`: process the transaction flagged as channel-encrypted (SSL, 3-D Secure authentication \nwas not performed) instead of 3-D Secure in case 3-D Secure authentication could not be performed.\n* `RISKCHECK`: process risk check transaction before start of 3-D Secure authentication. In case of declined risk check\nno credit card transaction is started\n"
+            example: FALLBACK_ON_SSL
+            enum:
+            - FALLBACK_ON_SSL
+            - RISKCHECK
+    CreditCard:
+      required:
+      - expiry_date
+      - number
+      type: object
+      properties:
+        number:
+          maxLength: 19
+          minLength: 10
+          pattern: '[0-9]*'
+          type: string
+          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
+          example: '41111111111111111'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
+        code:
+          maxLength: 4
+          minLength: 3
+          pattern: '[0-9]*'
+          type: string
+          description: Card verification number of the credit card (also CVV or CVC).
+          example: '332'
+        cardholder:
+          maxLength: 27
+          minLength: 1
+          type: string
+          description: The holder of a credit card.
+          example: Max Muster
+      description: Information about a credit card.
+    AccountInformation:
+      type: object
+      properties:
+        account_change_date:
+          type: string
+          description: Date of the last change to the client's account. This includes changes to the billing or shipping addresses, new payment methods or new users added.
+          format: date
+          example: '2021-10-25'
+        account_creation_indicator:
+          type: string
+          description: 'What kind of account is it?
+
+
+            * GUEST
+
+            * NEW_ACCOUNT
+
+            * EXISTING_ACCOUNT
+
+            '
+          example: GUEST
+          enum:
+          - GUEST
+          - NEW_ACCOUNT
+          - EXISTING_ACCOUNT
+        account_id:
+          type: string
+          description: The account ID.
+          example: MC_ACC_12345678
+        account_opened_date:
+          type: string
+          description: Date the client opened the account. This usually only applies if this is an EXISTING_ACCOUNT.
+          format: date
+          example: '2021-10-25'
+        modification_indicator:
+          type: string
+          description: 'This field is applicable only if this is an EXISTING_ACCOUNT.
+
+
+            * ACCOUNT_UPDATED_NOW
+
+            * ACCOUNT_UPDATED_PAST
+
+            '
+          example: ACCOUNT_UPDATED_NOW
+          enum:
+          - ACCOUNT_UPDATED_NOW
+          - ACCOUNT_UPDATED_PAST
+        password_change_date:
+          type: string
+          description: Date the client last changed the account's password. May be empty if the password has not been changed yet.
+          format: date
+          example: '2021-10-25'
+        password_change_indicator:
+          type: string
+          description: 'This field is applicable only if this is an EXISTING_ACCOUNT.
+
+
+            * PASSWORD_CHANGED_NOW
+
+            * PASSWORD_CHANGED_PAST
+
+            * PASSWORD_NEVER_CHANGED
+
+            '
+          example: PASSWORD_CHANGED_NOW
+          enum:
+          - PASSWORD_CHANGED_NOW
+          - PASSWORD_CHANGED_PAST
+          - PASSWORD_NEVER_CHANGED
+        payment_account_date:
+          type: string
+          description: Only applicable if PAYMENT_ACCOUNT_EXISTS.
+          format: date
+          example: '2021-10-25'
+        payment_account_history:
+          type: string
+          description: 'This field is applicable only if this is a NEW_ACCOUNT or EXISTING_ACCOUNT.
+
+
+            * PAYMENT_ACCOUNT_EXISTS
+
+            * PAYMENT_ACCOUNT_ADDED_NOW
+
+            '
+          example: PAYMENT_ACCOUNT_EXISTS
+          enum:
+          - PAYMENT_ACCOUNT_EXISTS
+          - PAYMENT_ACCOUNT_ADDED_NOW
+        add_card_attempts:
+          maximum: 999
+          type: integer
+          description: Number of add card attempts during the last 24 hours.
+          format: int32
+          example: 1
+        provisioning_day_count:
+          maximum: 9999
+          type: integer
+          description: The provisioning day counter.
+          format: int32
+          example: 1
+        purchases_six_month_count:
+          maximum: 9999
+          type: integer
+          description: Number of purchases with this account during the previous six months.
+          format: int32
+          example: 2
+        shipping_address_first_use_date:
+          type: string
+          description: Date when the shipping address was first used for this transaction. Only applies if firstUseOfShippingAddress is false and this is not a guest account.
+          format: date
+          example: '2021-10-25'
+        shipping_address_first_use:
+          type: boolean
+          description: Applicable if this is not a guest account.
+          example: false
+        shipping_name_indicator:
+          type: string
+          description: The shipping name indicator. Indicates if the account's cardholder name equals the shipping name used for this transaction.
+          example: '02'
+        suspicious_account_activity:
+          type: boolean
+          description: Indicates whether the merchant experienced suspicious activity (including previous fraud) on the account.
+          example: false
+        transactions_day_count:
+          maximum: 999
+          type: integer
+          description: Number of transactions (successful or abandoned) of this account during the last 24 hours.
+          format: int32
+          example: 1
+        transactions_year_count:
+          maximum: 9999
+          type: integer
+          description: Number of transactions (successful or abandoned) of this account during the last 365 days.
+          format: int32
+          example: 1
+      description: Information on a user's account usage, payment history, transaction statistics.
+    MandateResponse:
+      required:
+      - signed_on
+      type: object
+      properties:
+        mandate_id:
+          maxLength: 32
+          minLength: 32
+          type: string
+          description: Unique identification of the SEPA mandate. Use it for managed and already created mandates.
+          example: 89c3d6b532be80339839f1605201f2c7
+        signed_on:
+          type: string
+          description: Date when the SEPA mandate was issued. Full-date notation as defined by RFC 3339, section 5.6.
+          format: date
+          example: '2017-01-01'
+    BasketExtensions:
+      type: object
+      properties:
+        paypal_data:
+          $ref: '#/components/schemas/BasketPayPalData'
+      description: Service specific basket fields.
+    PaymentResponse:
+      required:
+      - event_id
+      - message
+      - rc
+      - timestamp
+      - tx_id
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        event_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: A unique ID for the event.
+          example: E5686585867636541231230
+        tx_id:
+          type: string
+          description: Unique transaction identifier. Can be used to reference this transaction.
+          example: 020LMG10jxSI8FN0OC4vLR
+        riskmanagement_info:
+          $ref: '#/components/schemas/RiskmanagementInfoResponse'
+        amount_total:
+          $ref: '#/components/schemas/AmountCurrency'
+        kind:
+          type: string
+          description: The type of transaction.
+          enum:
+          - DIRECTDEBIT
+          - CREDITCARD
+          - CREDITCARD_3DS20
+          - CREDITTRANSFER
+          - SOFORTUEBERWEISUNG
+          - PAYPAL
+          - PAYDIREKT
+          - WECHATPAY
+          - P24
+          - GIROPAY
+          - KLARNA
+          - PSD2
+        tx_action:
+          type: string
+          description: The action of a transaction.
+          enum:
+          - authorization
+          - capture
+          - credit
+          - preauthorization
+          - refund
+          - reversal
+          - risk_check
+          - verify-mop
+          - payment
+          - avs
+          - avspayment
+        alias_info:
+          $ref: '#/components/schemas/AliasInfo'
+        back_rc:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Response code of a backend system, for example the GICC response code.
+          example: '00'
+        timestamp:
+          type: string
+          description: Timestamp of the transaction.
+          format: date-time
+        transaction_info:
+          $ref: '#/components/schemas/TransactionInfo'
+    BasketPayPalData:
+      type: object
+      properties:
+        custom_id:
+          maxLength: 127
+          minLength: 0
+          type: string
+          description: The API caller-provided external ID. Used to reconcile client transactions with PayPal transactions. Appears in transaction and settlement reports but is not visible to the payer.
+          example: CUSTOMID123
+      description: Service specific basket fields for PayPal.
+    MerchantInformation:
+      type: object
+      properties:
+        locale:
+          type: string
+          description: Language of the form to be displayed according to ISO 639-1.
+          example: en
+        merchant_data_1:
+          type: string
+          description: The first merchant data field.
+          example: '123456789'
+        merchant_data_2:
+          type: string
+          description: The second merchant data field.
+          example: '123456789'
+        merchant_data_3:
+          type: string
+          description: The third merchant data field.
+          example: '123456789'
+        extensions:
+          $ref: '#/components/schemas/MerchantInformationExtensions'
+    AliasAction:
+      required:
+      - action
+      type: object
+      properties:
+        alias:
+          type: string
+          description: The alias value. If no value is set an alias is created by the system.
+          example: 221f56ca355d8e6c42517749cf79ceb8
+        action:
+          type: string
+          description: What should be done.
+          enum:
+          - CREATE
+          - UPDATE
+          - USE
+      description: Specifies an alias and an operation to perform on it.
+    RiskmanagementTravelInformationPassenger:
+      type: object
+      properties:
+        first_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: First name of the individual.
+          example: Jane
+        last_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Last name of the individual.
+          example: Doe
+      description: Information about a passenger.
+    RiskCheckAdditionalInformation:
+      type: object
+      properties:
+        fingerprint_session_id:
+          maxLength: 88
+          minLength: 0
+          type: string
+          description: Fingerprint session ID of the device and request of the customer.
+          example: '529572354443398504'
+      description: Additional information for calculation of the risk of a transaction.
+    TransactionInfo:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+          - creditcard
+          - bankaccount
+        transaction_creditcard_info:
+          $ref: '#/components/schemas/TransactionCreditCardInfo'
+        transaction_bankaccount_info:
+          $ref: '#/components/schemas/TransactionBankAccountInfo'
+        mandate_data:
+          $ref: '#/components/schemas/MandateResponse'
+        back_state:
+          type: string
+          description: "State of a transaction according to the response of a backend system. \n         This value is available on some backend systems.  The use of this field requires an explicit activation. Please contact customer support.  Possible values:\n        \n* `DECLINED`\n* `AUTHORIZED`\n* `REVERSED`\n* `CAPTURED`\n* `SETTLED`\n"
+          example: REVERSED
+          enum:
+          - DECLINED
+          - AUTHORIZED
+          - REVERSED
+          - CAPTURED
+          - SETTLED
+        ip_address:
+          type: string
+          description: The customer's IP address associated with this transaction.  The use of this field requires an explicit activation. Please contact customer support.
+    Quantity:
+      required:
+      - quantity_amount
+      - quantity_unit
+      type: object
+      properties:
+        quantity_amount:
+          minimum: 0
+          type: integer
+          description: Amount of units.
+          format: int64
+          example: 5
+        quantity_unit:
+          maxLength: 8
+          minLength: 0
+          type: string
+          description: Unit used to describe the quantity.
+          example: pcs
+      description: A quantity.
+    BasketItemPayPalData:
+      required:
+      - paypal_type
+      type: object
+      properties:
+        paypal_type:
+          type: string
+          description: "PayPal specific type of an order item.\n\n    * `DIGITAL_GOODS`: Goods that are stored, delivered, and used in electronic format.\n    * `PHYSICAL_GOODS`: A tangible item that can be shipped with proof of delivery.\n    * `DONATION`: A contribution or gift for which no good or service is exchanged.\n    "
+          example: PHYSICAL_GOODS
+          enum:
+          - DIGITAL_GOODS
+          - PHYSICAL_GOODS
+          - DONATION
+      description: Service specific basket item fields for PayPal.
+    TDS20Data:
+      type: object
+      properties:
+        customer_data:
+          $ref: '#/components/schemas/TDS20CustomerData'
+        device_information:
+          $ref: '#/components/schemas/DeviceInformation'
+        communication_data:
+          $ref: '#/components/schemas/TDS20CommunicationData'
+        requestor_challenge_indicator:
+          type: string
+          enum:
+          - NO_PREFERENCE
+          - NO_CHALLENGE_REQUESTED
+          - CHALLENGE_REQUESTED_3DS_REQUESTOR_PREFERENCE
+          - CHALLENGE_REQUESTED_MANDATE
+          - NO_CHALLENGE_REQUESTED_RISK_ANALYSIS_ALREADY_PERFORMED
+          - NO_CHALLENGE_REQUESTED_DATA_SHARE_ONLY
+          - NO_CHALLENGE_REQUESTED_STRONGER_CONSUMER_AUTHENTICATION_ALREADY_PERFORMED
+          - NO_CHALLENGE_REQUESTED_UTILISE_WHITELIST_EXEMPTION_IF_NO_CHALLENGE_REQUIRED
+          - CHALLENGE_REQUESTED_WHITELIST_PROMPT_REQUESTED_IF_CHALLENGE_REQUIRED
+        transaction_attributes:
+          $ref: '#/components/schemas/TDS20TransactionAttributes'
+      description: 3-D Secure data. Activates 3-D Secure processing if values are set.
+    BasketItemExtensions:
+      type: object
+      properties:
+        paypal_data:
+          $ref: '#/components/schemas/BasketItemPayPalData'
+        riskcheck_data:
+          $ref: '#/components/schemas/BasketItemRiskCheckData'
+        klarna_data:
+          $ref: '#/components/schemas/BasketItemKlarnaData'
+      description: Service specific basket item fields.
+    AmountCurrency:
+      required:
+      - amount
+      - currency
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: Minor currency value of an amount of money.
+          format: int64
+          example: 200
+        currency:
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+      description: An amount and a currency.
+    TDS20TransactionAttributes:
+      type: object
+      properties:
+        purchase_instalment_data:
+          maximum: 999
+          minimum: 2
+          type: integer
+          description: Maximum number of authorizations permitted for instalment payments, must be > 1.
+          format: int32
+        recurring_expiry:
+          type: string
+          description: Date after which no further authorizations shall be carried out.
+          format: date
+        recurring_frequency:
+          maximum: 9999
+          minimum: 1
+          type: integer
+          description: Minimum number of days between authorizations.
+          format: int32
+        transaction_type:
+          type: string
+          description: Type of 3-D Secure 2.0 payment.
+          enum:
+          - PURCHASE
+          - CHECK_ACCEPTANCE
+          - ACCOUNT_FUNDING
+          - QUASI_CASH
+          - PREPAID_ACTIVATION
+    Headless3DSecure20ChallengeRequiredResponse:
+      required:
+      - acs_url
+      type: object
+      properties:
+        PaReq:
+          type: string
+          description: 3-D Secure Payer Authentication Request that has to be sent to the ACS.
+        acs_url:
+          type: string
+          description: The URL to which the customer should be redirected.
+        creq:
+          type: string
+          description: 3-D Secure challenge request data that has to be sent to the ACS.
+    TDS20CardHolderAccountInfo:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: The account ID.
+        account_age_indicator:
+          type: string
+          description: The account age indicator.
+          enum:
+          - LESS_30
+          - MORE_30_LESS_60
+          - MORE_60
+          - NEVER
+          - NOW
+        password_change_indicator:
+          type: string
+          description: The account password change indicator.
+          enum:
+          - LESS_30
+          - MORE_30_LESS_60
+          - MORE_60
+          - NEVER
+          - NOW
+        payment_account_age_indicator:
+          type: string
+          description: The payment account age indicator.
+          enum:
+          - LESS_30
+          - MORE_30_LESS_60
+          - MORE_60
+          - NEVER
+          - NOW
+        account_change:
+          type: string
+          description: The account change.
+          enum:
+          - LESS_30
+          - MORE_30_LESS_60
+          - MORE_60
+          - NOW
+        shipping_address_age_indicator:
+          type: string
+          description: The shipping address age indicator.
+          enum:
+          - LESS_30
+          - MORE_30_LESS_60
+          - MORE_60
+          - NOW
+        account_change_date:
+          type: string
+          description: The account change date.
+          format: date
+        account_opened_date:
+          type: string
+          description: The account opened date.
+          format: date
+        password_change_date:
+          type: string
+          description: The password change date.
+          format: date
+        payment_account_age:
+          type: string
+          description: The payment account age.
+          format: date
+        shipping_address_age:
+          type: string
+          description: The shipping address age.
+          format: date
+        purchases_six_month_count:
+          type: integer
+          description: The 6 month purchases counter
+          format: int32
+        provisioning_day_count:
+          type: integer
+          description: The provisioning day counter
+          format: int32
+        transactions_day_count:
+          type: integer
+          description: The transaction day counter
+          format: int32
+        transactions_year_count:
+          type: integer
+          description: The transaction year counter
+          format: int32
+        shipping_name_indicator:
+          type: string
+          description: The shipping name indicator.
+          enum:
+          - DIFFERENT
+          - IDENTICAL
+        suspicious_account_activity:
+          type: string
+          description: The suspicious account activity.
+          enum:
+          - OBSERVED
+          - NOT_OBSERVED
+    PersonalIdentification:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'Type of identification.
+
+
+            * `NATIONAL`
+
+            * `PASSPORT`
+
+            * `CPF`
+
+            * `CNPJ`
+
+            * `CURP`
+
+            * `SSN`
+
+            * `DRIVERS_LICENSE`
+
+            '
+          example: PASSPORT
+          enum:
+          - NATIONAL
+          - PASSPORT
+          - CPF
+          - CNPJ
+          - CURP
+          - SSN
+          - DRIVERS_LICENSE
+        id:
+          maxLength: 26
+          minLength: 0
+          type: string
+          description: The value of the identification type. For 'PASSPORT', this is the customer's passport number. For 'CPF', set this field to the Cadastro de Pessoas Fisicas.
+          example: T220001297
+        issued_by:
+          type: string
+          description: The government agency that issued the identification. For 'DRIVERS_LICENSE', this is the administrative area where it was issued. For 'PASSPORT', this is the country that issued the passport. Use the two-character state, province or territory codes respectively for United States and Canada.
+          example: DE
+      description: Customer's legal ID data.
+    CustomerInformationExtensions:
+      type: object
+      properties:
+        paypal_data:
+          $ref: '#/components/schemas/CustomerExtensionPayPalData'
+      description: Service specific customer information fields.
+    RiskCheckPassenger:
+      type: object
+      properties:
+        type:
+          type: string
+          description: 'Passenger classification as indicated by the price discount class of the ticket. The following values are valid:
+
+
+            * `ADT`: Adult
+
+            * `CNN`: Child
+
+            * `INF`: Infant
+
+            * `YTH`: Youth
+
+            * `STU`: Student
+
+            * `SCR`: Senior Citizen
+
+            * `MIL`: Military
+
+            '
+          example: ADT
+          enum:
+          - ADT
+          - CNN
+          - INF
+          - YTH
+          - STU
+          - SCR
+          - MIL
+        status:
+          maxLength: 32
+          minLength: 0
+          type: string
+          description: Merchant specific passenger classification, such as standard, gold, or platinum.
+          example: standard
+        phone:
+          $ref: '#/components/schemas/PhoneContact'
+        first_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: First name of the individual.
+          example: Jane
+        last_name:
+          maxLength: 60
+          minLength: 0
+          type: string
+          description: Last name of the individual.
+          example: Doe
+        id:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: ID of the passenger to whom a ticket was issued. For example, this field may contain the frequent flyer number.
+          example: B7564
+        email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address of the individual.
+          example: test_jane@gmail.com
+        country:
+          maxLength: 2
+          minLength: 2
+          pattern: '[A-Z]{2}'
+          type: string
+          description: The ISO 3166 Alpha-2 country code (upper case) of the individual's homeland.
+          example: DE
+      description: A (plane) passenger as modelled from the point of view of a risk check service.
+    TransactionBankAccountInfo:
+      type: object
+      properties:
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+    DeviceInformation:
+      type: object
+      properties:
+        cookies_accepted:
+          type: boolean
+          description: Whether or not the browser accepts cookies.
+          example: true
+        http_accept_browser_value:
+          maxLength: 2048
+          minLength: 0
+          type: string
+          description: 'Value of the ''Accept'' header sent by the customer''s web browser. Note: If the customer''s browser provides a value, you must include it with your request.'
+          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+        http_accept_content:
+          maxLength: 2048
+          minLength: 0
+          type: string
+          description: The exact content of the HTTP accept header.
+          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+        color_depth:
+          type: string
+          description: "The bit depth of the color palette for displaying images, in bits per pixel. See https://en.wikipedia.org/wiki/Color_depth. Possible values:\n\n* `B1`\n* `B4`\n* `B8`\n* `B15`\n* `B16`\n* `B24`\n* `B32`\n* `B48`\n\n    "
+          example: B24
+          enum:
+          - B1
+          - B4
+          - B8
+          - B15
+          - B16
+          - B24
+          - B32
+          - B48
+        http_browser_email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address set in the customer's browser. May differ from customer's actual email.
+          example: mustermann@example.com
+        http_browser_java_enabled:
+          type: boolean
+          description: Is the browser able to execute Java. Value is taken from the navigator.javaEnabled property.
+          example: false
+        http_browser_java_script_enabled:
+          type: boolean
+          description: 'Is the browser able to execute JavaScript. Background: Merchants may want to fingerprint a cardholder''s browser.'
+          example: false
+        http_browser_language:
+          maxLength: 8
+          minLength: 0
+          type: string
+          description: Browser language as defined in IETF BCP47. See https://en.wikipedia.org/wiki/IETF_language_tag.
+          example: en-US
+        http_browser_screen_height:
+          minimum: 0
+          type: integer
+          description: Total height of the client's screen in pixels.
+          format: int32
+          example: 864
+        http_browser_screen_width:
+          minimum: 0
+          type: integer
+          description: Total width of the client's screen in pixels.
+          format: int32
+          example: 1536
+        http_browser_time_difference:
+          maximum: 1440
+          minimum: -1440
+          type: integer
+          description: Time difference between UTC time and the client's browser's local time in minutes.
+          format: int32
+          example: 300
+        ip_address:
+          maxLength: 45
+          minLength: 0
+          pattern: ((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))
+          type: string
+          description: IP address of the client. Both IPv4 and IPv6 are supported.
+          example: 192.168.0.1
+        user_agent:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: Client's browser as identified by the HTTP header data.
+          example: Mozilla
+        user_agent_browser_value:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Value of the User-Agent header sent by the client's browser.
+          example: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
+      description: Technical details of a client.
+    TDS20CustomerData:
+      type: object
+      properties:
+        billing_address:
+          $ref: '#/components/schemas/TDS20Address'
+        shipping_address:
+          $ref: '#/components/schemas/TDS20Address'
+        home_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        mobile_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        work_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        cardholder_account_info:
+          $ref: '#/components/schemas/TDS20CardHolderAccountInfo'
+        cardholder_email:
+          type: string
+        addresses_match:
+          type: string
+          enum:
+          - MATCHES
+          - DOES_NOT_MATCH
+    RiskCheckMerchantDefinedInformation:
+      type: object
+      properties:
+        key:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Merchant-defined data fields are not intended to and must not be used to capture personally identifying information. Accordingly, merchants are prohibited from capturing, obtaining, and/or transmitting any personally identifying information in or via the merchant-defined data fields. Personally identifying information includes, but is not limited to, address, credit card number, social security number, driver's license number, state-issued identification number, passport number, and card verification numbers (CVV, CVC2, CVV2, CID, CVN). In the event Riskmanagement discovers that a merchant is capturing and/or transmitting personally identifying information via the merchant-defined data fields, whether or not intentionally, Riskmanagement will immediately suspend the merchant's account, which will result in a rejection of any and all transaction requests submitted by the merchant after the point of suspension.
+          example: MDD_001
+        value:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: String value for the key.
+          example: nightly order
+      description: Merchant defined information of the order. This must not be used to capture personally identifying information.
+    Headless3DSecureResponse:
+      required:
+      - message
+      - outcome
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        outcome:
+          type: string
+          description: "Indicates the outcome of the current headless 3-D Secure transaction.\n        \n* `PROCESSED`: The transaction has been processed, no further action required. \n        Consult attribute `processed` for details of the processed transaction.\n* `METHOD_REQUIRED`: 3-D Secure method flow needs to be started.\n        Consult attribute `method_required` for required data.\n* `CHALLENGE_REQUIRED`: 3-D Secure challenge flow needs to be started.\n        Consult attribute `challenge_required` for required data. \n"
+          example: PROCESSED
+          enum:
+          - PROCESSED
+          - METHOD_REQUIRED
+          - CHALLENGE_REQUIRED
+        challenge_required:
+          $ref: '#/components/schemas/Headless3DSecure20ChallengeRequiredResponse'
+        method_required:
+          $ref: '#/components/schemas/Headless3DSecure20MethodRequiredResponse'
+        processed:
+          $ref: '#/components/schemas/PaymentResponse'
+    BasketItemRiskCheckData:
+      type: object
+      properties:
+        riskcheck_type:
+          type: string
+          description: 'Riskcheck specific type of an order item.
+
+
+            * `ADULT_CONTENT`: Adult content.
+
+            * `COUPON`: Coupon applied to the entire order.
+
+            * `DEFAULT`: Default value for the product code. This value is used if a request message does not include a value for the product code.
+
+            * `ELECTRONIC_GOOD`: Electronic product other than software.
+
+            * `ELECTRONIC_SOFTWARE`: Software distributed electronically rather than on physical media.
+
+            * `GIFT_CERTIFICATE`: Gift certificate.
+
+            * `HANDLING_ONLY`: A fee that covers the merchant''s administrative selling costs.
+
+            * `SERVICE`: An arbitrary service that a merchant performs for customers.
+
+            * `SHIPPING_ONLY`: Charge for transporting tangible personal property from the merchant to the customer.
+
+            * `SHIPPING_AND_HANDLING`: Handling & Shipping fees combined.
+
+            * `SUBSCRIPTION`: Subscription to a website or other type of subscribable content.'
+          example: SHIPPING_ONLY
+          enum:
+          - ADULT_CONTENT
+          - COUPON
+          - DEFAULT
+          - ELECTRONIC_GOOD
+          - ELECTRONIC_SOFTWARE
+          - GIFT_CERTIFICATE
+          - HANDLING_ONLY
+          - SERVICE
+          - SHIPPING_ONLY
+          - SHIPPING_AND_HANDLING
+          - SUBSCRIPTION
+        distributor_product_sku:
+          maxLength: 15
+          minLength: 0
+          type: string
+          description: Product's identifier code.
+          example: '12345678'
+        gift_card_currency:
+          type: string
+          description: If riskcheck_type is GIFT_CERTIFICATE, this field must contain the ISO-4217-3 alpha-numeric currency code used for the gift card purchase.
+          example: EUR
+        product_risk:
+          type: string
+          description: 'Indicates the product''s risk level. This field may contain one of the following values:
+
+
+            * `LOW`: The product is associated with a low number of chargebacks.
+
+            * `NORMAL`: The product is associated with a normal number of chargebacks.
+
+            * `HIGH`: The product is associated with a high number of chargebacks.
+
+            '
+          example: NORMAL
+          enum:
+          - LOW
+          - NORMAL
+          - HIGH
+        risk_check_passenger:
+          $ref: '#/components/schemas/RiskCheckPassenger'
+        shipping_destination_types:
+          type: string
+          description: "Destination to where the item will be shipped.\n                \n* `COMMERCIAL`\n* `RESIDENTIAL`\n* `STORE`\n"
+          example: RESIDENTIAL
+          enum:
+          - COMMERCIAL
+          - RESIDENTIAL
+          - STORE
+        is_gift:
+          type: boolean
+          description: 'If billing and shipping addresses are different:
+
+
+            true: Order risk increases slightly.
+
+            false: Order risk increases significantly.
+
+            '
+          example: true
+      description: Service specific basket item fields for riskcheck related use cases.
+    MerchantRiskIndicators:
+      type: object
+      properties:
+        delivery_email_address:
+          type: string
+          description: The delivery email address.
+        delivery_timeframe:
+          type: string
+          description: The delivery time frame for this order.
+          enum:
+          - ELECTRONIC
+          - MORE_THAN_ONE_DAY
+          - OVERNIGHT
+          - SAME_DAY
+        gift_card_amount:
+          type: string
+          description: The gift card amount.
+        gift_card_count:
+          type: string
+          description: The gift card count.
+        gift_card_currency:
+          type: string
+          description: The gift card currency.
+        pre_order_date:
+          type: string
+          description: The preorder date. Full-date notation as defined by RFC 3339 section 5.6.
+          format: date
+        pre_order_purchase_indicator:
+          type: string
+          description: The preorder purchase indicator.
+          enum:
+          - AVAILABLE
+          - FUTURE
+        reordered_items_indicator:
+          type: string
+          description: The reordered items indicator.
+          enum:
+          - FIRST
+          - REORDERED
+        shipping_indicator:
+          type: string
+          description: The shipping indicator.
+          enum:
+          - DIGITAL
+          - OTHER
+          - BILLING_ADDRESS
+          - DIFFERENT_ADDRESS
+          - STORE
+          - VERIFIED_ADDRESS
+    TDS20CommunicationData:
+      type: object
+      properties:
+        method_notification_url:
+          type: string
+          description: The URL to send the method notification to.
+        cres_notification_url:
+          type: string
+          description: The URL to send the CRes to.
+    AddressPaydirektData:
+      type: object
+      properties:
+        addon:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Additional address information.
+          example: Apartment 12A
+      description: Paydirekt specific address fields.
+    CustomerInformation:
+      type: object
+      properties:
+        customer_id:
+          maxLength: 50
+          minLength: 1
+          pattern: '[\/0-9a-zA-Z_.:,\-+*$%]+'
+          type: string
+          description: Technical identification number of a customer.
+          example: C1234-AX
+        date_of_birth:
+          type: string
+          description: Customer's date of birth.
+          format: date
+          example: '1975-06-30'
+        gender:
+          type: string
+          description: "Customer's gender.\n                \n* `DIVERSE`\n* `FEMALE`\n* `MALE`\n"
+          example: FEMALE
+          enum:
+          - DIVERSE
+          - FEMALE
+          - MALE
+        title:
+          type: string
+          description: Customer's title.
+          example: Ms
+        personal_identifications:
+          type: array
+          description: Customer's available identifications.
+          items:
+            $ref: '#/components/schemas/PersonalIdentification'
+        contacts:
+          $ref: '#/components/schemas/Contacts'
+        extensions:
+          $ref: '#/components/schemas/CustomerInformationExtensions'
+      description: Details of a customer.
+    RiskmanagementTravelInformationLeg:
+      type: object
+      properties:
+        origination:
+          maxLength: 3
+          minLength: 0
+          type: string
+          description: 'Use to specify the airport code for the origin of the leg of the trip, which is designated by the pound (#) symbol in the field name. This code is usually three digits long, for example: SFO = San Francisco. Do not use the colon (:) or the dash (-). For airport codes, see the IATA Airline and Airport Code Search.'
+          example: SFO
+        destination:
+          maxLength: 3
+          minLength: 0
+          type: string
+          description: 'Use to specify the airport code for the destination of the leg of the trip, which is designated by the pound (#) symbol in the field name. This code is usually three digits long, for example: SFO = San Francisco. Do not use the colon (:) or the dash (-). For airport codes, see the IATA Airline and Airport Code Search.'
+          example: LHR
+        carrier_code:
+          maxLength: 2
+          minLength: 0
+          type: string
+          description: International Air Transport Association (IATA) code for the carrier for this leg of the trip. Required for each leg.
+          example: LH
+        departure_date:
+          maxLength: 8
+          minLength: 8
+          type: string
+          description: Departure date for the first leg of the trip.
+          example: '20240212'
+      description: Information about a leg of the complete journey.
+    RiskmanErrorInformation:
+      type: object
+      properties:
+        error_field_information:
+          type: array
+          description: Detailed field level information regarding the reason why the request was rejected.
+          items:
+            $ref: '#/components/schemas/RiskmanErrorFieldInformation'
+        error_message:
+          type: string
+          description: The reason why the request was rejected.
+          example: Declined - The request is missing one or more fields.
+        error_reason:
+          type: string
+          description: The reason why the request was rejected from the backend system.
+          example: MISSING_FIELD
+        error_status:
+          type: string
+          description: The status why the request was rejected from the backend system.
+          example: INVALID_REQUEST
+      description: Detailed error information including fields which had been the reasons for unsuccessful processing.
+    AlternativeAddressData:
+      type: object
+      properties:
+        street:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: The street.
+          example: Main Street
+        street_number:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: The street number.
+          example: 123a
+      description: Alternative address fields.
+    TDS20Address:
+      required:
+      - city
+      - country
+      - postal_code
+      - street
+      type: object
+      properties:
+        city:
+          type: string
+          description: City of the address.
+          example: Munich
+        country:
+          maxLength: 2
+          minLength: 2
+          pattern: '[A-Z]{2}'
+          type: string
+          description: The ISO 3166 Alpha-2 country code (upper case) of the individual's homeland.
+          example: DE
+        postal_code:
+          type: string
+          description: Postal code of the address.
+          example: '80469'
+        state:
+          type: string
+          description: State or province of the address.
+          example: BY
+        street:
+          type: string
+          description: The street.
+        street_number:
+          type: string
+          description: The street number.
+        additional1:
+          type: string
+          description: An additional first line.
+        additional2:
+          type: string
+          description: An additional second line.
+      description: Address data for 3DS 2.0 transactions.
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

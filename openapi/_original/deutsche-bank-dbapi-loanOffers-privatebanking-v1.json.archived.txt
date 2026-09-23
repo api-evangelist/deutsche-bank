@@ -1,0 +1,2 @@
+# x-archived-from: deutsche-bank-dbapi-loanOffers-privatebanking-v1.json
+# x-archived-on: 2026-09-16
