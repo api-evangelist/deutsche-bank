@@ -14,7 +14,7 @@ description: 'Deutsche Bank is a global financial institution headquartered in F
 image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/deutsche-bank.png
 tags:
 - Banking
-- Financial
+- Finance
 - Wealth Management
 - Open Banking
 - PSD2
@@ -24,7 +24,7 @@ tags:
 - Credit Cards
 - Merchant Solutions
 - Germany
-- Financial-Services
+- Financial Services
 tags_raw:
 - Banking
 - Financial
@@ -38,6 +38,7 @@ tags_raw:
 - Merchant Solutions
 - Germany
 - Financial Services
+- Financial-Services
 created: '2025-02-08'
 modified: '2026-09-06'
 position: Producing

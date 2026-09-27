@@ -242,40 +242,29 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    OrderCancelResponse:
+    SecurityRate_1:
       required:
-      - orderStatus
+      - currency
+      - rate
       type: object
       properties:
-        orderStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/SecurityOrderStatus'
-      description: A summary of the order for the order cancellation execution
-    SecurityOrderMessage:
-      type: object
-      properties:
-        text_de:
+        rate:
+          type: number
+          description: The rate of the security in the respective currency on the respective date
+          format: double
+          example: 56.14
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        unitPer:
+          type: number
+          description: Unit/percentage quotation of the security
+          format: double
+          example: 1.0
+        date:
           type: string
-          description: status message in German
-        text_en:
-          type: string
-          description: status message in English
-        code:
-          type: string
-          description: The response code
-        category:
-          type: string
-          description: Reason category
-          enum:
-          - INFO
-          - WARN
-          - ERROR
-    CurrencyCode:
-      pattern: '[A-Z]{3}'
-      type: string
-      description: ISO 4217 Alpha 3 currency code.
-      example: EUR
+          description: The date of the security rate in ISO 8601 format YYYY-MM-DD
+          format: date
+          example: '1970-10-20'
     SecurityOrderStatus:
       required:
       - status
@@ -341,29 +330,40 @@ components:
           description: Value date of the transaction delivered after execution or fixed price orders. Date in ISO 8601 format YYYY-MM-DD
           format: date
       description: The security order status
-    SecurityRate_1:
-      required:
-      - currency
-      - rate
+    SecurityOrderMessage:
       type: object
       properties:
-        rate:
-          type: number
-          description: The rate of the security in the respective currency on the respective date
-          format: double
-          example: 56.14
-        currency:
-          $ref: '#/components/schemas/CurrencyCode'
-        unitPer:
-          type: number
-          description: Unit/percentage quotation of the security
-          format: double
-          example: 1.0
-        date:
+        text_de:
           type: string
-          description: The date of the security rate in ISO 8601 format YYYY-MM-DD
-          format: date
-          example: '1970-10-20'
+          description: status message in German
+        text_en:
+          type: string
+          description: status message in English
+        code:
+          type: string
+          description: The response code
+        category:
+          type: string
+          description: Reason category
+          enum:
+          - INFO
+          - WARN
+          - ERROR
+    OrderCancelResponse:
+      required:
+      - orderStatus
+      type: object
+      properties:
+        orderStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityOrderStatus'
+      description: A summary of the order for the order cancellation execution
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
     OrderCancelRequest:
       required:
       - orderId

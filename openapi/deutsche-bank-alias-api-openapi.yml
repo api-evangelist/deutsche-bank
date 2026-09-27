@@ -544,116 +544,6 @@ paths:
                 $ref: '#/components/schemas/BaseResponse'
 components:
   schemas:
-    ErrorModel:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
-          type: string
-          description: Four digit response code.
-          example: '4001'
-        message:
-          type: string
-          description: Describes the error.
-          example: unexpected error
-      description: Includes data returned in case of an error.
-    AliasInfo:
-      type: object
-      properties:
-        alias:
-          type: string
-          description: Name of the alias.
-          example: da2c9029-b180-42a7-b473-50d182a01f8a
-        credit_card:
-          $ref: '#/components/schemas/CreditCardInfo'
-        bank_account:
-          $ref: '#/components/schemas/BankAccount'
-        address:
-          $ref: '#/components/schemas/CommonAddress'
-      description: Contains information about the created or updated alias. This field is null if the there was no 'alias_info' in the request.
-    AliasResponse:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
-          type: string
-          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
-          example: '0'
-        message:
-          type: string
-          description: Success or error message, text for the response code.
-          example: Transaction approved.
-        alias_info:
-          $ref: '#/components/schemas/AliasInfo'
-      description: Common response of all alias requests.
-    ExpiryDate:
-      required:
-      - month
-      - year
-      type: object
-      properties:
-        year:
-          maximum: 2099
-          minimum: 2000
-          type: integer
-          description: The credit card expiry year.
-          format: int32
-          example: 2021
-        month:
-          maximum: 12
-          minimum: 1
-          type: integer
-          description: The credit card expiry month.
-          format: int32
-          example: 11
-      description: The credit card expiry date.
-    AliasBankAccountRequest:
-      type: object
-      properties:
-        alias:
-          maxLength: 50
-          minLength: 0
-          type: string
-          description: The alias value. If no value is set an alias is created by the system.
-          example: 221f56ca355d8e6c42517749cf79ceb8
-        token:
-          maxLength: 500
-          minLength: 0
-          pattern: '[a-zA-Z0-9/+=_-]*'
-          type: string
-          description: The token value.
-          example: eyJ0IjoiSFcyaS13cTB3PT0iLCJzIjoiaWIybzFRMHEifQ
-        bank_account:
-          $ref: '#/components/schemas/BankAccount'
-        address:
-          $ref: '#/components/schemas/CommonAddress'
-      description: Contains information used to create an alias for a bank account. Either `token` or `bank_account` must be specified.
-    CommonAddressExtensions:
-      type: object
-      properties:
-        alternative_address_data:
-          $ref: '#/components/schemas/AlternativeAddressData'
-        paydirekt_data:
-          $ref: '#/components/schemas/AddressPaydirektData'
-      description: Service specific address fields.
-    BaseResponse:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
-          type: string
-          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
-          example: '0'
-        message:
-          type: string
-          description: Success or error message, text for the response code.
-          example: Transaction approved.
     BankAccount:
       required:
       - iban
@@ -685,159 +575,27 @@ components:
           description: Name of the bank.
           example: Musterbank
       description: Information about a bank account.
-    AddressPaydirektData:
-      type: object
-      properties:
-        addon:
-          maxLength: 100
-          minLength: 0
-          type: string
-          description: Additional address information.
-          example: Apartment 12A
-      description: Paydirekt specific address fields.
-    CreditCard:
+    ExpiryDate:
       required:
-      - expiry_date
-      - number
+      - month
+      - year
       type: object
       properties:
-        number:
-          maxLength: 19
-          minLength: 10
-          pattern: '[0-9]*'
-          type: string
-          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
-          example: '41111111111111111'
-        expiry_date:
-          $ref: '#/components/schemas/ExpiryDate'
-        code:
-          maxLength: 4
-          minLength: 3
-          pattern: '[0-9]*'
-          type: string
-          description: Card verification number of the credit card (also CVV or CVC).
-          example: '332'
-        cardholder:
-          maxLength: 27
-          minLength: 1
-          type: string
-          description: The holder of a credit card.
-          example: Max Muster
-      description: Information about a credit card.
-    AliasCreditCardRequest:
-      type: object
-      properties:
-        alias:
-          maxLength: 50
-          minLength: 0
-          type: string
-          description: The alias value. If no value is set an alias is created by the system.
-          example: 221f56ca355d8e6c42517749cf79ceb8
-        token:
-          maxLength: 500
-          minLength: 0
-          pattern: '[a-zA-Z0-9/+=_-]*'
-          type: string
-          description: The token value.
-          example: eyJ0IjoiSFcyaS13cTB3PT0iLCJzIjoiaWIybzFRMHEifQ
-        credit_card:
-          $ref: '#/components/schemas/CreditCard'
-      description: Contains information used to create an alias for a credit card. Either `token` or `credit_card` must be specified.
-    CreditCardInfo:
-      required:
-      - expiry_date
-      - number
-      type: object
-      properties:
-        number:
-          maxLength: 19
-          minLength: 10
-          pattern: '[0-9]*'
-          type: string
-          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
-          example: '41111111111111111'
-        expiry_date:
-          $ref: '#/components/schemas/ExpiryDate'
-        cardholder:
-          maxLength: 27
-          minLength: 1
-          type: string
-          description: The holder of a credit card.
-          example: Max Muster
-        brand:
-          type: string
-          description: "The credit card brand.  The use of this field requires an explicit activation. Please contact customer support. Possible values:     \n           \n* `AMEX`\n* `DINERS`\n* `JCB`\n* `MAESTRO`\n* `MASTERCARD`\n* `VISA`        \n"
-          example: VISA
-          enum:
-          - AMEX
-          - DINERS
-          - JCB
-          - MAESTRO
-          - MASTERCARD
-          - VISA
-        issuer_country:
-          type: string
-          description: The card issuers country of origin.  The use of this field requires an explicit activation. Please contact customer support.
-      description: Information about a credit card.
-    PhoneContact:
-      required:
-      - phone_number
-      - phone_type
-      type: object
-      properties:
-        phone_type:
-          type: string
-          description: 'The phone type.
-
-
-            * `FAX`
-
-            * `HOME`
-
-            * `MOBILE`
-
-            * `OTHER`
-
-            * `PAGER`
-
-            * `WORK`
-
-            '
-          example: FAX
-          enum:
-          - FAX
-          - HOME
-          - MOBILE
-          - OTHER
-          - PAGER
-          - WORK
-        phone_number:
-          maxLength: 16
-          minLength: 0
-          pattern: \+[1-9]\d{1,14}
-          type: string
-          description: A phone number in its canonical international E.164 numbering plan format.
-          example: '+442071838750'
-      description: A means of contacting a customer by phone.
-      example:
-        phone_type: FAX
-        phone_number: '+442071838750'
-    AlternativeAddressData:
-      type: object
-      properties:
-        street:
-          maxLength: 100
-          minLength: 0
-          type: string
-          description: The street.
-          example: Main Street
-        street_number:
-          maxLength: 10
-          minLength: 0
-          type: string
-          description: The street number.
-          example: 123a
-      description: Alternative address fields.
+        year:
+          maximum: 2099
+          minimum: 2000
+          type: integer
+          description: The credit card expiry year.
+          format: int32
+          example: 2021
+        month:
+          maximum: 12
+          minimum: 1
+          type: integer
+          description: The credit card expiry month.
+          format: int32
+          example: 11
+      description: The credit card expiry date.
     CommonAddress:
       type: object
       properties:
@@ -917,6 +675,248 @@ components:
         extensions:
           $ref: '#/components/schemas/CommonAddressExtensions'
       description: Address data as applicable to most use cases.
+    CreditCard:
+      required:
+      - expiry_date
+      - number
+      type: object
+      properties:
+        number:
+          maxLength: 19
+          minLength: 10
+          pattern: '[0-9]*'
+          type: string
+          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
+          example: '41111111111111111'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
+        code:
+          maxLength: 4
+          minLength: 3
+          pattern: '[0-9]*'
+          type: string
+          description: Card verification number of the credit card (also CVV or CVC).
+          example: '332'
+        cardholder:
+          maxLength: 27
+          minLength: 1
+          type: string
+          description: The holder of a credit card.
+          example: Max Muster
+      description: Information about a credit card.
+    PhoneContact:
+      required:
+      - phone_number
+      - phone_type
+      type: object
+      properties:
+        phone_type:
+          type: string
+          description: 'The phone type.
+
+
+            * `FAX`
+
+            * `HOME`
+
+            * `MOBILE`
+
+            * `OTHER`
+
+            * `PAGER`
+
+            * `WORK`
+
+            '
+          example: FAX
+          enum:
+          - FAX
+          - HOME
+          - MOBILE
+          - OTHER
+          - PAGER
+          - WORK
+        phone_number:
+          maxLength: 16
+          minLength: 0
+          pattern: \+[1-9]\d{1,14}
+          type: string
+          description: A phone number in its canonical international E.164 numbering plan format.
+          example: '+442071838750'
+      description: A means of contacting a customer by phone.
+      example:
+        phone_type: FAX
+        phone_number: '+442071838750'
+    BaseResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+    AlternativeAddressData:
+      type: object
+      properties:
+        street:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: The street.
+          example: Main Street
+        street_number:
+          maxLength: 10
+          minLength: 0
+          type: string
+          description: The street number.
+          example: 123a
+      description: Alternative address fields.
+    AliasCreditCardRequest:
+      type: object
+      properties:
+        alias:
+          maxLength: 50
+          minLength: 0
+          type: string
+          description: The alias value. If no value is set an alias is created by the system.
+          example: 221f56ca355d8e6c42517749cf79ceb8
+        token:
+          maxLength: 500
+          minLength: 0
+          pattern: '[a-zA-Z0-9/+=_-]*'
+          type: string
+          description: The token value.
+          example: eyJ0IjoiSFcyaS13cTB3PT0iLCJzIjoiaWIybzFRMHEifQ
+        credit_card:
+          $ref: '#/components/schemas/CreditCard'
+      description: Contains information used to create an alias for a credit card. Either `token` or `credit_card` must be specified.
+    AliasInfo:
+      type: object
+      properties:
+        alias:
+          type: string
+          description: Name of the alias.
+          example: da2c9029-b180-42a7-b473-50d182a01f8a
+        credit_card:
+          $ref: '#/components/schemas/CreditCardInfo'
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+      description: Contains information about the created or updated alias. This field is null if the there was no 'alias_info' in the request.
+    CommonAddressExtensions:
+      type: object
+      properties:
+        alternative_address_data:
+          $ref: '#/components/schemas/AlternativeAddressData'
+        paydirekt_data:
+          $ref: '#/components/schemas/AddressPaydirektData'
+      description: Service specific address fields.
+    CreditCardInfo:
+      required:
+      - expiry_date
+      - number
+      type: object
+      properties:
+        number:
+          maxLength: 19
+          minLength: 10
+          pattern: '[0-9]*'
+          type: string
+          description: The credit card number (Primary Account Number). It is sometimes masked in response messages, for example 411111******1111.
+          example: '41111111111111111'
+        expiry_date:
+          $ref: '#/components/schemas/ExpiryDate'
+        cardholder:
+          maxLength: 27
+          minLength: 1
+          type: string
+          description: The holder of a credit card.
+          example: Max Muster
+        brand:
+          type: string
+          description: "The credit card brand.  The use of this field requires an explicit activation. Please contact customer support. Possible values:     \n           \n* `AMEX`\n* `DINERS`\n* `JCB`\n* `MAESTRO`\n* `MASTERCARD`\n* `VISA`        \n"
+          example: VISA
+          enum:
+          - AMEX
+          - DINERS
+          - JCB
+          - MAESTRO
+          - MASTERCARD
+          - VISA
+        issuer_country:
+          type: string
+          description: The card issuers country of origin.  The use of this field requires an explicit activation. Please contact customer support.
+      description: Information about a credit card.
+    AddressPaydirektData:
+      type: object
+      properties:
+        addon:
+          maxLength: 100
+          minLength: 0
+          type: string
+          description: Additional address information.
+          example: Apartment 12A
+      description: Paydirekt specific address fields.
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+    AliasResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        alias_info:
+          $ref: '#/components/schemas/AliasInfo'
+      description: Common response of all alias requests.
+    AliasBankAccountRequest:
+      type: object
+      properties:
+        alias:
+          maxLength: 50
+          minLength: 0
+          type: string
+          description: The alias value. If no value is set an alias is created by the system.
+          example: 221f56ca355d8e6c42517749cf79ceb8
+        token:
+          maxLength: 500
+          minLength: 0
+          pattern: '[a-zA-Z0-9/+=_-]*'
+          type: string
+          description: The token value.
+          example: eyJ0IjoiSFcyaS13cTB3PT0iLCJzIjoiaWIybzFRMHEifQ
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+        address:
+          $ref: '#/components/schemas/CommonAddress'
+      description: Contains information used to create an alias for a bank account. Either `token` or `bank_account` must be specified.
   securitySchemes:
     bearerAuth:
       type: http

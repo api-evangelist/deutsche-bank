@@ -558,94 +558,6 @@ paths:
         - request_private_loans
 components:
   schemas:
-    ExistingInsurance:
-      type: object
-      properties:
-        disability:
-          type: boolean
-          description: Whether the customer has an existing disability insurance
-        residualDebt:
-          type: boolean
-          description: Whether the customer has an existing residual debt insurance
-        unemployment:
-          type: boolean
-          description: Whether the customer has an existing unemployment insurance
-    PaymentDay:
-      type: string
-      description: Schedule of the loan repayment
-      enum:
-      - MONTH_START
-      - MONTH_MIDDLE
-    DebtRestructuring:
-      required:
-      - amount
-      - bankName
-      - ownerName
-      - paymentType
-      type: object
-      properties:
-        bankName:
-          type: string
-        bic:
-          type: string
-        iban:
-          type: string
-        ownerName:
-          type: string
-        paymentType:
-          $ref: '#/components/schemas/PaymentType'
-        amount:
-          type: number
-          description: Account balance of the loan to be restructured
-    PaymentHoliday:
-      type: string
-      description: Payment holiday month
-      enum:
-      - JANUARY
-      - FEBRUARY
-      - MARCH
-      - APRIL
-      - MAY
-      - JUNE
-      - JULY
-      - AUGUST
-      - SEPTEMBER
-      - OCTOBER
-      - NOVEMBER
-      - DECEMBER
-    DocumentType:
-      type: string
-      description: Structure of the transaction data
-      enum:
-      - JSON
-    MaritalStatus:
-      type: string
-      description: Marital status of the debtor
-      enum:
-      - SINGLE
-      - DIVORCED
-      - CIVIL_UNION_SEPARATE_TAX_ASSESSMENT
-      - MARRIED_SEPARATED
-      - WIDOWED
-      - CIVIL_UNION_SEPARATED
-      - SINGLE_LIVING_IN_COHABITATION
-      - MARRIED_JOINT_TAX_ASSESSMENT
-      - MARRIED_SEPARATE_TAX_ASSESSMENT
-      - CIVIL_UNION_JOINT_TAX_ASSESSMENT
-    RequestForOfferResponse:
-      required:
-      - offerId
-      type: object
-      properties:
-        offerId:
-          type: string
-          description: Unique identifier of an offer.
-    Source:
-      type: string
-      description: Source format of the transaction data
-      enum:
-      - FINTEC
-      - OTHER
     Employment:
       required:
       - disclosedProfession
@@ -670,87 +582,84 @@ components:
           type: string
           description: Short term employment end date. [ISO Date. I.e. YYYY-MM-DD]
           format: date
-    StatusEnum:
+    PaymentHoliday:
       type: string
+      description: Payment holiday month
       enum:
-      - CREATED
-      - IN_PROGRESS
-      - ACCEPTED
-      - REJECTED
-      - ERROR
-    RequestForOffer:
+      - JANUARY
+      - FEBRUARY
+      - MARCH
+      - APRIL
+      - MAY
+      - JUNE
+      - JULY
+      - AUGUST
+      - SEPTEMBER
+      - OCTOBER
+      - NOVEMBER
+      - DECEMBER
+    Account:
       required:
-      - listAccount
-      - listDebtor
-      - loanAmount
-      - paymentDay
-      - productType
+      - bankName
+      - ownerName
+      - paymentType
       type: object
       properties:
-        environment:
+        bankName:
           type: string
-          description: Identifies the environment in which the request should be processed.
-        callbackUrl:
+          description: Bank name of the account
+        bic:
           type: string
-          description: Callback URL provided for asynchronous notifications and document delivery related to the loan offers request. If missing, the default configuration will be applied.
-        productType:
-          $ref: '#/components/schemas/ProductType'
-        productName:
+          description: BIC ( Bank Identifier Code) of the account
+        iban:
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
           type: string
-          description: Name of the product/conditions, to be agreed on between consumer/bank
-        externalClientId:
+          description: IBAN of the account
+        ownerName:
           type: string
-          description: Application/process ID in the system
-        durationInMonths:
-          type: integer
-          description: Number of requested installment rates
-          format: int32
-        installment:
-          type: number
-          description: Requested amount per installment
-        loanAmount:
-          type: number
-          description: Loan amount in euro
-        purpose:
+          description: Full name of the account owner
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+    RequestedInsuranceType:
+      type: string
+      description: Insurance type, residual debt is mandatory if any other insurances are requested
+      enum:
+      - RESIDUAL_DEBT_INSURANCE
+      - DISABILITY_INSURANCE
+      - UNEMPLOYMENT_INSURANCE
+    Source:
+      type: string
+      description: Source format of the transaction data
+      enum:
+      - FINTEC
+      - OTHER
+    AccountStatement:
+      required:
+      - document
+      - documentName
+      - documentType
+      - iban
+      - source
+      - target
+      type: object
+      properties:
+        document:
           type: string
-          description: Purpose of the loan
-        requestedVersion:
+          description: Base64 encoded transaction data
+        documentName:
           type: string
-          description: Application version to handle the request
-        paymentDay:
-          $ref: '#/components/schemas/PaymentDay'
-        paymentHoliday:
-          $ref: '#/components/schemas/PaymentHoliday'
-        carLoan:
-          $ref: '#/components/schemas/CarLoan'
-        commission:
-          type: number
-        listAccountStatement:
-          maxItems: 10
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountStatement'
-        listAccount:
-          maxItems: 2
-          minItems: 2
-          type: array
-          items:
-            $ref: '#/components/schemas/Account'
-        listDebtRestructuring:
-          maxItems: 5
-          type: array
-          items:
-            $ref: '#/components/schemas/DebtRestructuring'
-        listDebtor:
-          maxItems: 2
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/Debtor'
-        listAgent:
-          type: array
-          items:
-            $ref: '#/components/schemas/Agent'
+          description: Name of the delivered document (i.e. account statement)
+        iban:
+          type: string
+          description: International Bank Account Number
+        documentType:
+          $ref: '#/components/schemas/DocumentType'
+        rankPosition:
+          $ref: '#/components/schemas/RankPosition'
+        source:
+          $ref: '#/components/schemas/Source'
+        target:
+          $ref: '#/components/schemas/Target'
     OfferStatus:
       required:
       - status
@@ -758,37 +667,6 @@ components:
       properties:
         status:
           $ref: '#/components/schemas/StatusEnum'
-    Address:
-      required:
-      - city
-      - country
-      - houseNumber
-      - street
-      - zipCode
-      type: object
-      properties:
-        city:
-          type: string
-          description: city name
-        country:
-          type: string
-          description: Country the address is located in [ISO 3166-1 alpha-3 code of the country]
-        houseNumber:
-          type: string
-          description: house number
-        ownProperty:
-          type: boolean
-          description: True if living in a self owned property
-        street:
-          type: string
-          description: Street name
-        zipCode:
-          type: string
-          description: Zip code
-        residenceAddressSince:
-          type: string
-          description: Start date of living at the current address, only needed if there was a move in the last 2 years and predecessor address is also available. [ISO Date. I.e. YYYY-MM-DD]
-          format: date
     Income:
       type: object
       properties:
@@ -798,73 +676,6 @@ components:
         otherIncome:
           type: number
           description: Monthly other net income
-    Agent:
-      required:
-      - city
-      - houseNumber
-      - name
-      - street
-      - type
-      - zipCode
-      type: object
-      properties:
-        agentId:
-          type: string
-          description: ID of the agent
-        city:
-          type: string
-          description: City of the agent
-        cooperationId:
-          type: string
-          description: CooperationID of the agent
-        directorate:
-          type: string
-          description: Directorate of the agent
-        email:
-          type: string
-          description: Email address of the agent
-        emailNotification:
-          type: boolean
-          description: Select if status updates of the loan should be sent to the agent instead of the customer
-        fax:
-          type: string
-          description: Fax number of the agent
-        firstName:
-          type: string
-          description: First name of the agent
-        homepage:
-          type: string
-          description: URL to the homepage of the agent
-        houseNumber:
-          type: string
-          description: House number of the agent
-        name:
-          type: string
-          description: Last name of the agent
-        salesKey:
-          type: string
-          description: Sales key of the agent
-        street:
-          type: string
-          description: Street of the agent
-        telephone:
-          type: string
-          description: Phone number of the agent
-        type:
-          type: integer
-          description: Agent type, to be agreed on with the bank
-          format: int32
-        zipCode:
-          type: string
-          description: Zip code of the agent
-    GenerateTransactionIdResponse:
-      required:
-      - transactionId
-      type: object
-      properties:
-        transactionId:
-          type: string
-          description: A unique transactionId to be used for one upload session (n document uploads + 1 startCase).
     Expense:
       type: object
       properties:
@@ -898,160 +709,45 @@ components:
           type: number
           description: Monthly warm rent payments
           format: double
-    UploadDocumentRequest:
+    NotifyDocumentsUploadRequest:
       required:
-      - data
-      - fileName
-      - mimeType
-      - requirementType
       - transactionId
       type: object
       properties:
         transactionId:
           type: string
-          description: Unique transaction id of the upload session.
-        requirementType:
-          type: string
-          description: Type of document required for processing the loan application (e.g. SALARY_CERTIFICATE, LOAN_CONTRACT,RESIDENCE_PERMIT)
-          enum:
-          - SALARY_CERTIFICATE
-          - CIVIL_SERVANT_NOTICE
-          - PENSION_NOTICE
-          - ACCOUNT_STATEMENT
-          - ACCOUNT_OWNER_DISBURSEMENT
-          - OTHER_INCOME_STATEMENT
-          - ACCOUNT_OWNER_PROOF
-          - LOAN_CONTRACT_FOR_REPAYMENT
-          - LAND_REGISTER_UTILITY_BILLING
-          - RESIDENCE_PERMIT
-          - LOAN_CONTRACT
-          - SEPA_MANDATE
-          - ENROLMENT_CERTIFICATE
-          - CAR_SALE_CONTRACT
-          - CHATTEL_MORTGAGE_PRIVATE
-          - INSURANCE_CONTRACT
-          - ADVICE_RECORD
-          - LEGITIMATION_CERTIFICATE
-          - OTHER
-          - FRAUD_EMPLOYMENT_CONTRACT
-          - FRAUD_SOCIAL_INSURANCE
-          - FRAUD_SIGN_UP_MINIJOB
-          - FRAUD_VALUE_EXPLANATION
-          - FRAUD_INCOME_TAX_ASSESSMENT
-          - FRAUD_ELECTRONIC_INCOME_TAX_CERTIFICATE
-          - LETTER_OF_ATTORNEY
-        fileName:
-          type: string
-          description: Immutable name of the document file as given by the creator of the document.
-        data:
-          type: string
-          description: Document content as Base64 encoded string.
-          format: byte
-        mimeType:
-          type: string
-          description: Media type of the document (e.g. application/pdf, image/tiff.).
-          enum:
-          - application/pdf
-          - image/png
-          - image/jpeg
-          - image/tiff
-          - image/bmp
-    AcademicTitle:
-      type: string
-      description: Academic title of the debtor
-      enum:
-      - NONE
-      - DR
-      - PROF
-      - PROF_DIR
-    EmploymentLevel:
-      type: string
-      enum:
-      - EMPLOYEE
-      - CIVIL_SERVANT
-      - WORKER
-      - OTHER
-      - RETIRED_PENSIONER
-      - INDEPENDENT
-      - STUDENT
-      - CHIEF_EXECUTIVE
-      - MASTER
-      - QUALIFIED_EXECUTIVE
-      - HOMEMAKER
-      - MIDDLE_GRADE_SERVANT
-      - HIGH_GRADE_SERVANT
-      - RAISED_GRADE_SERVANT
-      - UNEMPLOYED
-      - CHAIRMAN_MANAGING_DIRECTOR
-      - TRAINEE
-      - TECHNICIAN
-      - VOLUNTARIST
-    PaymentType:
-      type: string
-      description: Exactly one disbursement and direct debit account are always required
-      enum:
-      - DISBURSEMENT
-      - DIRECT_DEBIT
-      - DEBT_RESTRUCTURING
-    RankPosition:
-      type: string
-      description: Debtor the transaction data belongs to. First or second debtor
-      enum:
-      - FIRST
-      - SECOND
-    ErrorResponse:
+          description: Unique transaction id for this upload session.
+    Address:
       required:
-      - code
-      - message
+      - city
+      - country
+      - houseNumber
+      - street
+      - zipCode
       type: object
       properties:
-        code:
-          type: integer
-          description: The error code
-        message:
+        city:
           type: string
-          description: Description of the belonging error code.
-        messageId:
+          description: city name
+        country:
           type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    DocumentStatusInfo:
-      required:
-      - requirementType
-      type: object
-      properties:
-        requirementType:
+          description: Country the address is located in [ISO 3166-1 alpha-3 code of the country]
+        houseNumber:
           type: string
-          description: Requirement Type
-          enum:
-          - SALARY_CERTIFICATE
-          - CIVIL_SERVANT_NOTICE
-          - PENSION_NOTICE
-          - ACCOUNT_STATEMENT
-          - ACCOUNT_OWNER_DISBURSEMENT
-          - OTHER_INCOME_STATEMENT
-          - ACCOUNT_OWNER_PROOF
-          - LOAN_CONTRACT_FOR_REPAYMENT
-          - LAND_REGISTER_UTILITY_BILLING
-          - RESIDENCE_PERMIT
-          - LOAN_CONTRACT
-          - SEPA_MANDATE
-          - ENROLMENT_CERTIFICATE
-          - CAR_SALE_CONTRACT
-          - CHATTEL_MORTGAGE_PRIVATE
-          - INSURANCE_CONTRACT
-          - ADVICE_RECORD
-          - LEGITIMATION_CERTIFICATE
-          - OTHER
-          - FRAUD_EMPLOYMENT_CONTRACT
-          - FRAUD_SOCIAL_INSURANCE
-          - FRAUD_SIGN_UP_MINIJOB
-          - FRAUD_VALUE_EXPLANATION
-          - FRAUD_INCOME_TAX_ASSESSMENT
-          - FRAUD_ELECTRONIC_INCOME_TAX_CERTIFICATE
-          - LETTER_OF_ATTORNEY
-        description:
+          description: house number
+        ownProperty:
+          type: boolean
+          description: True if living in a self owned property
+        street:
           type: string
+          description: Street name
+        zipCode:
+          type: string
+          description: Zip code
+        residenceAddressSince:
+          type: string
+          description: Start date of living at the current address, only needed if there was a move in the last 2 years and predecessor address is also available. [ISO Date. I.e. YYYY-MM-DD]
+          format: date
     Debtor:
       required:
       - dateOfBirth
@@ -1142,82 +838,72 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RequestedInsurance'
-    Account:
+    GenerateTransactionIdResponse:
       required:
-      - bankName
-      - ownerName
-      - paymentType
+      - transactionId
       type: object
       properties:
-        bankName:
+        transactionId:
           type: string
-          description: Bank name of the account
-        bic:
-          type: string
-          description: BIC ( Bank Identifier Code) of the account
-        iban:
-          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
-          type: string
-          description: IBAN of the account
-        ownerName:
-          type: string
-          description: Full name of the account owner
-        paymentType:
-          $ref: '#/components/schemas/PaymentType'
-    ProductType:
-      type: string
-      description: Type of the product
-      enum:
-      - CAR_LOAN_PRIVATE
-      - CAR_LOAN_DEALER
-      - PRIVATE_LOAN
-      - MODERNISATION_LOAN
-    RequestedInsuranceType:
-      type: string
-      description: Insurance type, residual debt is mandatory if any other insurances are requested
-      enum:
-      - RESIDUAL_DEBT_INSURANCE
-      - DISABILITY_INSURANCE
-      - UNEMPLOYMENT_INSURANCE
-    Target:
-      type: string
-      description: Target format of the transaction data
-      enum:
-      - FINTEC
-      - CHECK24
-    Sex:
-      type: string
-      description: Sex of the debtor, also determines salutation
-      enum:
-      - MALE
-      - FEMALE
-    AccountStatement:
+          description: A unique transactionId to be used for one upload session (n document uploads + 1 startCase).
+    UploadDocumentRequest:
       required:
-      - document
-      - documentName
-      - documentType
-      - iban
-      - source
-      - target
+      - data
+      - fileName
+      - mimeType
+      - requirementType
+      - transactionId
       type: object
       properties:
-        document:
+        transactionId:
           type: string
-          description: Base64 encoded transaction data
-        documentName:
+          description: Unique transaction id of the upload session.
+        requirementType:
           type: string
-          description: Name of the delivered document (i.e. account statement)
-        iban:
+          description: Type of document required for processing the loan application (e.g. SALARY_CERTIFICATE, LOAN_CONTRACT,RESIDENCE_PERMIT)
+          enum:
+          - SALARY_CERTIFICATE
+          - CIVIL_SERVANT_NOTICE
+          - PENSION_NOTICE
+          - ACCOUNT_STATEMENT
+          - ACCOUNT_OWNER_DISBURSEMENT
+          - OTHER_INCOME_STATEMENT
+          - ACCOUNT_OWNER_PROOF
+          - LOAN_CONTRACT_FOR_REPAYMENT
+          - LAND_REGISTER_UTILITY_BILLING
+          - RESIDENCE_PERMIT
+          - LOAN_CONTRACT
+          - SEPA_MANDATE
+          - ENROLMENT_CERTIFICATE
+          - CAR_SALE_CONTRACT
+          - CHATTEL_MORTGAGE_PRIVATE
+          - INSURANCE_CONTRACT
+          - ADVICE_RECORD
+          - LEGITIMATION_CERTIFICATE
+          - OTHER
+          - FRAUD_EMPLOYMENT_CONTRACT
+          - FRAUD_SOCIAL_INSURANCE
+          - FRAUD_SIGN_UP_MINIJOB
+          - FRAUD_VALUE_EXPLANATION
+          - FRAUD_INCOME_TAX_ASSESSMENT
+          - FRAUD_ELECTRONIC_INCOME_TAX_CERTIFICATE
+          - LETTER_OF_ATTORNEY
+        fileName:
           type: string
-          description: International Bank Account Number
-        documentType:
-          $ref: '#/components/schemas/DocumentType'
-        rankPosition:
-          $ref: '#/components/schemas/RankPosition'
-        source:
-          $ref: '#/components/schemas/Source'
-        target:
-          $ref: '#/components/schemas/Target'
+          description: Immutable name of the document file as given by the creator of the document.
+        data:
+          type: string
+          description: Document content as Base64 encoded string.
+          format: byte
+        mimeType:
+          type: string
+          description: Media type of the document (e.g. application/pdf, image/tiff.).
+          enum:
+          - application/pdf
+          - image/png
+          - image/jpeg
+          - image/tiff
+          - image/bmp
     RequestedInsurance:
       required:
       - insurancePercentage
@@ -1229,14 +915,192 @@ components:
           description: Insurance percentage, only multiples of 10 are valid
         type:
           $ref: '#/components/schemas/RequestedInsuranceType'
-    NotifyDocumentsUploadRequest:
+    MaritalStatus:
+      type: string
+      description: Marital status of the debtor
+      enum:
+      - SINGLE
+      - DIVORCED
+      - CIVIL_UNION_SEPARATE_TAX_ASSESSMENT
+      - MARRIED_SEPARATED
+      - WIDOWED
+      - CIVIL_UNION_SEPARATED
+      - SINGLE_LIVING_IN_COHABITATION
+      - MARRIED_JOINT_TAX_ASSESSMENT
+      - MARRIED_SEPARATE_TAX_ASSESSMENT
+      - CIVIL_UNION_JOINT_TAX_ASSESSMENT
+    Sex:
+      type: string
+      description: Sex of the debtor, also determines salutation
+      enum:
+      - MALE
+      - FEMALE
+    RankPosition:
+      type: string
+      description: Debtor the transaction data belongs to. First or second debtor
+      enum:
+      - FIRST
+      - SECOND
+    Agent:
       required:
-      - transactionId
+      - city
+      - houseNumber
+      - name
+      - street
+      - type
+      - zipCode
       type: object
       properties:
-        transactionId:
+        agentId:
           type: string
-          description: Unique transaction id for this upload session.
+          description: ID of the agent
+        city:
+          type: string
+          description: City of the agent
+        cooperationId:
+          type: string
+          description: CooperationID of the agent
+        directorate:
+          type: string
+          description: Directorate of the agent
+        email:
+          type: string
+          description: Email address of the agent
+        emailNotification:
+          type: boolean
+          description: Select if status updates of the loan should be sent to the agent instead of the customer
+        fax:
+          type: string
+          description: Fax number of the agent
+        firstName:
+          type: string
+          description: First name of the agent
+        homepage:
+          type: string
+          description: URL to the homepage of the agent
+        houseNumber:
+          type: string
+          description: House number of the agent
+        name:
+          type: string
+          description: Last name of the agent
+        salesKey:
+          type: string
+          description: Sales key of the agent
+        street:
+          type: string
+          description: Street of the agent
+        telephone:
+          type: string
+          description: Phone number of the agent
+        type:
+          type: integer
+          description: Agent type, to be agreed on with the bank
+          format: int32
+        zipCode:
+          type: string
+          description: Zip code of the agent
+    EmploymentLevel:
+      type: string
+      enum:
+      - EMPLOYEE
+      - CIVIL_SERVANT
+      - WORKER
+      - OTHER
+      - RETIRED_PENSIONER
+      - INDEPENDENT
+      - STUDENT
+      - CHIEF_EXECUTIVE
+      - MASTER
+      - QUALIFIED_EXECUTIVE
+      - HOMEMAKER
+      - MIDDLE_GRADE_SERVANT
+      - HIGH_GRADE_SERVANT
+      - RAISED_GRADE_SERVANT
+      - UNEMPLOYED
+      - CHAIRMAN_MANAGING_DIRECTOR
+      - TRAINEE
+      - TECHNICIAN
+      - VOLUNTARIST
+    ProductType:
+      type: string
+      description: Type of the product
+      enum:
+      - CAR_LOAN_PRIVATE
+      - CAR_LOAN_DEALER
+      - PRIVATE_LOAN
+      - MODERNISATION_LOAN
+    AcademicTitle:
+      type: string
+      description: Academic title of the debtor
+      enum:
+      - NONE
+      - DR
+      - PROF
+      - PROF_DIR
+    DocumentType:
+      type: string
+      description: Structure of the transaction data
+      enum:
+      - JSON
+    PaymentDay:
+      type: string
+      description: Schedule of the loan repayment
+      enum:
+      - MONTH_START
+      - MONTH_MIDDLE
+    PaymentType:
+      type: string
+      description: Exactly one disbursement and direct debit account are always required
+      enum:
+      - DISBURSEMENT
+      - DIRECT_DEBIT
+      - DEBT_RESTRUCTURING
+    StatusEnum:
+      type: string
+      enum:
+      - CREATED
+      - IN_PROGRESS
+      - ACCEPTED
+      - REJECTED
+      - ERROR
+    DocumentStatusInfo:
+      required:
+      - requirementType
+      type: object
+      properties:
+        requirementType:
+          type: string
+          description: Requirement Type
+          enum:
+          - SALARY_CERTIFICATE
+          - CIVIL_SERVANT_NOTICE
+          - PENSION_NOTICE
+          - ACCOUNT_STATEMENT
+          - ACCOUNT_OWNER_DISBURSEMENT
+          - OTHER_INCOME_STATEMENT
+          - ACCOUNT_OWNER_PROOF
+          - LOAN_CONTRACT_FOR_REPAYMENT
+          - LAND_REGISTER_UTILITY_BILLING
+          - RESIDENCE_PERMIT
+          - LOAN_CONTRACT
+          - SEPA_MANDATE
+          - ENROLMENT_CERTIFICATE
+          - CAR_SALE_CONTRACT
+          - CHATTEL_MORTGAGE_PRIVATE
+          - INSURANCE_CONTRACT
+          - ADVICE_RECORD
+          - LEGITIMATION_CERTIFICATE
+          - OTHER
+          - FRAUD_EMPLOYMENT_CONTRACT
+          - FRAUD_SOCIAL_INSURANCE
+          - FRAUD_SIGN_UP_MINIJOB
+          - FRAUD_VALUE_EXPLANATION
+          - FRAUD_INCOME_TAX_ASSESSMENT
+          - FRAUD_ELECTRONIC_INCOME_TAX_CERTIFICATE
+          - LETTER_OF_ATTORNEY
+        description:
+          type: string
     CarLoan:
       required:
       - isNewCar
@@ -1265,14 +1129,150 @@ components:
         purchasePrice:
           type: number
           description: Purchase price of the car
+    ExistingInsurance:
+      type: object
+      properties:
+        disability:
+          type: boolean
+          description: Whether the customer has an existing disability insurance
+        residualDebt:
+          type: boolean
+          description: Whether the customer has an existing residual debt insurance
+        unemployment:
+          type: boolean
+          description: Whether the customer has an existing unemployment insurance
+    RequestForOffer:
+      required:
+      - listAccount
+      - listDebtor
+      - loanAmount
+      - paymentDay
+      - productType
+      type: object
+      properties:
+        environment:
+          type: string
+          description: Identifies the environment in which the request should be processed.
+        callbackUrl:
+          type: string
+          description: Callback URL provided for asynchronous notifications and document delivery related to the loan offers request. If missing, the default configuration will be applied.
+        productType:
+          $ref: '#/components/schemas/ProductType'
+        productName:
+          type: string
+          description: Name of the product/conditions, to be agreed on between consumer/bank
+        externalClientId:
+          type: string
+          description: Application/process ID in the system
+        durationInMonths:
+          type: integer
+          description: Number of requested installment rates
+          format: int32
+        installment:
+          type: number
+          description: Requested amount per installment
+        loanAmount:
+          type: number
+          description: Loan amount in euro
+        purpose:
+          type: string
+          description: Purpose of the loan
+        requestedVersion:
+          type: string
+          description: Application version to handle the request
+        paymentDay:
+          $ref: '#/components/schemas/PaymentDay'
+        paymentHoliday:
+          $ref: '#/components/schemas/PaymentHoliday'
+        carLoan:
+          $ref: '#/components/schemas/CarLoan'
+        commission:
+          type: number
+        listAccountStatement:
+          maxItems: 10
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountStatement'
+        listAccount:
+          maxItems: 2
+          minItems: 2
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+        listDebtRestructuring:
+          maxItems: 5
+          type: array
+          items:
+            $ref: '#/components/schemas/DebtRestructuring'
+        listDebtor:
+          maxItems: 2
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/Debtor'
+        listAgent:
+          type: array
+          items:
+            $ref: '#/components/schemas/Agent'
+    Target:
+      type: string
+      description: Target format of the transaction data
+      enum:
+      - FINTEC
+      - CHECK24
+    DebtRestructuring:
+      required:
+      - amount
+      - bankName
+      - ownerName
+      - paymentType
+      type: object
+      properties:
+        bankName:
+          type: string
+        bic:
+          type: string
+        iban:
+          type: string
+        ownerName:
+          type: string
+        paymentType:
+          $ref: '#/components/schemas/PaymentType'
+        amount:
+          type: number
+          description: Account balance of the loan to be restructured
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    RequestForOfferResponse:
+      required:
+      - offerId
+      type: object
+      properties:
+        offerId:
+          type: string
+          description: Unique identifier of an offer.
   examples:
-    RequestForOfferTwoDebtorsExample:
-      summary: A request for an offer proposal for two debtors.
+    RequestForOfferOneDebtorExample:
+      summary: A request for an offer proposal for one debtor.
       value:
         durationInMonths: 24
         externalClientId: SIT
         installment: null
-        loanAmount: 11000
+        loanAmount: 9000
         productType: PRIVATE_LOAN
         purpose: Purchase of a luxury item
         requestedVersion: null
@@ -1302,7 +1302,7 @@ components:
           optInTelephone: true
           placeOfBirth: Frankfurt
           residencyPermitValidUntil: null
-          telephoneNumber: '+492563178954'
+          telephoneNumber: '+492563179954'
           tin: null
           workPermitValidUntil: null
           rankPosition: FIRST
@@ -1340,62 +1340,7 @@ components:
             utilities: 0
             warmRent: 500
           income:
-            nonSelfEmployment: 2000
-            otherIncome: 0
-        - dateOfBirth: '1990-04-12'
-          emailAddress: laura.fischer@db.com
-          firstName: Laura
-          lastName: Fischer
-          inGermanySince: null
-          nationality: DEU
-          numberOfChildren: 2
-          optInEmail: true
-          optInTelephone: true
-          placeOfBirth: Frankfurt
-          residencyPermitValidUntil: null
-          telephoneNumber: '+492563178954'
-          tin: null
-          workPermitValidUntil: null
-          rankPosition: SECOND
-          academicTitle: NONE
-          maritalStatus: SINGLE
-          sex: FEMALE
-          listRequestedInsurance:
-          - insurancePercentage: 100
-            type: RESIDUAL_DEBT_INSURANCE
-          - insurancePercentage: 50
-            type: DISABILITY_INSURANCE
-          - insurancePercentage: 100
-            type: UNEMPLOYMENT_INSURANCE
-          listAddress:
-          - city: Frankfurt
-            country: Germany
-            houseNumber: '72'
-            ownProperty: true
-            street: Nordend
-            zipCode: '60486'
-            residenceAddressSince: null
-          existingInsurance:
-            disability: false
-            residualDebt: true
-            unemployment: true
-          employment:
-            disclosedProfession: Business Analyst
-            employer: DB
-            employmentLevel: EMPLOYEE
-            employmentStart: '2010-04-12'
-            shortTermEmploymentEndDate: null
-          expense:
-            alimony: 0
-            leasingRates: 0
-            otherExpenses: 0
-            privateHealthInsurance: 0
-            realEstateLoanRates: 0
-            redemptionPayments: 0
-            utilities: 0
-            warmRent: 500
-          income:
-            nonSelfEmployment: 2000
+            nonSelfEmployment: 10000
             otherIncome: 0
         listAgent: []
         carLoan: {}
@@ -1547,13 +1492,13 @@ components:
           firstRegistrationDate: '2022-04-12'
           mileage: 10000
           purchasePrice: 30000
-    RequestForOfferOneDebtorExample:
-      summary: A request for an offer proposal for one debtor.
+    RequestForOfferTwoDebtorsExample:
+      summary: A request for an offer proposal for two debtors.
       value:
         durationInMonths: 24
         externalClientId: SIT
         installment: null
-        loanAmount: 9000
+        loanAmount: 11000
         productType: PRIVATE_LOAN
         purpose: Purchase of a luxury item
         requestedVersion: null
@@ -1583,7 +1528,7 @@ components:
           optInTelephone: true
           placeOfBirth: Frankfurt
           residencyPermitValidUntil: null
-          telephoneNumber: '+492563179954'
+          telephoneNumber: '+492563178954'
           tin: null
           workPermitValidUntil: null
           rankPosition: FIRST
@@ -1621,7 +1566,62 @@ components:
             utilities: 0
             warmRent: 500
           income:
-            nonSelfEmployment: 10000
+            nonSelfEmployment: 2000
+            otherIncome: 0
+        - dateOfBirth: '1990-04-12'
+          emailAddress: laura.fischer@db.com
+          firstName: Laura
+          lastName: Fischer
+          inGermanySince: null
+          nationality: DEU
+          numberOfChildren: 2
+          optInEmail: true
+          optInTelephone: true
+          placeOfBirth: Frankfurt
+          residencyPermitValidUntil: null
+          telephoneNumber: '+492563178954'
+          tin: null
+          workPermitValidUntil: null
+          rankPosition: SECOND
+          academicTitle: NONE
+          maritalStatus: SINGLE
+          sex: FEMALE
+          listRequestedInsurance:
+          - insurancePercentage: 100
+            type: RESIDUAL_DEBT_INSURANCE
+          - insurancePercentage: 50
+            type: DISABILITY_INSURANCE
+          - insurancePercentage: 100
+            type: UNEMPLOYMENT_INSURANCE
+          listAddress:
+          - city: Frankfurt
+            country: Germany
+            houseNumber: '72'
+            ownProperty: true
+            street: Nordend
+            zipCode: '60486'
+            residenceAddressSince: null
+          existingInsurance:
+            disability: false
+            residualDebt: true
+            unemployment: true
+          employment:
+            disclosedProfession: Business Analyst
+            employer: DB
+            employmentLevel: EMPLOYEE
+            employmentStart: '2010-04-12'
+            shortTermEmploymentEndDate: null
+          expense:
+            alimony: 0
+            leasingRates: 0
+            otherExpenses: 0
+            privateHealthInsurance: 0
+            realEstateLoanRates: 0
+            redemptionPayments: 0
+            utilities: 0
+            warmRent: 500
+          income:
+            nonSelfEmployment: 2000
             otherIncome: 0
         listAgent: []
         carLoan: {}

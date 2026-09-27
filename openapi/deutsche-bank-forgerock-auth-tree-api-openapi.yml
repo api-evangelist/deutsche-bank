@@ -84,6 +84,18 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    ForgeRockStepRequest:
+      type: object
+      properties:
+        authId:
+          type: string
+        callbacks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+      description: Generic callback submission body for FRAuth.next
     ForgeRockLoginSuccess:
       type: object
       properties:
@@ -97,16 +109,6 @@ components:
           type: string
       additionalProperties: true
       description: Success shape may vary by SDK/AM config
-    ErrorResponse:
-      type: object
-      properties:
-        title:
-          type: string
-        type:
-          type: string
-        message:
-          type: string
-      additionalProperties: true
     ForgeRockStepResponse:
       required:
       - authId
@@ -123,18 +125,16 @@ components:
             type: object
             additionalProperties: true
       additionalProperties: true
-    ForgeRockStepRequest:
+    ErrorResponse:
       type: object
       properties:
-        authId:
+        title:
           type: string
-        callbacks:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
+        type:
+          type: string
+        message:
+          type: string
       additionalProperties: true
-      description: Generic callback submission body for FRAuth.next
   securitySchemes:
     bearerAuth:
       type: http

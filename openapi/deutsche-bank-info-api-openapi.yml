@@ -179,89 +179,6 @@ paths:
                 $ref: '#/components/schemas/PSD2AccountInfoResponse'
 components:
   schemas:
-    PSD2TransactionFilter:
-      type: object
-      properties:
-        date_from:
-          type: string
-          description: Starting date of the transaction list. Full-date notation as defined by RFC 3339, section 5.6.
-          format: date
-          example: '2021-07-13'
-        date_to:
-          type: string
-          description: End date of the transaction list. Full-date notation as defined by RFC 3339, section 5.6.
-          format: date
-          example: '2021-07-14'
-        booking_status:
-          type: array
-          description: The requested booking status(es). Not all banks allow `PENDING` or `BOOKED` and `PENDING`.
-          example:
-          - BOOKED
-          items:
-            type: string
-            description: 'Booking status of a transaction
-
-
-              * `BOOKED`
-
-              * `PENDING`'
-            example: BOOKED
-            enum:
-            - BOOKED
-            - PENDING
-      description: 'Contains properties to filter the transactions if `requested_details` includes `TRANSACTIONS`.
-
-        If `booking_status` is not submitted `BOOKED` transactions will be requested from the customer''s bank.'
-    ErrorModel:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
-          type: string
-          description: Four digit response code.
-          example: '4001'
-        message:
-          type: string
-          description: Describes the error.
-          example: unexpected error
-      description: Includes data returned in case of an error.
-    PSD2Account:
-      type: object
-      properties:
-        iban:
-          maxLength: 34
-          minLength: 15
-          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}'
-          type: string
-          description: The international bank account number of a bank account.
-          example: DE17215730140403340300
-        bban:
-          type: string
-          description: Used for payment accounts which have no IBAN.
-        pan:
-          maxLength: 35
-          minLength: 0
-          type: string
-          description: 'Primary Account Number (PAN) of a card, can be tokenized by the ASPSP due to PCI DSS
-
-            requirements.'
-        masked_pan:
-          maxLength: 35
-          minLength: 0
-          type: string
-          description: Primary Account Number (PAN) of a card in a masked form.
-        msisdn:
-          maxLength: 35
-          minLength: 0
-          type: string
-          description: An alias to access a payment account via a registered mobile phone number.
-        currency:
-          pattern: '[A-Z]{3}'
-          type: string
-          description: ISO 4217 currency code, three uppercase letters.
-          example: EUR
     PSD2AccountDetails:
       type: object
       properties:
@@ -334,6 +251,85 @@ components:
           items:
             $ref: '#/components/schemas/PSD2Transaction'
       description: Contains details of a customer's bank account.
+    PSD2CapabilityEnum:
+      type: string
+      description: " * `AVAILABLE_ACCOUNTS`: PSD2 account information service AIS can be used to find all the customer's accounts with this bank.\n * `AVAILABLE_ACCOUNTS_WITH_BALANCE`: AIS can be used to find all the customer's account including the balances\n * `BANK_OFFERED_CONSENT`: AIS can be used to find the customer's accounts with this bank. If the customer has more than one account the bank will display the list of accounts and the customer chooses the accounts for which she/he wants to grant access.\n * `GLOBAL_CONSENT`: AIS can be used to get the customer's consent to access all accounts."
+      enum:
+      - AVAILABLE_ACCOUNTS
+      - AVAILABLE_ACCOUNTS_WITH_BALANCE
+      - BANK_OFFERED_CONSENT
+      - GLOBAL_CONSENT
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+    PSD2Account:
+      type: object
+      properties:
+        iban:
+          maxLength: 34
+          minLength: 15
+          pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9*]{11,30}'
+          type: string
+          description: The international bank account number of a bank account.
+          example: DE17215730140403340300
+        bban:
+          type: string
+          description: Used for payment accounts which have no IBAN.
+        pan:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: 'Primary Account Number (PAN) of a card, can be tokenized by the ASPSP due to PCI DSS
+
+            requirements.'
+        masked_pan:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: Primary Account Number (PAN) of a card in a masked form.
+        msisdn:
+          maxLength: 35
+          minLength: 0
+          type: string
+          description: An alias to access a payment account via a registered mobile phone number.
+        currency:
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+    PagedMetadata:
+      type: object
+      properties:
+        limit:
+          type: integer
+          format: int32
+        offset:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int32
+    PSD2BankResults:
+      type: object
+      properties:
+        metadata:
+          $ref: '#/components/schemas/PagedMetadata'
+        banks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PSD2Bank'
     PSD2Transaction:
       required:
       - amount
@@ -462,57 +458,6 @@ components:
           - BOOKED
           - PENDING
       description: A transaction of a bank account.
-    PSD2AccountInfoResponse:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
-          type: string
-          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
-          example: '0'
-        message:
-          type: string
-          description: Success or error message, text for the response code.
-          example: Transaction approved.
-        accounts_as_of:
-          type: string
-          description: 'Date and time of the account information request. Date-time notation as defined by RFC 3339,
-
-            section 5.6.'
-          format: date-time
-          example: '2021-07-14T08:59:12Z'
-        transaction_filter:
-          $ref: '#/components/schemas/PSD2TransactionFilter'
-        accounts:
-          type: array
-          description: Bank account details which were stored in a previous step.
-          items:
-            $ref: '#/components/schemas/PSD2AccountDetails'
-    PSD2CapabilityEnum:
-      type: string
-      description: " * `AVAILABLE_ACCOUNTS`: PSD2 account information service AIS can be used to find all the customer's accounts with this bank.\n * `AVAILABLE_ACCOUNTS_WITH_BALANCE`: AIS can be used to find all the customer's account including the balances\n * `BANK_OFFERED_CONSENT`: AIS can be used to find the customer's accounts with this bank. If the customer has more than one account the bank will display the list of accounts and the customer chooses the accounts for which she/he wants to grant access.\n * `GLOBAL_CONSENT`: AIS can be used to get the customer's consent to access all accounts."
-      enum:
-      - AVAILABLE_ACCOUNTS
-      - AVAILABLE_ACCOUNTS_WITH_BALANCE
-      - BANK_OFFERED_CONSENT
-      - GLOBAL_CONSENT
-    PSD2Remittance:
-      type: object
-      properties:
-        reference:
-          maxLength: 35
-          minLength: 0
-          type: string
-        reference_type:
-          maxLength: 35
-          minLength: 0
-          type: string
-        reference_issuer:
-          maxLength: 35
-          minLength: 0
-          type: string
     PSD2CurrencyExchange:
       type: object
       properties:
@@ -637,15 +582,6 @@ components:
           description: Indicates the date of the balance. Full-date notation as defined by RFC 3339, section 5.6.
           format: date
           example: '2021-07-14'
-    PSD2BankResults:
-      type: object
-      properties:
-        metadata:
-          $ref: '#/components/schemas/PagedMetadata'
-        banks:
-          type: array
-          items:
-            $ref: '#/components/schemas/PSD2Bank'
     PSD2Bank:
       required:
       - name
@@ -678,18 +614,39 @@ components:
           items:
             $ref: '#/components/schemas/PSD2CapabilityEnum'
       description: Contains bank details.
-    PagedMetadata:
+    PSD2TransactionFilter:
       type: object
       properties:
-        limit:
-          type: integer
-          format: int32
-        offset:
-          type: integer
-          format: int32
-        total:
-          type: integer
-          format: int32
+        date_from:
+          type: string
+          description: Starting date of the transaction list. Full-date notation as defined by RFC 3339, section 5.6.
+          format: date
+          example: '2021-07-13'
+        date_to:
+          type: string
+          description: End date of the transaction list. Full-date notation as defined by RFC 3339, section 5.6.
+          format: date
+          example: '2021-07-14'
+        booking_status:
+          type: array
+          description: The requested booking status(es). Not all banks allow `PENDING` or `BOOKED` and `PENDING`.
+          example:
+          - BOOKED
+          items:
+            type: string
+            description: 'Booking status of a transaction
+
+
+              * `BOOKED`
+
+              * `PENDING`'
+            example: BOOKED
+            enum:
+            - BOOKED
+            - PENDING
+      description: 'Contains properties to filter the transactions if `requested_details` includes `TRANSACTIONS`.
+
+        If `booking_status` is not submitted `BOOKED` transactions will be requested from the customer''s bank.'
     AmountCurrency:
       required:
       - amount
@@ -709,6 +666,49 @@ components:
           description: ISO 4217 currency code, three uppercase letters.
           example: EUR
       description: An amount and a currency.
+    PSD2Remittance:
+      type: object
+      properties:
+        reference:
+          maxLength: 35
+          minLength: 0
+          type: string
+        reference_type:
+          maxLength: 35
+          minLength: 0
+          type: string
+        reference_issuer:
+          maxLength: 35
+          minLength: 0
+          type: string
+    PSD2AccountInfoResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        accounts_as_of:
+          type: string
+          description: 'Date and time of the account information request. Date-time notation as defined by RFC 3339,
+
+            section 5.6.'
+          format: date-time
+          example: '2021-07-14T08:59:12Z'
+        transaction_filter:
+          $ref: '#/components/schemas/PSD2TransactionFilter'
+        accounts:
+          type: array
+          description: Bank account details which were stored in a previous step.
+          items:
+            $ref: '#/components/schemas/PSD2AccountDetails'
   securitySchemes:
     bearerAuth:
       type: http

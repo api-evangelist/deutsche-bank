@@ -103,6 +103,25 @@ paths:
       deprecated: false
 components:
   schemas:
+    ApiDefinitions:
+      title: ApiDefinitions
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiDefinition'
+        totalItems:
+          type: number
+          description: total number of API definitions
+    ApiGroupVersionPath:
+      title: ApiGroupVersionPath
+      type: object
+      properties:
+        path:
+          type: string
+        version:
+          type: string
     ApiDefinition:
       title: ApiDefinition
       type: object
@@ -131,25 +150,6 @@ components:
           type: string
         tryItOut:
           type: boolean
-    ApiGroupVersionPath:
-      title: ApiGroupVersionPath
-      type: object
-      properties:
-        path:
-          type: string
-        version:
-          type: string
-    ApiDefinitions:
-      title: ApiDefinitions
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ApiDefinition'
-        totalItems:
-          type: number
-          description: total number of API definitions
     ApiGroup:
       title: ApiGroup
       type: object

@@ -585,14 +585,6 @@ paths:
       x-codegen-request-body-name: activation
 components:
   schemas:
-    SubscriptionPatch:
-      title: SubscriptionPatch
-      required:
-      - subscriptionDetails
-      type: object
-      properties:
-        subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
     SubscriptionDetails:
       title: SubscriptionDetails
       required:
@@ -617,81 +609,6 @@ components:
           - one-time
           - recurring
       description: Subscription details
-    SubscriptionPost:
-      title: SubscriptionPost
-      type: object
-      properties:
-        filterCriteria:
-          $ref: '#/components/schemas/SubscriptionFilterCriteria'
-        subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionPostDetails'
-    PagedResultSubscription:
-      title: PagedResultSubscription
-      required:
-      - items
-      - totalItems
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscription'
-        totalItems:
-          minimum: 0
-          type: integer
-          description: Total number of items found for your request parameters over all pages of the pagination.
-          format: int32
-    SubscriptionPatchSubscriptionDetails:
-      title: SubscriptionPatchSubscriptionDetails
-      required:
-      - expirationDate
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-      description: Subscription details
-    SubscriptionPostDetails:
-      title: SubscriptionPostDetails
-      required:
-      - notificationURL
-      - subscriptionType
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-        notificationURL:
-          type: string
-          description: The URL the notification will be passed towards.
-          format: url
-        subscriptionType:
-          type: string
-          description: Type of subscription?
-          enum:
-          - one-time
-          - recurring
-      description: Subscription details
-    ErrorResponse:
-      title: ErrorResponse
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-          format: int32
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
     SubscriptionFilterCriteria:
       title: SubscriptionFilterCriteria
       required:
@@ -731,6 +648,89 @@ components:
       properties:
         activationCode:
           type: string
+    SubscriptionPost:
+      title: SubscriptionPost
+      type: object
+      properties:
+        filterCriteria:
+          $ref: '#/components/schemas/SubscriptionFilterCriteria'
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionPostDetails'
+    SubscriptionPatchSubscriptionDetails:
+      title: SubscriptionPatchSubscriptionDetails
+      required:
+      - expirationDate
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+      description: Subscription details
+    SubscriptionPostDetails:
+      title: SubscriptionPostDetails
+      required:
+      - notificationURL
+      - subscriptionType
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+        notificationURL:
+          type: string
+          description: The URL the notification will be passed towards.
+          format: url
+        subscriptionType:
+          type: string
+          description: Type of subscription?
+          enum:
+          - one-time
+          - recurring
+      description: Subscription details
+    SubscriptionPatch:
+      title: SubscriptionPatch
+      required:
+      - subscriptionDetails
+      type: object
+      properties:
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+          format: int32
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    PagedResultSubscription:
+      title: PagedResultSubscription
+      required:
+      - items
+      - totalItems
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+        totalItems:
+          minimum: 0
+          type: integer
+          description: Total number of items found for your request parameters over all pages of the pagination.
+          format: int32
   securitySchemes:
     api_auth_code:
       type: oauth2

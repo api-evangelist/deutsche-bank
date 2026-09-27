@@ -154,13 +154,6 @@ paths:
         - open_cash_account
 components:
   schemas:
-    IBAN:
-      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
-      type: string
-      description: The IBAN of this account.
-    ProductApplicationForm:
-      type: string
-      description: The PDF document for the customer in base64
     ProcessingStatus:
       type: string
       description: The processing state of the legitimation/fulfillment
@@ -172,22 +165,13 @@ components:
       - APPLICATION_FULFILLED
       - POSTIDENT_CHOSEN
       - POSTIDENT_DOCUMENT_GENERATED
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
+    ProductApplicationForm:
+      type: string
+      description: The PDF document for the customer in base64
     AccountOpeningStatusResponse:
       required:
       - e2eProcessId
@@ -208,6 +192,22 @@ components:
           $ref: '#/components/schemas/IBAN'
         productApplicationForm:
           $ref: '#/components/schemas/ProductApplicationForm'
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
   securitySchemes:
     api_client_credential:
       type: oauth2

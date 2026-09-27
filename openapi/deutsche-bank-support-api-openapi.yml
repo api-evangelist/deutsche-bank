@@ -275,6 +275,21 @@ components:
           description: Unit/percentage quotation of the security
           format: double
           example: 1.0
+    OrderQuotesResponse:
+      required:
+      - marketPlaceData
+      - securityRates
+      type: object
+      properties:
+        securityRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityRate'
+        marketPlaceData:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketPlace_1'
+      description: A summary of the order for the order cancellation execution
     CurrencyCode:
       pattern: '[A-Z]{3}'
       type: string
@@ -312,21 +327,6 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
-    OrderQuotesResponse:
-      required:
-      - marketPlaceData
-      - securityRates
-      type: object
-      properties:
-        securityRates:
-          type: array
-          items:
-            $ref: '#/components/schemas/SecurityRate'
-        marketPlaceData:
-          type: array
-          items:
-            $ref: '#/components/schemas/MarketPlace_1'
-      description: A summary of the order for the order cancellation execution
   securitySchemes:
     api_auth_code:
       type: oauth2

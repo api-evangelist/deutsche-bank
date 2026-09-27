@@ -591,13 +591,14 @@ paths:
       x-codegen-request-body-name: switchMethod
 components:
   schemas:
-    ChallengeRequestSwitchMethod:
+    ChallengeResponse:
       required:
-      - method
+      - challengeResponse
       type: object
       properties:
-        method:
-          $ref: '#/components/schemas/ChallengeMethodType'
+        challengeResponse:
+          type: string
+          description: 'The TAN token to the created challenge. '
     ChallengeMethodType:
       type: string
       description: Challenge method
@@ -639,15 +640,21 @@ components:
           enum:
           - de
           - en
-    ChallengeMethodsAndTypes:
+    ChallengeRequest:
       required:
-      - methods
+      - id
+      - method
       type: object
       properties:
-        methods:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChallengeMethodItem'
+        id:
+          type: string
+          description: the ID of the created challenge request
+        method:
+          $ref: '#/components/schemas/ChallengeMethodType'
+        challenge:
+          type: object
+          properties: {}
+          description: The sub-type of the response challenge. Depending on the value see swagger model ChallengeMethodMTAN or ChallengeMethodPHOTOTAN. This is actually a constrain of the swagger 2.0 spec.
     ChallengeMethodMetadata:
       type: object
       properties:
@@ -657,6 +664,29 @@ components:
         activeDevicesCount:
           type: integer
           description: Number of active devices for this method type.
+    ChallengeRequestSwitchMethod:
+      required:
+      - method
+      type: object
+      properties:
+        method:
+          $ref: '#/components/schemas/ChallengeMethodType'
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
     ChallengeMethodItem:
       required:
       - method
@@ -678,22 +708,6 @@ components:
           - UNKNOWN
         metadata:
           $ref: '#/components/schemas/ChallengeMethodMetadata'
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
     ChallengeResult:
       type: object
       properties:
@@ -709,29 +723,15 @@ components:
           - REJECTED
           - VALIDATED
           - EIDP_ERROR
-    ChallengeRequest:
+    ChallengeMethodsAndTypes:
       required:
-      - id
-      - method
+      - methods
       type: object
       properties:
-        id:
-          type: string
-          description: the ID of the created challenge request
-        method:
-          $ref: '#/components/schemas/ChallengeMethodType'
-        challenge:
-          type: object
-          properties: {}
-          description: The sub-type of the response challenge. Depending on the value see swagger model ChallengeMethodMTAN or ChallengeMethodPHOTOTAN. This is actually a constrain of the swagger 2.0 spec.
-    ChallengeResponse:
-      required:
-      - challengeResponse
-      type: object
-      properties:
-        challengeResponse:
-          type: string
-          description: 'The TAN token to the created challenge. '
+        methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChallengeMethodItem'
   securitySchemes:
     api_auth_code:
       type: oauth2

@@ -218,14 +218,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    EstimatedExpenseReportRequest:
-      required:
-      - token
-      type: object
-      properties:
-        token:
-          type: string
-      description: Estimated expense report request token
     EstimatedExpenseReportResponse:
       type: object
       properties:
@@ -248,6 +240,14 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    EstimatedExpenseReportRequest:
+      required:
+      - token
+      type: object
+      properties:
+        token:
+          type: string
+      description: Estimated expense report request token
   securitySchemes:
     api_auth_code:
       type: oauth2
