@@ -160,9 +160,255 @@ paths:
       x-codegen-request-body-name: body
 components:
   schemas:
+    Sex:
+      type: string
+      description: Sex of the partner
+      enum:
+      - MALE
+      - FEMALE
+      - UNKNOWN
+    AccountOpeningRequest:
+      required:
+      - currentAccount
+      - digitalServices
+      - isActingForOwnAccount
+      - overdraftCredit
+      - partners
+      type: object
+      properties:
+        community:
+          $ref: '#/components/schemas/Community'
+        partners:
+          maxItems: 2
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/NaturalPerson'
+        isActingForOwnAccount:
+          type: boolean
+          description: Customer is acting for own account?
+        currentAccount:
+          $ref: '#/components/schemas/CurrentAccount'
+        overdraftCredit:
+          $ref: '#/components/schemas/OverdraftCredit'
+        savingsAccount:
+          type: boolean
+          description: Indicates if a savings account is requested.
+        solvencyInformation:
+          maxItems: 2
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/SolvencyInformation'
+        creditCard:
+          maxItems: 2
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/CreditCard'
+        debitMasterCard:
+          maxItems: 2
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/DebitMasterCard'
+        digitalServices:
+          maxItems: 2
+          minItems: 1
+          type: array
+          items:
+            $ref: '#/components/schemas/DigitalService'
+        processControls:
+          $ref: '#/components/schemas/ProcessControls'
+        additionalAgreements:
+          maxItems: 2
+          type: array
+          items:
+            $ref: '#/components/schemas/AdditionalAgreements'
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    ProductApplicationForm:
+      type: string
+      description: The PDF document for the customer in base64
+    SolvencyInformation:
+      required:
+      - additionalLoanExpenses
+      - alimonyPayment
+      - dependentChildren
+      - insuranceExpenses
+      - loanExpenses
+      - netIncome
+      - partnerIndex
+      - rentalExpenses
+      type: object
+      properties:
+        partnerIndex:
+          maximum: 2
+          minimum: 1
+          type: integer
+          description: Reference to partner that gives this SolvencyInformation (1st or 2nd account holder)
+          format: int32
+          example: 1
+        netIncome:
+          type: integer
+          description: Net income per month
+          format: int64
+        rentalExpenses:
+          type: integer
+          description: Amount of monthly rental expenses; mandatory if ProprietaryStatus = RENTING_SUBTENANT or WITH_PARENTS
+          format: int64
+        loanExpenses:
+          type: integer
+          description: Amount of monthly loan expenses; mandatory if ProprietaryStatus = OWN_PROPERTY
+          format: int64
+        additionalLoanExpenses:
+          type: integer
+          description: Amount of additional monthly loan expenses; mandatory if ProprietaryStatus = OWN_PROPERTY
+          format: int64
+        insuranceExpenses:
+          type: integer
+          description: Amount of monthly expenses for private health insurance
+          format: int64
+        dependentChildren:
+          type: integer
+          description: Number of dependent children
+          format: int32
+        alimonyPayment:
+          type: integer
+          description: Alimony payment in EUR per month
+          format: int64
+      description: Solvency Information for one or twoaccount holders (in case of joint account). The solvency information is mandatory when an overdraft credit and/or a credit card is requested
     Country:
       type: string
       description: Country
+    DebitMasterCard:
+      required:
+      - partnerIndex
+      - product
+      type: object
+      properties:
+        partnerIndex:
+          maximum: 2
+          minimum: 1
+          type: integer
+          description: Reference to partner that requests the Debit MasterCard
+          format: int32
+          example: 1
+        product:
+          $ref: '#/components/schemas/DebitMastercardProduct'
+      description: Optional list of Debit MasterCards cards for the first and second account holder; a DMC for the 2nd account holder is only possible in case of a joint account
+    AcademicTitle:
+      type: string
+      description: Academic title
+      enum:
+      - DR
+      - PROF
+      - PROF_DR
+    Community:
+      required:
+      - personCommunityType
+      type: object
+      properties:
+        personCommunityType:
+          $ref: '#/components/schemas/PersonCommunityType'
+      description: A partner and the specific details for this community e.g. married couple
+    ProductApplicationStatus:
+      type: string
+      description: The result of the customer verification
+      enum:
+      - ACCEPTED
+      - ACCEPTED_POSTIDENT_ONLY
+      - REJECTED_PRODUCT_ALTERNATIVES
+      - REJECTED
+    SelfEmploymentInformation:
+      required:
+      - industryCodeSelfEmployer
+      - legalForm
+      type: object
+      properties:
+        industryCodeSelfEmployer:
+          type: string
+          description: Industry code of the self-employer
+        legalForm:
+          $ref: '#/components/schemas/LegalForm'
+        employedSince:
+          pattern: YYYY-MM-DD
+          type: string
+          description: Start of date the current self-employment. In the format YYYY-MM-DD
+          format: date
+      description: Self-employment information
+    AdditionalAgreements:
+      required:
+      - partnerIndex
+      type: object
+      properties:
+        partnerIndex:
+          maximum: 2
+          minimum: 1
+          type: integer
+        financeStatus:
+          type: string
+          enum:
+          - MONTHLY_FIRST
+          - MONTHLY_MID
+          - 2_WEEKLY
+          - WEEKLY
+          - DAILY
+        employerLetter:
+          type: boolean
+        changeAccountService:
+          type: boolean
+        consentForDataAnalysis:
+          type: boolean
+        requestForSubAccount:
+          type: boolean
+    ProductAlternatives:
+      type: object
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountProduct'
+        cards:
+          type: array
+          items:
+            $ref: '#/components/schemas/CardProduct'
+      description: Product alternatives if ProductApplicationStatus = REJECTED_PRODUCT_ALTERNATIVES
+    CreditCard:
+      required:
+      - limit
+      - partnerIndex
+      - product
+      type: object
+      properties:
+        partnerIndex:
+          maximum: 2
+          minimum: 1
+          type: integer
+          description: Reference to partner that requests the credit card
+          format: int32
+          example: 1
+        product:
+          $ref: '#/components/schemas/CreditCardProduct'
+        limit:
+          type: integer
+          description: Credit card limit in EUR requested by customer
+          format: int64
+      description: Optional list of credit cards for the first and second account holder; a credit card for the 2nd account holder is only possible in case of a joint account
     AccountProduct:
       type: string
       description: The possible account(s) if the customer has not been rejected
@@ -176,73 +422,24 @@ components:
       - PBGIRODIREKTNEU
       - PBGIROPLUSNEU
       - PBGIROEXTRAPLSNEU
-    AccountOpeningResponse:
-      required:
-      - message
-      - productApplicationStatus
+    mTanMobileNumber:
+      pattern: ^\+[1-9]\d{6,14}$
+      type: string
+      description: Optional mobile number field in E.164 standard format that will be used for mTAN authentication
+    EmploymentInformation:
       type: object
       properties:
-        productApplicationId:
+        industryCodeEmployer:
           type: string
-          description: The unique ID for the partner to identify the call
-        e2eProcessId:
+          description: Industry code of the employer
+        employmentLevel:
+          $ref: '#/components/schemas/EmploymentLevel'
+        employedSince:
+          pattern: YYYY-MM-DD
           type: string
-          description: The e2eProcessId to recognize the account opening application
-        productApplicationStatus:
-          $ref: '#/components/schemas/ProductApplicationStatus'
-        precontractualInformation:
-          type: string
-          description: 'The URL of the PCI (D: Vorvertragliche Informationen) for the product'
-        productAlternatives:
-          $ref: '#/components/schemas/ProductAlternatives'
-        productApplicationForm:
-          $ref: '#/components/schemas/ProductApplicationForm'
-        legitimationUrl:
-          type: string
-          description: The customer legitimation URL
-        message:
-          $ref: '#/components/schemas/Message'
-    DebitMastercardProduct:
-      type: string
-      description: 'Product Debit MasterCard: DEUTSCHE_BANK_CARD_PLUS, MASTERCARD_DIREKT_WITHOUT_SOLVENCY, MASTERCARD_DIREKT_WITH_SOLVENCY'
-      enum:
-      - DB_DEUTSCHE_BANK_CARD_PLUS
-      - NB_MASTERCARD_DIREKT_WITHOUT_SOLVENCY
-      - NB_MASTERCARD_DIREKT_WITH_SOLVENCY
-      - POSTBANK_CARD_PLUS
-      - POSTBANK_BUSINESS_CARD_PLUS
-    CurrencyCode:
-      pattern: '[A-Z]{3}'
-      type: string
-      description: ISO 4217 Alpha 3 currency code.
-      example: EUR
-    DigitalService:
-      required:
-      - partnerIndex
-      type: object
-      properties:
-        partnerIndex:
-          maximum: 2
-          minimum: 1
-          type: integer
-          description: Reference to partner that requests the digital services
-          format: int32
-          example: 1
-        requestedPFM:
-          $ref: '#/components/schemas/RequestedPFM'
-        mTanMobileNumber:
-          $ref: '#/components/schemas/mTanMobileNumber'
-      description: List of digital services for the first and second account holder; only allowed for second account holder in case of joint account
-    PersonCommunityType:
-      type: string
-      description: 'Type of community the account holder are in: OTHER, MARRIAGE, COHABITATION, RESIDENTIAL_COMMUNITY, HEIRS_COMMUNITY, CIVIL_UNION'
-      enum:
-      - OTHER
-      - MARRIAGE
-      - COHABITATION
-      - RESIDENTIAL_COMMUNITY
-      - HEIRS_COMMUNITY
-      - CIVIL_UNION
+          description: Start date of the current employment. In the format YYYY-MM-DD
+          format: date
+      description: Employment information
     ProcessControls:
       type: object
       properties:
@@ -260,38 +457,37 @@ components:
           type: string
           description: Id to map request to certain campaign.
       description: Process controls for Legitimation as a Service (Laas) and notifications
-    DebitMasterCard:
+    LegalForm:
+      type: string
+      description: Self-employment legal form
+      example: FREELANCER
+      enum:
+      - FREELANCER
+      - CRAFTSMAN
+      - TRADESMAN_WITHOUT_COMMERCIAL_REGISTER_ENTRY
+      - OTHER_LEGAL_ORGANIZATION_FORM
+    CountryCode:
+      pattern: ^[A-Z]{3}$
+      type: string
+      description: ISO 3166-1 alpha-3 country code. Not all existing ISO codes might be supported
+      example: DEU
+    DigitalService:
       required:
       - partnerIndex
-      - product
       type: object
       properties:
         partnerIndex:
           maximum: 2
           minimum: 1
           type: integer
-          description: Reference to partner that requests the Debit MasterCard
+          description: Reference to partner that requests the digital services
           format: int32
           example: 1
-        product:
-          $ref: '#/components/schemas/DebitMastercardProduct'
-      description: Optional list of Debit MasterCards cards for the first and second account holder; a DMC for the 2nd account holder is only possible in case of a joint account
-    Message:
-      required:
-      - code
-      - text
-      type: object
-      properties:
-        code:
-          type: string
-          description: The response code
-        text:
-          type: string
-          description: The message text
-        category:
-          type: string
-          description: The message category
-      description: Response message
+        requestedPFM:
+          $ref: '#/components/schemas/RequestedPFM'
+        mTanMobileNumber:
+          $ref: '#/components/schemas/mTanMobileNumber'
+      description: List of digital services for the first and second account holder; only allowed for second account holder in case of joint account
     NaturalPerson:
       required:
       - dateOfBirth
@@ -382,59 +578,67 @@ components:
         taxInformation:
           $ref: '#/components/schemas/TaxInformation'
       description: Basic partner information
-    Address:
+    CurrentAccount:
       required:
-      - city
-      - country
-      - houseNumber
-      - street
-      - zipCode
+      - accountCurrency
+      - accountProductId
       type: object
       properties:
-        street:
+        accountProductId:
+          $ref: '#/components/schemas/AccountProduct'
+        accountCurrency:
+          $ref: '#/components/schemas/CurrencyCode'
+        isSalaryAccount:
+          type: boolean
+          description: Flag indicating if the account is used as a salary account
+        periodicIncomingPayments:
+          type: boolean
+          description: Account is not used as salary account, nevertheless incoming payments are expected regularly
+        endDateCurrentEducation:
           type: string
-          description: Street
-        houseNumber:
-          type: string
-          description: House number
-        zipCode:
-          type: string
-          description: Zip code
-        city:
-          type: string
-          description: City
-        country:
-          $ref: '#/components/schemas/Country'
-      description: User address. Note that CommunicationAddress must not be provided for Norisbank and will result in an error
-    ProductAlternatives:
-      type: object
-      properties:
-        accounts:
-          type: array
-          items:
-            $ref: '#/components/schemas/AccountProduct'
-        cards:
-          type: array
-          items:
-            $ref: '#/components/schemas/CardProduct'
-      description: Product alternatives if ProductApplicationStatus = REJECTED_PRODUCT_ALTERNATIVES
-    PhoneNumber:
+          description: 'Mandatory field for DB JungesKonto. Date in Year & Month when the current studies will complete. Eg: graduation planned month'
+          format: date
+      description: Current account information
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
+    MaritalStatus:
+      type: string
+      description: Marital status
+      enum:
+      - UNKNOWN
+      - SINGLE
+      - MARRIED_SEPARATE_TAX_ASSESSMENT
+      - DIVORCED
+      - WIDOWED
+      - SINGLE_LIVING_IN_COHABITATION
+      - MARRIED_SEPARATED
+      - MARRIED_JOINT_TAX_ASSESSMENT
+      - CIVIL_UNION_JOINT_TAX_ASSESSMENT
+      - CIVIL_UNION_SEPARATE_TAX_ASSESSMENT
+      - CIVIL_UNION_SEPARATED
+    PersonCommunityType:
+      type: string
+      description: 'Type of community the account holder are in: OTHER, MARRIAGE, COHABITATION, RESIDENTIAL_COMMUNITY, HEIRS_COMMUNITY, CIVIL_UNION'
+      enum:
+      - OTHER
+      - MARRIAGE
+      - COHABITATION
+      - RESIDENTIAL_COMMUNITY
+      - HEIRS_COMMUNITY
+      - CIVIL_UNION
+    OverdraftCredit:
       required:
-      - areaCode
-      - internationalAreaCode
-      - telephoneNumber
+      - requestedOverdraftCredit
       type: object
       properties:
-        internationalAreaCode:
-          type: string
-          description: International area code
-        areaCode:
-          type: string
-          description: Area code
-        telephoneNumber:
-          type: string
-          description: Phone number
-      description: Phone number information
+        requestedOverdraftCredit:
+          type: integer
+          description: Amount of the overdraft credit as requested by the customer. A value of 0 EUR indicates that an overdraft is not requested
+          format: int64
+      description: Overdraft credit information
     CardProduct:
       type: string
       description: The possible card(s) if the customer has not been rejected
@@ -465,202 +669,145 @@ components:
       - MASTERCARD_TRAVEL
       - MASTERCARD_BLACK
       - MASTERCARD_PLATIN
-    CurrentAccount:
-      required:
-      - accountCurrency
-      - accountProductId
-      type: object
-      properties:
-        accountProductId:
-          $ref: '#/components/schemas/AccountProduct'
-        accountCurrency:
-          $ref: '#/components/schemas/CurrencyCode'
-        isSalaryAccount:
-          type: boolean
-          description: Flag indicating if the account is used as a salary account
-        periodicIncomingPayments:
-          type: boolean
-          description: Account is not used as salary account, nevertheless incoming payments are expected regularly
-        endDateCurrentEducation:
-          type: string
-          description: 'Mandatory field for DB JungesKonto. Date in Year & Month when the current studies will complete. Eg: graduation planned month'
-          format: date
-      description: Current account information
-    SelfEmploymentInformation:
-      required:
-      - industryCodeSelfEmployer
-      - legalForm
-      type: object
-      properties:
-        industryCodeSelfEmployer:
-          type: string
-          description: Industry code of the self-employer
-        legalForm:
-          $ref: '#/components/schemas/LegalForm'
-        employedSince:
-          pattern: YYYY-MM-DD
-          type: string
-          description: Start of date the current self-employment. In the format YYYY-MM-DD
-          format: date
-      description: Self-employment information
-    AdditionalAgreements:
-      required:
-      - partnerIndex
-      type: object
-      properties:
-        partnerIndex:
-          maximum: 2
-          minimum: 1
-          type: integer
-        financeStatus:
-          type: string
-          enum:
-          - MONTHLY_FIRST
-          - MONTHLY_MID
-          - 2_WEEKLY
-          - WEEKLY
-          - DAILY
-        employerLetter:
-          type: boolean
-        changeAccountService:
-          type: boolean
-        consentForDataAnalysis:
-          type: boolean
-        requestForSubAccount:
-          type: boolean
-    mTanMobileNumber:
-      pattern: ^\+[1-9]\d{6,14}$
+    CreditCardProduct:
       type: string
-      description: Optional mobile number field in E.164 standard format that will be used for mTAN authentication
-    MaritalStatus:
-      type: string
-      description: Marital status
+      description: 'Credit card product requested by customer: MASTERCARD_STANDARD, MASTERCARD_GOLD, MASTERCARD_TRAVEL, MASTERCARD_KREDITKARTE'
       enum:
-      - UNKNOWN
-      - SINGLE
-      - MARRIED_SEPARATE_TAX_ASSESSMENT
-      - DIVORCED
-      - WIDOWED
-      - SINGLE_LIVING_IN_COHABITATION
-      - MARRIED_SEPARATED
-      - MARRIED_JOINT_TAX_ASSESSMENT
-      - CIVIL_UNION_JOINT_TAX_ASSESSMENT
-      - CIVIL_UNION_SEPARATE_TAX_ASSESSMENT
-      - CIVIL_UNION_SEPARATED
-    ProprietaryStatus:
+      - DB_MASTERCARD_STANDARD
+      - DB_MASTERCARD_GOLD
+      - DB_MASTERCARD_TRAVEL
+      - NB_MASTERCARD_KREDITKARTE
+      - PB_MASTERCARD_STANDARD
+      - PB_MASTERCARD_GOLD
+      - PB_MASTERCARD_TRAVEL
+      - PB_MASTERCARD_PLATINUM
+    RequestedPFM:
       type: string
-      description: 'Proprietary status of the partner: RENTING_OR_SUBTENANT, OWN_PROPERTY, WITH_PARENTS'
-      example: RENTING_OR_SUBTENANT
+      description: 'The customer signs in for Finanzplaner MultiBanking: PFM_ONLY, PFM_DATA. Not available for Postbank tenant'
       enum:
-      - RENTING_OR_SUBTENANT
-      - OWN_PROPERTY
-      - WITH_PARENTS
-    Sex:
-      type: string
-      description: Sex of the partner
-      enum:
-      - MALE
-      - FEMALE
-      - UNKNOWN
-    AccountOpeningRequest:
+      - PFM_ONLY
+      - PFM_DATA
+    AccountOpeningResponse:
       required:
-      - currentAccount
-      - digitalServices
-      - isActingForOwnAccount
-      - overdraftCredit
-      - partners
+      - message
+      - productApplicationStatus
       type: object
       properties:
-        community:
-          $ref: '#/components/schemas/Community'
-        partners:
-          maxItems: 2
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/NaturalPerson'
-        isActingForOwnAccount:
-          type: boolean
-          description: Customer is acting for own account?
-        currentAccount:
-          $ref: '#/components/schemas/CurrentAccount'
-        overdraftCredit:
-          $ref: '#/components/schemas/OverdraftCredit'
-        savingsAccount:
-          type: boolean
-          description: Indicates if a savings account is requested.
-        solvencyInformation:
-          maxItems: 2
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/SolvencyInformation'
-        creditCard:
-          maxItems: 2
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/CreditCard'
-        debitMasterCard:
-          maxItems: 2
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/DebitMasterCard'
-        digitalServices:
-          maxItems: 2
-          minItems: 1
-          type: array
-          items:
-            $ref: '#/components/schemas/DigitalService'
-        processControls:
-          $ref: '#/components/schemas/ProcessControls'
-        additionalAgreements:
-          maxItems: 2
-          type: array
-          items:
-            $ref: '#/components/schemas/AdditionalAgreements'
-    EmploymentInformation:
-      type: object
-      properties:
-        industryCodeEmployer:
+        productApplicationId:
           type: string
-          description: Industry code of the employer
-        employmentLevel:
-          $ref: '#/components/schemas/EmploymentLevel'
-        employedSince:
-          pattern: YYYY-MM-DD
+          description: The unique ID for the partner to identify the call
+        e2eProcessId:
           type: string
-          description: Start date of the current employment. In the format YYYY-MM-DD
-          format: date
-      description: Employment information
-    OverdraftCredit:
-      required:
-      - requestedOverdraftCredit
-      type: object
-      properties:
-        requestedOverdraftCredit:
-          type: integer
-          description: Amount of the overdraft credit as requested by the customer. A value of 0 EUR indicates that an overdraft is not requested
-          format: int64
-      description: Overdraft credit information
-    LegalForm:
+          description: The e2eProcessId to recognize the account opening application
+        productApplicationStatus:
+          $ref: '#/components/schemas/ProductApplicationStatus'
+        precontractualInformation:
+          type: string
+          description: 'The URL of the PCI (D: Vorvertragliche Informationen) for the product'
+        productAlternatives:
+          $ref: '#/components/schemas/ProductAlternatives'
+        productApplicationForm:
+          $ref: '#/components/schemas/ProductApplicationForm'
+        legitimationUrl:
+          type: string
+          description: The customer legitimation URL
+        message:
+          $ref: '#/components/schemas/Message'
+    DebitMastercardProduct:
       type: string
-      description: Self-employment legal form
-      example: FREELANCER
+      description: 'Product Debit MasterCard: DEUTSCHE_BANK_CARD_PLUS, MASTERCARD_DIREKT_WITHOUT_SOLVENCY, MASTERCARD_DIREKT_WITH_SOLVENCY'
       enum:
-      - FREELANCER
-      - CRAFTSMAN
-      - TRADESMAN_WITHOUT_COMMERCIAL_REGISTER_ENTRY
-      - OTHER_LEGAL_ORGANIZATION_FORM
-    Community:
+      - DB_DEUTSCHE_BANK_CARD_PLUS
+      - NB_MASTERCARD_DIREKT_WITHOUT_SOLVENCY
+      - NB_MASTERCARD_DIREKT_WITH_SOLVENCY
+      - POSTBANK_CARD_PLUS
+      - POSTBANK_BUSINESS_CARD_PLUS
+    EmploymentLevel:
+      type: string
+      description: Employment level
+      enum:
+      - SENIOR_EMPLOYEE
+      - QUALIFIED_EMPLOYEE
+      - SALARIED_EMPLOYEE
+      - SENIOR_CIVIL_SERVANT
+      - MIDDLE_CIVIL_SERVANT
+      - JUNIOR_CIVIL_SERVANT
+      - MASTER
+      - SKILLED_WORKER
+      - WORKER
+      - RETIRED
+      - STUDENT
+      - SCHOLAR
+      - MILITARY_COMMUNITY_SERVICE
+      - APPRENTICE
+      - HOMEWORKER
+      - UPPER_CIVIL_SERVANT
+      - UNEMPLOYED
+      - CHAIRMAN
+    EmploymentStatus:
+      type: string
+      description: 'Employment status of the partner: EMPLOYED, SELF_EMPLOYED. For Norisbank only EMPLOYED is allowed'
+      example: EMPLOYED
+      enum:
+      - SELF_EMPLOYED
+      - EMPLOYED
+    PhoneNumber:
       required:
-      - personCommunityType
+      - areaCode
+      - internationalAreaCode
+      - telephoneNumber
       type: object
       properties:
-        personCommunityType:
-          $ref: '#/components/schemas/PersonCommunityType'
-      description: A partner and the specific details for this community e.g. married couple
+        internationalAreaCode:
+          type: string
+          description: International area code
+        areaCode:
+          type: string
+          description: Area code
+        telephoneNumber:
+          type: string
+          description: Phone number
+      description: Phone number information
+    Address:
+      required:
+      - city
+      - country
+      - houseNumber
+      - street
+      - zipCode
+      type: object
+      properties:
+        street:
+          type: string
+          description: Street
+        houseNumber:
+          type: string
+          description: House number
+        zipCode:
+          type: string
+          description: Zip code
+        city:
+          type: string
+          description: City
+        country:
+          $ref: '#/components/schemas/Country'
+      description: User address. Note that CommunicationAddress must not be provided for Norisbank and will result in an error
+    Message:
+      required:
+      - code
+      - text
+      type: object
+      properties:
+        code:
+          type: string
+          description: The response code
+        text:
+          type: string
+          description: The message text
+        category:
+          type: string
+          description: The message category
+      description: Response message
     TaxInformation:
       required:
       - isBornInTheUS
@@ -735,161 +882,14 @@ components:
           - '2'
           - '3'
       description: Tax information
-    EmploymentLevel:
+    ProprietaryStatus:
       type: string
-      description: Employment level
+      description: 'Proprietary status of the partner: RENTING_OR_SUBTENANT, OWN_PROPERTY, WITH_PARENTS'
+      example: RENTING_OR_SUBTENANT
       enum:
-      - SENIOR_EMPLOYEE
-      - QUALIFIED_EMPLOYEE
-      - SALARIED_EMPLOYEE
-      - SENIOR_CIVIL_SERVANT
-      - MIDDLE_CIVIL_SERVANT
-      - JUNIOR_CIVIL_SERVANT
-      - MASTER
-      - SKILLED_WORKER
-      - WORKER
-      - RETIRED
-      - STUDENT
-      - SCHOLAR
-      - MILITARY_COMMUNITY_SERVICE
-      - APPRENTICE
-      - HOMEWORKER
-      - UPPER_CIVIL_SERVANT
-      - UNEMPLOYED
-      - CHAIRMAN
-    AcademicTitle:
-      type: string
-      description: Academic title
-      enum:
-      - DR
-      - PROF
-      - PROF_DR
-    CountryCode:
-      pattern: ^[A-Z]{3}$
-      type: string
-      description: ISO 3166-1 alpha-3 country code. Not all existing ISO codes might be supported
-      example: DEU
-    CreditCardProduct:
-      type: string
-      description: 'Credit card product requested by customer: MASTERCARD_STANDARD, MASTERCARD_GOLD, MASTERCARD_TRAVEL, MASTERCARD_KREDITKARTE'
-      enum:
-      - DB_MASTERCARD_STANDARD
-      - DB_MASTERCARD_GOLD
-      - DB_MASTERCARD_TRAVEL
-      - NB_MASTERCARD_KREDITKARTE
-      - PB_MASTERCARD_STANDARD
-      - PB_MASTERCARD_GOLD
-      - PB_MASTERCARD_TRAVEL
-      - PB_MASTERCARD_PLATINUM
-    RequestedPFM:
-      type: string
-      description: 'The customer signs in for Finanzplaner MultiBanking: PFM_ONLY, PFM_DATA. Not available for Postbank tenant'
-      enum:
-      - PFM_ONLY
-      - PFM_DATA
-    CreditCard:
-      required:
-      - limit
-      - partnerIndex
-      - product
-      type: object
-      properties:
-        partnerIndex:
-          maximum: 2
-          minimum: 1
-          type: integer
-          description: Reference to partner that requests the credit card
-          format: int32
-          example: 1
-        product:
-          $ref: '#/components/schemas/CreditCardProduct'
-        limit:
-          type: integer
-          description: Credit card limit in EUR requested by customer
-          format: int64
-      description: Optional list of credit cards for the first and second account holder; a credit card for the 2nd account holder is only possible in case of a joint account
-    EmploymentStatus:
-      type: string
-      description: 'Employment status of the partner: EMPLOYED, SELF_EMPLOYED. For Norisbank only EMPLOYED is allowed'
-      example: EMPLOYED
-      enum:
-      - SELF_EMPLOYED
-      - EMPLOYED
-    SolvencyInformation:
-      required:
-      - additionalLoanExpenses
-      - alimonyPayment
-      - dependentChildren
-      - insuranceExpenses
-      - loanExpenses
-      - netIncome
-      - partnerIndex
-      - rentalExpenses
-      type: object
-      properties:
-        partnerIndex:
-          maximum: 2
-          minimum: 1
-          type: integer
-          description: Reference to partner that gives this SolvencyInformation (1st or 2nd account holder)
-          format: int32
-          example: 1
-        netIncome:
-          type: integer
-          description: Net income per month
-          format: int64
-        rentalExpenses:
-          type: integer
-          description: Amount of monthly rental expenses; mandatory if ProprietaryStatus = RENTING_SUBTENANT or WITH_PARENTS
-          format: int64
-        loanExpenses:
-          type: integer
-          description: Amount of monthly loan expenses; mandatory if ProprietaryStatus = OWN_PROPERTY
-          format: int64
-        additionalLoanExpenses:
-          type: integer
-          description: Amount of additional monthly loan expenses; mandatory if ProprietaryStatus = OWN_PROPERTY
-          format: int64
-        insuranceExpenses:
-          type: integer
-          description: Amount of monthly expenses for private health insurance
-          format: int64
-        dependentChildren:
-          type: integer
-          description: Number of dependent children
-          format: int32
-        alimonyPayment:
-          type: integer
-          description: Alimony payment in EUR per month
-          format: int64
-      description: Solvency Information for one or twoaccount holders (in case of joint account). The solvency information is mandatory when an overdraft credit and/or a credit card is requested
-    ProductApplicationForm:
-      type: string
-      description: The PDF document for the customer in base64
-    ProductApplicationStatus:
-      type: string
-      description: The result of the customer verification
-      enum:
-      - ACCEPTED
-      - ACCEPTED_POSTIDENT_ONLY
-      - REJECTED_PRODUCT_ALTERNATIVES
-      - REJECTED
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
+      - RENTING_OR_SUBTENANT
+      - OWN_PROPERTY
+      - WITH_PARENTS
   securitySchemes:
     api_client_credential:
       type: oauth2

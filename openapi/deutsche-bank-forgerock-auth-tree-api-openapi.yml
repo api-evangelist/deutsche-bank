@@ -70,45 +70,7 @@ paths:
         5XX:
           $ref: '#/components/responses/ServerError'
 components:
-  responses:
-    ServerError:
-      description: 5xx server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    ClientError:
-      description: 4xx client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   schemas:
-    ForgeRockStepRequest:
-      type: object
-      properties:
-        authId:
-          type: string
-        callbacks:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-      additionalProperties: true
-      description: Generic callback submission body for FRAuth.next
-    ForgeRockLoginSuccess:
-      type: object
-      properties:
-        tokenId:
-          type: string
-        successUrl:
-          type: string
-        code:
-          type: string
-        state:
-          type: string
-      additionalProperties: true
-      description: Success shape may vary by SDK/AM config
     ForgeRockStepResponse:
       required:
       - authId
@@ -125,6 +87,18 @@ components:
             type: object
             additionalProperties: true
       additionalProperties: true
+    ForgeRockStepRequest:
+      type: object
+      properties:
+        authId:
+          type: string
+        callbacks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+      description: Generic callback submission body for FRAuth.next
     ErrorResponse:
       type: object
       properties:
@@ -135,6 +109,32 @@ components:
         message:
           type: string
       additionalProperties: true
+    ForgeRockLoginSuccess:
+      type: object
+      properties:
+        tokenId:
+          type: string
+        successUrl:
+          type: string
+        code:
+          type: string
+        state:
+          type: string
+      additionalProperties: true
+      description: Success shape may vary by SDK/AM config
+  responses:
+    ClientError:
+      description: 4xx client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: 5xx server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     bearerAuth:
       type: http

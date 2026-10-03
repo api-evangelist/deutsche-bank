@@ -133,19 +133,6 @@ paths:
         5XX:
           $ref: '#/components/responses/ServerError'
 components:
-  responses:
-    ServerError:
-      description: 5xx server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    ClientError:
-      description: 4xx client error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
   schemas:
     OAuthTokenResponse:
       required:
@@ -171,6 +158,16 @@ components:
           type: string
           example: '2'
       additionalProperties: true
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        type:
+          type: string
+        message:
+          type: string
+      additionalProperties: true
     OAuthTokenRequest:
       type: object
       properties:
@@ -186,16 +183,19 @@ components:
         code_verifier:
           type: string
       additionalProperties: true
-    ErrorResponse:
-      type: object
-      properties:
-        title:
-          type: string
-        type:
-          type: string
-        message:
-          type: string
-      additionalProperties: true
+  responses:
+    ClientError:
+      description: 4xx client error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: 5xx server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
   securitySchemes:
     bearerAuth:
       type: http

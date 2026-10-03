@@ -59,149 +59,6 @@ paths:
                 $ref: '#/components/schemas/IFrameInitializeResponse'
 components:
   schemas:
-    IFrameInitializeRequest:
-      required:
-      - amount_total
-      type: object
-      properties:
-        tds_20_data:
-          $ref: '#/components/schemas/TDS20Data'
-        amount_total:
-          $ref: '#/components/schemas/AmountCurrency'
-        processing_options:
-          type: array
-          description: Defines an additional processing option for iFrame interaction.
-          example:
-          - MOTO
-          items:
-            type: string
-            description: "Additional processing option for an iFrame interaction.\n\n* `MOTO`: A credit card token should be created for use in a MOTO payment transaction. \n          This skips the 3D-Secure process."
-            example: MOTO
-            enum:
-            - MOTO
-      description: Request data to initialize an iFrame interaction.
-    DeviceInformation:
-      type: object
-      properties:
-        cookies_accepted:
-          type: boolean
-          description: Whether or not the browser accepts cookies.
-          example: true
-        http_accept_browser_value:
-          maxLength: 2048
-          minLength: 0
-          type: string
-          description: 'Value of the ''Accept'' header sent by the customer''s web browser. Note: If the customer''s browser provides a value, you must include it with your request.'
-          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
-        http_accept_content:
-          maxLength: 2048
-          minLength: 0
-          type: string
-          description: The exact content of the HTTP accept header.
-          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
-        color_depth:
-          type: string
-          description: "The bit depth of the color palette for displaying images, in bits per pixel. See https://en.wikipedia.org/wiki/Color_depth. Possible values:\n\n* `B1`\n* `B4`\n* `B8`\n* `B15`\n* `B16`\n* `B24`\n* `B32`\n* `B48`\n\n    "
-          example: B24
-          enum:
-          - B1
-          - B4
-          - B8
-          - B15
-          - B16
-          - B24
-          - B32
-          - B48
-        http_browser_email:
-          maxLength: 255
-          minLength: 0
-          type: string
-          description: Email address set in the customer's browser. May differ from customer's actual email.
-          example: mustermann@example.com
-        http_browser_java_enabled:
-          type: boolean
-          description: Is the browser able to execute Java. Value is taken from the navigator.javaEnabled property.
-          example: false
-        http_browser_java_script_enabled:
-          type: boolean
-          description: 'Is the browser able to execute JavaScript. Background: Merchants may want to fingerprint a cardholder''s browser.'
-          example: false
-        http_browser_language:
-          maxLength: 8
-          minLength: 0
-          type: string
-          description: Browser language as defined in IETF BCP47. See https://en.wikipedia.org/wiki/IETF_language_tag.
-          example: en-US
-        http_browser_screen_height:
-          minimum: 0
-          type: integer
-          description: Total height of the client's screen in pixels.
-          format: int32
-          example: 864
-        http_browser_screen_width:
-          minimum: 0
-          type: integer
-          description: Total width of the client's screen in pixels.
-          format: int32
-          example: 1536
-        http_browser_time_difference:
-          maximum: 1440
-          minimum: -1440
-          type: integer
-          description: Time difference between UTC time and the client's browser's local time in minutes.
-          format: int32
-          example: 300
-        ip_address:
-          maxLength: 45
-          minLength: 0
-          pattern: ((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))
-          type: string
-          description: IP address of the client. Both IPv4 and IPv6 are supported.
-          example: 192.168.0.1
-        user_agent:
-          maxLength: 40
-          minLength: 0
-          type: string
-          description: Client's browser as identified by the HTTP header data.
-          example: Mozilla
-        user_agent_browser_value:
-          maxLength: 255
-          minLength: 0
-          type: string
-          description: Value of the User-Agent header sent by the client's browser.
-          example: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
-      description: Technical details of a client.
-    TDS20CommunicationData:
-      type: object
-      properties:
-        method_notification_url:
-          type: string
-          description: The URL to send the method notification to.
-        cres_notification_url:
-          type: string
-          description: The URL to send the CRes to.
-    TDS20CustomerData:
-      type: object
-      properties:
-        billing_address:
-          $ref: '#/components/schemas/TDS20Address'
-        shipping_address:
-          $ref: '#/components/schemas/TDS20Address'
-        home_phone_number:
-          $ref: '#/components/schemas/TDS20PhoneNumber'
-        mobile_phone_number:
-          $ref: '#/components/schemas/TDS20PhoneNumber'
-        work_phone_number:
-          $ref: '#/components/schemas/TDS20PhoneNumber'
-        cardholder_account_info:
-          $ref: '#/components/schemas/TDS20CardHolderAccountInfo'
-        cardholder_email:
-          type: string
-        addresses_match:
-          type: string
-          enum:
-          - MATCHES
-          - DOES_NOT_MATCH
     TDS20CardHolderAccountInfo:
       type: object
       properties:
@@ -299,30 +156,74 @@ components:
           enum:
           - OBSERVED
           - NOT_OBSERVED
-    TDS20Data:
+    IFrameInitializeRequest:
+      required:
+      - amount_total
       type: object
       properties:
-        customer_data:
-          $ref: '#/components/schemas/TDS20CustomerData'
-        device_information:
-          $ref: '#/components/schemas/DeviceInformation'
-        communication_data:
-          $ref: '#/components/schemas/TDS20CommunicationData'
-        requestor_challenge_indicator:
+        tds_20_data:
+          $ref: '#/components/schemas/TDS20Data'
+        amount_total:
+          $ref: '#/components/schemas/AmountCurrency'
+        processing_options:
+          type: array
+          description: Defines an additional processing option for iFrame interaction.
+          example:
+          - MOTO
+          items:
+            type: string
+            description: "Additional processing option for an iFrame interaction.\n\n* `MOTO`: A credit card token should be created for use in a MOTO payment transaction. \n          This skips the 3D-Secure process."
+            example: MOTO
+            enum:
+            - MOTO
+      description: Request data to initialize an iFrame interaction.
+    TDS20TransactionAttributes:
+      type: object
+      properties:
+        purchase_instalment_data:
+          maximum: 999
+          minimum: 2
+          type: integer
+          description: Maximum number of authorizations permitted for instalment payments, must be > 1.
+          format: int32
+        recurring_expiry:
           type: string
+          description: Date after which no further authorizations shall be carried out.
+          format: date
+        recurring_frequency:
+          maximum: 9999
+          minimum: 1
+          type: integer
+          description: Minimum number of days between authorizations.
+          format: int32
+        transaction_type:
+          type: string
+          description: Type of 3-D Secure 2.0 payment.
           enum:
-          - NO_PREFERENCE
-          - NO_CHALLENGE_REQUESTED
-          - CHALLENGE_REQUESTED_3DS_REQUESTOR_PREFERENCE
-          - CHALLENGE_REQUESTED_MANDATE
-          - NO_CHALLENGE_REQUESTED_RISK_ANALYSIS_ALREADY_PERFORMED
-          - NO_CHALLENGE_REQUESTED_DATA_SHARE_ONLY
-          - NO_CHALLENGE_REQUESTED_STRONGER_CONSUMER_AUTHENTICATION_ALREADY_PERFORMED
-          - NO_CHALLENGE_REQUESTED_UTILISE_WHITELIST_EXEMPTION_IF_NO_CHALLENGE_REQUIRED
-          - CHALLENGE_REQUESTED_WHITELIST_PROMPT_REQUESTED_IF_CHALLENGE_REQUIRED
-        transaction_attributes:
-          $ref: '#/components/schemas/TDS20TransactionAttributes'
-      description: 3-D Secure data. Activates 3-D Secure processing if values are set.
+          - PURCHASE
+          - CHECK_ACCEPTANCE
+          - ACCOUNT_FUNDING
+          - QUASI_CASH
+          - PREPAID_ACTIVATION
+    AmountCurrency:
+      required:
+      - amount
+      - currency
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: Minor currency value of an amount of money.
+          format: int64
+          example: 200
+        currency:
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
+          type: string
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+      description: An amount and a currency.
     IFrameInitializeResponse:
       required:
       - message
@@ -352,44 +253,21 @@ components:
           description: The iFrame client configuration.
           example: eyJob3N0IjoiaHR0cDovL2hvc3Q6ODA4MCIsIm9wdGlvbnMiLi4u
       description: Contains data to initialize an iFrame interaction with JavaScript.
-    TDS20TransactionAttributes:
+    ErrorModel:
+      required:
+      - message
+      - rc
       type: object
       properties:
-        purchase_instalment_data:
-          maximum: 999
-          minimum: 2
-          type: integer
-          description: Maximum number of authorizations permitted for instalment payments, must be > 1.
-          format: int32
-        recurring_expiry:
+        rc:
           type: string
-          description: Date after which no further authorizations shall be carried out.
-          format: date
-        recurring_frequency:
-          maximum: 9999
-          minimum: 1
-          type: integer
-          description: Minimum number of days between authorizations.
-          format: int32
-        transaction_type:
+          description: Four digit response code.
+          example: '4001'
+        message:
           type: string
-          description: Type of 3-D Secure 2.0 payment.
-          enum:
-          - PURCHASE
-          - CHECK_ACCEPTANCE
-          - ACCOUNT_FUNDING
-          - QUASI_CASH
-          - PREPAID_ACTIVATION
-    TDS20PhoneNumber:
-      type: object
-      properties:
-        country:
-          type: string
-          description: The country code of the phone number.
-        regional:
-          type: string
-          description: The regional part of the phone number.
-      description: Phone number with country code.
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
     TDS20Address:
       required:
       - city
@@ -430,40 +308,162 @@ components:
           type: string
           description: An additional second line.
       description: Address data for 3DS 2.0 transactions.
-    ErrorModel:
-      required:
-      - message
-      - rc
+    DeviceInformation:
       type: object
       properties:
-        rc:
+        cookies_accepted:
+          type: boolean
+          description: Whether or not the browser accepts cookies.
+          example: true
+        http_accept_browser_value:
+          maxLength: 2048
+          minLength: 0
           type: string
-          description: Four digit response code.
-          example: '4001'
-        message:
+          description: 'Value of the ''Accept'' header sent by the customer''s web browser. Note: If the customer''s browser provides a value, you must include it with your request.'
+          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+        http_accept_content:
+          maxLength: 2048
+          minLength: 0
           type: string
-          description: Describes the error.
-          example: unexpected error
-      description: Includes data returned in case of an error.
-    AmountCurrency:
-      required:
-      - amount
-      - currency
-      type: object
-      properties:
-        amount:
+          description: The exact content of the HTTP accept header.
+          example: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+        color_depth:
+          type: string
+          description: "The bit depth of the color palette for displaying images, in bits per pixel. See https://en.wikipedia.org/wiki/Color_depth. Possible values:\n\n* `B1`\n* `B4`\n* `B8`\n* `B15`\n* `B16`\n* `B24`\n* `B32`\n* `B48`\n\n    "
+          example: B24
+          enum:
+          - B1
+          - B4
+          - B8
+          - B15
+          - B16
+          - B24
+          - B32
+          - B48
+        http_browser_email:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Email address set in the customer's browser. May differ from customer's actual email.
+          example: mustermann@example.com
+        http_browser_java_enabled:
+          type: boolean
+          description: Is the browser able to execute Java. Value is taken from the navigator.javaEnabled property.
+          example: false
+        http_browser_java_script_enabled:
+          type: boolean
+          description: 'Is the browser able to execute JavaScript. Background: Merchants may want to fingerprint a cardholder''s browser.'
+          example: false
+        http_browser_language:
+          maxLength: 8
+          minLength: 0
+          type: string
+          description: Browser language as defined in IETF BCP47. See https://en.wikipedia.org/wiki/IETF_language_tag.
+          example: en-US
+        http_browser_screen_height:
+          minimum: 0
           type: integer
-          description: Minor currency value of an amount of money.
-          format: int64
-          example: 200
-        currency:
-          maxLength: 3
-          minLength: 3
-          pattern: '[A-Z]{3}'
+          description: Total height of the client's screen in pixels.
+          format: int32
+          example: 864
+        http_browser_screen_width:
+          minimum: 0
+          type: integer
+          description: Total width of the client's screen in pixels.
+          format: int32
+          example: 1536
+        http_browser_time_difference:
+          maximum: 1440
+          minimum: -1440
+          type: integer
+          description: Time difference between UTC time and the client's browser's local time in minutes.
+          format: int32
+          example: 300
+        ip_address:
+          maxLength: 45
+          minLength: 0
+          pattern: ((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))
           type: string
-          description: ISO 4217 currency code, three uppercase letters.
-          example: EUR
-      description: An amount and a currency.
+          description: IP address of the client. Both IPv4 and IPv6 are supported.
+          example: 192.168.0.1
+        user_agent:
+          maxLength: 40
+          minLength: 0
+          type: string
+          description: Client's browser as identified by the HTTP header data.
+          example: Mozilla
+        user_agent_browser_value:
+          maxLength: 255
+          minLength: 0
+          type: string
+          description: Value of the User-Agent header sent by the client's browser.
+          example: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
+      description: Technical details of a client.
+    TDS20CustomerData:
+      type: object
+      properties:
+        billing_address:
+          $ref: '#/components/schemas/TDS20Address'
+        shipping_address:
+          $ref: '#/components/schemas/TDS20Address'
+        home_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        mobile_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        work_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        cardholder_account_info:
+          $ref: '#/components/schemas/TDS20CardHolderAccountInfo'
+        cardholder_email:
+          type: string
+        addresses_match:
+          type: string
+          enum:
+          - MATCHES
+          - DOES_NOT_MATCH
+    TDS20Data:
+      type: object
+      properties:
+        customer_data:
+          $ref: '#/components/schemas/TDS20CustomerData'
+        device_information:
+          $ref: '#/components/schemas/DeviceInformation'
+        communication_data:
+          $ref: '#/components/schemas/TDS20CommunicationData'
+        requestor_challenge_indicator:
+          type: string
+          enum:
+          - NO_PREFERENCE
+          - NO_CHALLENGE_REQUESTED
+          - CHALLENGE_REQUESTED_3DS_REQUESTOR_PREFERENCE
+          - CHALLENGE_REQUESTED_MANDATE
+          - NO_CHALLENGE_REQUESTED_RISK_ANALYSIS_ALREADY_PERFORMED
+          - NO_CHALLENGE_REQUESTED_DATA_SHARE_ONLY
+          - NO_CHALLENGE_REQUESTED_STRONGER_CONSUMER_AUTHENTICATION_ALREADY_PERFORMED
+          - NO_CHALLENGE_REQUESTED_UTILISE_WHITELIST_EXEMPTION_IF_NO_CHALLENGE_REQUIRED
+          - CHALLENGE_REQUESTED_WHITELIST_PROMPT_REQUESTED_IF_CHALLENGE_REQUIRED
+        transaction_attributes:
+          $ref: '#/components/schemas/TDS20TransactionAttributes'
+      description: 3-D Secure data. Activates 3-D Secure processing if values are set.
+    TDS20PhoneNumber:
+      type: object
+      properties:
+        country:
+          type: string
+          description: The country code of the phone number.
+        regional:
+          type: string
+          description: The regional part of the phone number.
+      description: Phone number with country code.
+    TDS20CommunicationData:
+      type: object
+      properties:
+        method_notification_url:
+          type: string
+          description: The URL to send the method notification to.
+        cres_notification_url:
+          type: string
+          description: The URL to send the CRes to.
   securitySchemes:
     bearerAuth:
       type: http

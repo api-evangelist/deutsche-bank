@@ -158,14 +158,6 @@ paths:
         - create_processing_orders
 components:
   schemas:
-    UploadDocumentResponse:
-      required:
-      - documentReferenceId
-      type: object
-      properties:
-        documentReferenceId:
-          type: string
-          description: ID referencing the uploaded document, to be used in ???/orders request.
     ErrorResponse:
       required:
       - code
@@ -182,6 +174,14 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    UploadDocumentResponse:
+      required:
+      - documentReferenceId
+      type: object
+      properties:
+        documentReferenceId:
+          type: string
+          description: ID referencing the uploaded document, to be used in ???/orders request.
     ProcessingOrderEntryResponse:
       required:
       - createdResource

@@ -143,31 +143,6 @@ paths:
         - rent_analysis
 components:
   schemas:
-    RentResponse:
-      type: object
-      properties:
-        rentResponses:
-          type: array
-          items:
-            $ref: '#/components/schemas/AnalysedTransaction'
-        message:
-          $ref: '#/components/schemas/Message'
-    Message:
-      required:
-      - code
-      - text
-      type: object
-      properties:
-        code:
-          type: string
-          description: The response code
-        text:
-          type: string
-          description: The reason message text
-        category:
-          type: string
-          description: Reason category
-      description: Backend response in case of certificate can't be determined
     AnalysedTransaction:
       required:
       - amount
@@ -195,19 +170,13 @@ components:
           type: string
           description: Name of the counter party.
       description: Backend response containing a list of 20 transactions, each represents a rent/income payment.
-    IBAN:
-      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
-      type: string
-      description: The IBAN of this account.
-    IncomeResponse:
+    RentResponse:
       type: object
       properties:
-        lowerLimit:
-          type: number
-          description: Lower limit of the average income
-        upperLimit:
-          type: number
-          description: Upper limit of the average income
+        rentResponses:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalysedTransaction'
         message:
           $ref: '#/components/schemas/Message'
     ErrorResponse:
@@ -226,6 +195,37 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    IncomeResponse:
+      type: object
+      properties:
+        lowerLimit:
+          type: number
+          description: Lower limit of the average income
+        upperLimit:
+          type: number
+          description: Upper limit of the average income
+        message:
+          $ref: '#/components/schemas/Message'
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
+    Message:
+      required:
+      - code
+      - text
+      type: object
+      properties:
+        code:
+          type: string
+          description: The response code
+        text:
+          type: string
+          description: The reason message text
+        category:
+          type: string
+          description: Reason category
+      description: Backend response in case of certificate can't be determined
   securitySchemes:
     api_auth_code:
       type: oauth2

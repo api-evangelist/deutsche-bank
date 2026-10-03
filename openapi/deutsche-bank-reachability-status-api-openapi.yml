@@ -59,14 +59,6 @@ paths:
         - instant_sepa_credit_transfers
 components:
   schemas:
-    ReachabilityResponse:
-      required:
-      - isInstantPaymentReachable
-      type: object
-      properties:
-        isInstantPaymentReachable:
-          type: boolean
-          description: IBAN is reachable for SEPA Instant credit transfers
     ErrorResponse:
       required:
       - code
@@ -83,6 +75,14 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    ReachabilityResponse:
+      required:
+      - isInstantPaymentReachable
+      type: object
+      properties:
+        isInstantPaymentReachable:
+          type: boolean
+          description: IBAN is reachable for SEPA Instant credit transfers
   securitySchemes:
     api_auth_code:
       type: oauth2

@@ -119,6 +119,10 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    AuthId:
+      type: string
+      description: Authentication Id used for update SCA status SEPA payment; it will be valid for 5 minutes.
+      example: 232ed5b7-fc70-4c67-98bb-bf95b3300001
     PaymentId:
       type: string
       description: Resource identification of the generated paymentinitiation resource ('Transaction-ID' from the header which is populated with the Intra Bank ID); should be available at least when status is PDNG or ACCP.
@@ -163,10 +167,6 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
-    AuthId:
-      type: string
-      description: Authentication Id used for update SCA status SEPA payment; it will be valid for 5 minutes.
-      example: 232ed5b7-fc70-4c67-98bb-bf95b3300001
   securitySchemes:
     api_auth_code:
       type: oauth2

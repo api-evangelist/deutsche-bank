@@ -585,6 +585,48 @@ paths:
       x-codegen-request-body-name: activation
 components:
   schemas:
+    SubscriptionPatch:
+      title: SubscriptionPatch
+      required:
+      - subscriptionDetails
+      type: object
+      properties:
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
+    PagedResultSubscription:
+      title: PagedResultSubscription
+      required:
+      - items
+      - totalItems
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+        totalItems:
+          minimum: 0
+          type: integer
+          description: Total number of items found for your request parameters over all pages of the pagination.
+          format: int32
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+          format: int32
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
     SubscriptionDetails:
       title: SubscriptionDetails
       required:
@@ -609,45 +651,6 @@ components:
           - one-time
           - recurring
       description: Subscription details
-    SubscriptionFilterCriteria:
-      title: SubscriptionFilterCriteria
-      required:
-      - iban
-      type: object
-      properties:
-        iban:
-          type: string
-          description: IBAN of the account to subscribe to.
-        incoming:
-          type: boolean
-          description: true, if events shall be filtered for incoming transactions, false if not.
-        maxAmount:
-          type: number
-          description: events will be filtered for a transactions amount, absolute values only.
-        minAmount:
-          type: number
-          description: events will be filtered for a transaction amount, absolute values only.
-        outgoing:
-          type: boolean
-          description: true, if events shall be filtered for outgoing transactions, false if not.
-      description: Filter criteria
-    Subscription:
-      title: Subscription
-      type: object
-      properties:
-        filterCriteria:
-          $ref: '#/components/schemas/SubscriptionFilterCriteria'
-        id:
-          type: string
-          description: ID of the resource
-        subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionDetails'
-    ActivationDTO:
-      title: ActivationDTO
-      type: object
-      properties:
-        activationCode:
-          type: string
     SubscriptionPost:
       title: SubscriptionPost
       type: object
@@ -656,17 +659,12 @@ components:
           $ref: '#/components/schemas/SubscriptionFilterCriteria'
         subscriptionDetails:
           $ref: '#/components/schemas/SubscriptionPostDetails'
-    SubscriptionPatchSubscriptionDetails:
-      title: SubscriptionPatchSubscriptionDetails
-      required:
-      - expirationDate
+    ActivationDTO:
+      title: ActivationDTO
       type: object
       properties:
-        expirationDate:
+        activationCode:
           type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-      description: Subscription details
     SubscriptionPostDetails:
       title: SubscriptionPostDetails
       required:
@@ -689,48 +687,50 @@ components:
           - one-time
           - recurring
       description: Subscription details
-    SubscriptionPatch:
-      title: SubscriptionPatch
-      required:
-      - subscriptionDetails
+    Subscription:
+      title: Subscription
       type: object
       properties:
+        filterCriteria:
+          $ref: '#/components/schemas/SubscriptionFilterCriteria'
+        id:
+          type: string
+          description: ID of the resource
         subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
-    ErrorResponse:
-      title: ErrorResponse
+          $ref: '#/components/schemas/SubscriptionDetails'
+    SubscriptionFilterCriteria:
+      title: SubscriptionFilterCriteria
       required:
-      - code
-      - message
+      - iban
       type: object
       properties:
-        code:
-          type: integer
-          description: The error code
-          format: int32
-        message:
+        iban:
           type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    PagedResultSubscription:
-      title: PagedResultSubscription
+          description: IBAN of the account to subscribe to.
+        incoming:
+          type: boolean
+          description: true, if events shall be filtered for incoming transactions, false if not.
+        maxAmount:
+          type: number
+          description: events will be filtered for a transactions amount, absolute values only.
+        minAmount:
+          type: number
+          description: events will be filtered for a transaction amount, absolute values only.
+        outgoing:
+          type: boolean
+          description: true, if events shall be filtered for outgoing transactions, false if not.
+      description: Filter criteria
+    SubscriptionPatchSubscriptionDetails:
+      title: SubscriptionPatchSubscriptionDetails
       required:
-      - items
-      - totalItems
+      - expirationDate
       type: object
       properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscription'
-        totalItems:
-          minimum: 0
-          type: integer
-          description: Total number of items found for your request parameters over all pages of the pagination.
-          format: int32
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+      description: Subscription details
   securitySchemes:
     api_auth_code:
       type: oauth2

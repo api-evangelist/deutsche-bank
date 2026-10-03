@@ -330,6 +330,15 @@ components:
           description: Value date of the transaction delivered after execution or fixed price orders. Date in ISO 8601 format YYYY-MM-DD
           format: date
       description: The security order status
+    OrderCancelRequest:
+      required:
+      - orderId
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: The ID of the order
+      description: Order cancel request
     SecurityOrderMessage:
       type: object
       properties:
@@ -349,30 +358,6 @@ components:
           - INFO
           - WARN
           - ERROR
-    OrderCancelResponse:
-      required:
-      - orderStatus
-      type: object
-      properties:
-        orderStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/SecurityOrderStatus'
-      description: A summary of the order for the order cancellation execution
-    CurrencyCode:
-      pattern: '[A-Z]{3}'
-      type: string
-      description: ISO 4217 Alpha 3 currency code.
-      example: EUR
-    OrderCancelRequest:
-      required:
-      - orderId
-      type: object
-      properties:
-        orderId:
-          type: string
-          description: The ID of the order
-      description: Order cancel request
     ErrorResponse:
       required:
       - code
@@ -389,6 +374,21 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    OrderCancelResponse:
+      required:
+      - orderStatus
+      type: object
+      properties:
+        orderStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityOrderStatus'
+      description: A summary of the order for the order cancellation execution
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
   securitySchemes:
     api_auth_code:
       type: oauth2

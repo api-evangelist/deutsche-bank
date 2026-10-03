@@ -144,6 +144,37 @@ paths:
         - open_esp_securities_account
 components:
   schemas:
+    ESPSecuritiesAccountOpeningResponse:
+      required:
+      - recordId
+      - redirectionUrl
+      - vviList
+      type: object
+      properties:
+        redirectionUrl:
+          type: string
+          description: URL to LaaS
+        recordId:
+          type: string
+          description: ID of the underlying case. Can be used in the status call to get further information after fulfillment
+        vviList:
+          type: array
+          description: List of vviItems, which contain name and link to the vvi documents
+          items:
+            $ref: '#/components/schemas/VviItem'
+      description: Employee Share Plan Securities Account Opening Response
+    VviItem:
+      required:
+      - name
+      - url
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the vvi item
+        url:
+          type: string
+          description: Url to the vvi item
     ProcessData:
       required:
       - clients
@@ -155,19 +186,6 @@ components:
           items:
             $ref: '#/components/schemas/Client'
       description: Request information for opening the ESP securities account
-    OptIns:
-      required:
-      - allowEmail
-      - allowPhone
-      type: object
-      properties:
-        allowPhone:
-          type: boolean
-          description: Whether the customer can be contacted by phone
-        allowEmail:
-          type: boolean
-          description: Whether the customer can be contacted by email
-      description: Permissions to contact the customer
     NaturalPerson:
       required:
       - dateOfBirth
@@ -235,45 +253,42 @@ components:
           type: string
           description: Salutation of the customer
       description: Personal information of the customer
-    VviItem:
+    Client:
       required:
-      - name
-      - url
+      - address
+      - affiliateData
+      - contactData
+      - naturalPerson
+      - optIns
+      - taxInformation
       type: object
       properties:
-        name:
-          type: string
-          description: Name of the vvi item
-        url:
-          type: string
-          description: Url to the vvi item
-    Address:
+        taxInformation:
+          $ref: '#/components/schemas/TaxInformation'
+        address:
+          $ref: '#/components/schemas/Address'
+        naturalPerson:
+          $ref: '#/components/schemas/NaturalPerson'
+        contactData:
+          $ref: '#/components/schemas/ContactData'
+        affiliateData:
+          $ref: '#/components/schemas/AffiliateData'
+        optIns:
+          $ref: '#/components/schemas/OptIns'
+      description: Client data for opening the ESP securities account
+    ContactData:
       required:
-      - city
-      - country
-      - houseNumber
-      - street
-      - zipCode
+      - email
+      - phoneNumber
       type: object
       properties:
-        city:
+        email:
+          pattern: ([^@\s]+@[^@]+\.[^@\s\.]{2,})
           type: string
-          description: City
-        country:
-          maxLength: 2
-          minLength: 2
-          type: string
-          description: ISO 3166-1 alpha-2 country code
-        street:
-          type: string
-          description: Street
-        houseNumber:
-          type: string
-          description: The number of the house
-        zipCode:
-          type: string
-          description: Zip Code
-      description: Address information of the customer
+          description: Email address
+        phoneNumber:
+          $ref: '#/components/schemas/PhoneNumber'
+      description: Contact data of the customer
     AffiliateData:
       required:
       - employeeId
@@ -314,6 +329,22 @@ components:
         branchNumber:
           type: string
           description: (Optional) branch number, only present if product was fully automatically opened
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
     PhoneNumber:
       required:
       - areaCode
@@ -331,6 +362,44 @@ components:
           type: string
           description: Phone number
       description: Phone number information
+    Address:
+      required:
+      - city
+      - country
+      - houseNumber
+      - street
+      - zipCode
+      type: object
+      properties:
+        city:
+          type: string
+          description: City
+        country:
+          maxLength: 2
+          minLength: 2
+          type: string
+          description: ISO 3166-1 alpha-2 country code
+        street:
+          type: string
+          description: Street
+        houseNumber:
+          type: string
+          description: The number of the house
+        zipCode:
+          type: string
+          description: Zip Code
+      description: Address information of the customer
+    ESPSecuritiesAccountOpeningRequest:
+      required:
+      - processData
+      - returnUrl
+      type: object
+      properties:
+        returnUrl:
+          type: string
+          description: Frontend to redirect to after the product was opened
+        processData:
+          $ref: '#/components/schemas/ProcessData'
     TaxInformation:
       required:
       - hasUSGreencard
@@ -388,88 +457,19 @@ components:
           type: boolean
           description: Does the customer have US greencard?
       description: Description of the customer's tax situation
-    ErrorResponse:
+    OptIns:
       required:
-      - code
-      - message
+      - allowEmail
+      - allowPhone
       type: object
       properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    ESPSecuritiesAccountOpeningResponse:
-      required:
-      - recordId
-      - redirectionUrl
-      - vviList
-      type: object
-      properties:
-        redirectionUrl:
-          type: string
-          description: URL to LaaS
-        recordId:
-          type: string
-          description: ID of the underlying case. Can be used in the status call to get further information after fulfillment
-        vviList:
-          type: array
-          description: List of vviItems, which contain name and link to the vvi documents
-          items:
-            $ref: '#/components/schemas/VviItem'
-      description: Employee Share Plan Securities Account Opening Response
-    Client:
-      required:
-      - address
-      - affiliateData
-      - contactData
-      - naturalPerson
-      - optIns
-      - taxInformation
-      type: object
-      properties:
-        taxInformation:
-          $ref: '#/components/schemas/TaxInformation'
-        address:
-          $ref: '#/components/schemas/Address'
-        naturalPerson:
-          $ref: '#/components/schemas/NaturalPerson'
-        contactData:
-          $ref: '#/components/schemas/ContactData'
-        affiliateData:
-          $ref: '#/components/schemas/AffiliateData'
-        optIns:
-          $ref: '#/components/schemas/OptIns'
-      description: Client data for opening the ESP securities account
-    ContactData:
-      required:
-      - email
-      - phoneNumber
-      type: object
-      properties:
-        email:
-          pattern: ([^@\s]+@[^@]+\.[^@\s\.]{2,})
-          type: string
-          description: Email address
-        phoneNumber:
-          $ref: '#/components/schemas/PhoneNumber'
-      description: Contact data of the customer
-    ESPSecuritiesAccountOpeningRequest:
-      required:
-      - processData
-      - returnUrl
-      type: object
-      properties:
-        returnUrl:
-          type: string
-          description: Frontend to redirect to after the product was opened
-        processData:
-          $ref: '#/components/schemas/ProcessData'
+        allowPhone:
+          type: boolean
+          description: Whether the customer can be contacted by phone
+        allowEmail:
+          type: boolean
+          description: Whether the customer can be contacted by email
+      description: Permissions to contact the customer
   examples:
     ESPSecuritiesAccountOpeningMaximumRequest:
       summary: Maximal example of an ESP securities account opening request

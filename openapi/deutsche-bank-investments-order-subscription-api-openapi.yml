@@ -611,21 +611,6 @@ components:
           description: ID of the resource
         subscriptionDetails:
           $ref: '#/components/schemas/SubscriptionDetailsRes'
-    ActivationDTO:
-      title: ActivationDTO
-      type: object
-      properties:
-        activationCode:
-          type: string
-    InvestmentSubscriptionFilterCriteria:
-      title: InvestmentSubscriptionFilterCriteria
-      type: object
-      properties:
-        securityAccountId:
-          pattern: '[0-9]{12}'
-          type: string
-          description: Securities Account ID
-      description: Investment order filter criteria
     InvestmentSubscriptionPost:
       title: InvestmentSubscriptionPost
       required:
@@ -637,63 +622,6 @@ components:
           $ref: '#/components/schemas/InvestmentSubscriptionFilterCriteria'
         subscriptionDetails:
           $ref: '#/components/schemas/SubscriptionDetailsReq'
-    SubscriptionPatchSubscriptionDetails:
-      title: SubscriptionPatchSubscriptionDetails
-      required:
-      - expirationDate
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-      description: Subscription details
-    SubscriptionDetailsReq:
-      title: SubscriptionDetailsReq
-      required:
-      - notificationURL
-      - subscriptionType
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-        notificationURL:
-          type: string
-          description: The URL the notification will be passed towards.
-          format: url
-        subscriptionType:
-          type: string
-          description: Type of subscription
-          enum:
-          - one-time
-          - recurring
-      description: Subscription details
-    SubscriptionDetailsRes:
-      title: SubscriptionDetailsRes
-      required:
-      - notificationURL
-      - subscriptionType
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-        isActive:
-          type: boolean
-        notificationURL:
-          type: string
-          description: The URL the notification will be passed towards.
-          format: url
-        subscriptionType:
-          type: string
-          description: Type of subscription
-          enum:
-          - one-time
-          - recurring
-      description: Subscription details
     SubscriptionPatch:
       title: SubscriptionPatch
       required:
@@ -720,6 +648,78 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    SubscriptionDetailsRes:
+      title: SubscriptionDetailsRes
+      required:
+      - notificationURL
+      - subscriptionType
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+        isActive:
+          type: boolean
+        notificationURL:
+          type: string
+          description: The URL the notification will be passed towards.
+          format: url
+        subscriptionType:
+          type: string
+          description: Type of subscription
+          enum:
+          - one-time
+          - recurring
+      description: Subscription details
+    SubscriptionDetailsReq:
+      title: SubscriptionDetailsReq
+      required:
+      - notificationURL
+      - subscriptionType
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+        notificationURL:
+          type: string
+          description: The URL the notification will be passed towards.
+          format: url
+        subscriptionType:
+          type: string
+          description: Type of subscription
+          enum:
+          - one-time
+          - recurring
+      description: Subscription details
+    ActivationDTO:
+      title: ActivationDTO
+      type: object
+      properties:
+        activationCode:
+          type: string
+    InvestmentSubscriptionFilterCriteria:
+      title: InvestmentSubscriptionFilterCriteria
+      type: object
+      properties:
+        securityAccountId:
+          pattern: '[0-9]{12}'
+          type: string
+          description: Securities Account ID
+      description: Investment order filter criteria
+    SubscriptionPatchSubscriptionDetails:
+      title: SubscriptionPatchSubscriptionDetails
+      required:
+      - expirationDate
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+      description: Subscription details
   securitySchemes:
     api_auth_code:
       type: oauth2

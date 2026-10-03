@@ -309,13 +309,6 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
-    GetStatusPaymentResponse:
-      required:
-      - transactionStatus
-      type: object
-      properties:
-        transactionStatus:
-          $ref: '#/components/schemas/TransactionStatus'
     ErrorResponse:
       required:
       - code
@@ -332,6 +325,13 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    GetStatusPaymentResponse:
+      required:
+      - transactionStatus
+      type: object
+      properties:
+        transactionStatus:
+          $ref: '#/components/schemas/TransactionStatus'
     TransactionStatus:
       type: string
       description: 'Transaction Status: Specifies the status of a transaction in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. ACSP - AcceptedSettlementInProcess. The payment has been accepted for execution and settlement is in progress. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution.'

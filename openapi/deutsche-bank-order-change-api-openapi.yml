@@ -459,6 +459,40 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    OrderModificationResponse:
+      required:
+      - order
+      type: object
+      properties:
+        order:
+          $ref: '#/components/schemas/SecurityOrder'
+      description: A summary of the order modification
+    SecurityOrder:
+      type: object
+      properties:
+        orderIds:
+          $ref: '#/components/schemas/SecurityOrderIds'
+        orderParameter:
+          $ref: '#/components/schemas/SecurityOrderParameter'
+        orderStatus:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityOrderStatus'
+      description: The security order including parameter, ids and status
+    OrderLimit:
+      type: object
+      properties:
+        limitPrice:
+          type: number
+          description: The lowest price (for a buy) or highest price (for a sell) in trading currency at which an order execution should be triggered
+          format: double
+          exclusiveMinimum: 0
+        stopPrice:
+          type: number
+          description: 'Stop-Buy price (for a buy), Stop-Loss price (for a sell) in trading currency '
+          format: double
+          exclusiveMinimum: 0
+      description: 'You can protect your order by setting a limit or stop price. Default: At best'
     SecurityOrderStatus:
       required:
       - status
@@ -524,52 +558,53 @@ components:
           description: Value date of the transaction delivered after execution or fixed price orders. Date in ISO 8601 format YYYY-MM-DD
           format: date
       description: The security order status
-    SecurityOrderMessage:
-      type: object
-      properties:
-        text_de:
-          type: string
-          description: status message in German
-        text_en:
-          type: string
-          description: status message in English
-        code:
-          type: string
-          description: The response code
-        category:
-          type: string
-          description: Reason category
-          enum:
-          - INFO
-          - WARN
-          - ERROR
-    Amount:
-      required:
-      - amount
-      - currency
-      type: object
-      properties:
-        amount:
-          type: number
-          format: double
-          example: 58.13
-        currency:
-          $ref: '#/components/schemas/CurrencyCode'
-    OrderModificationRequest:
-      type: object
-      properties:
-        expiryDate:
-          type: string
-          description: The expiry date defines how long the order will be valid and get executed in ISO 8601 format YYYY-MM-DD
-          format: date
-        orderLimit:
-          $ref: '#/components/schemas/OrderLimit'
-      description: Order modification request
-    CurrencyCode:
-      pattern: '[A-Z]{3}'
+    SecurityAccountId:
+      pattern: '[0-9]{12}'
       type: string
-      description: ISO 4217 Alpha 3 currency code.
-      example: EUR
+      description: Security Account ID
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    SecurityOrderIds:
+      type: object
+      properties:
+        externalOrderReference:
+          maxLength: 16
+          type: string
+          description: External order reference
+        orderId:
+          type: string
+          description: Unique system order identifier
+        bulkOrderId:
+          type: string
+          description: Bulk order identifier
+      description: The security order identifiers
+    ISIN:
+      pattern: '[A-Z]{2}[0-9A-Z]{9}[0-9]'
+      type: string
+      description: International Securities Identification Number
+      example: DE0007100000
+    MarketPlaceId:
+      required:
+      - xd020a
+      type: object
+      properties:
+        xd020a:
+          $ref: '#/components/schemas/Xd020a'
+      description: You can leave the execution of the order to Deutsche Bank - in accordance with its execution principles (Best Execution)- or choose between various stock exchanges and fund companies. Depending on your selection, you can make further settings. Please note that the trading partners (exchange or fund company) charge different fees for trading.
     SecurityOrderParameter:
       required:
       - activityType
@@ -610,37 +645,16 @@ components:
         tradeCurrency:
           $ref: '#/components/schemas/CurrencyCode'
       description: All parameters relevant for a security order
-    CashAccount:
-      required:
-      - currency
-      - id
+    OrderModificationRequest:
       type: object
       properties:
-        currency:
-          $ref: '#/components/schemas/CurrencyCode'
-        id:
-          pattern: '[0-9]{12}'
+        expiryDate:
           type: string
-      description: The account used for settling an order transaction execution. <br/>The default account will be used if not specified in the order placement request
-    OrderLimit:
-      type: object
-      properties:
-        limitPrice:
-          type: number
-          description: The lowest price (for a buy) or highest price (for a sell) in trading currency at which an order execution should be triggered
-          format: double
-          exclusiveMinimum: 0
-        stopPrice:
-          type: number
-          description: 'Stop-Buy price (for a buy), Stop-Loss price (for a sell) in trading currency '
-          format: double
-          exclusiveMinimum: 0
-      description: 'You can protect your order by setting a limit or stop price. Default: At best'
-    ISIN:
-      pattern: '[A-Z]{2}[0-9A-Z]{9}[0-9]'
-      type: string
-      description: International Securities Identification Number
-      example: DE0007100000
+          description: The expiry date defines how long the order will be valid and get executed in ISO 8601 format YYYY-MM-DD
+          format: date
+        orderLimit:
+          $ref: '#/components/schemas/OrderLimit'
+      description: Order modification request
     CostComponent:
       type: object
       properties:
@@ -772,6 +786,95 @@ components:
             $ref: '#/components/schemas/SubCostComponent'
         tradeCurrency:
           $ref: '#/components/schemas/CurrencyCode'
+    OrderModificationPreviewResponse:
+      required:
+      - order
+      type: object
+      properties:
+        estimatedExpense:
+          $ref: '#/components/schemas/EstimatedExpense'
+        order:
+          $ref: '#/components/schemas/SecurityOrder'
+      description: A preview of the order modification and estimated expenses for the order execution
+    SecurityId:
+      type: object
+      properties:
+        isin:
+          $ref: '#/components/schemas/ISIN'
+        wkn:
+          $ref: '#/components/schemas/WKN'
+      description: The related security id
+    Xd020a:
+      pattern: '[A-Z0-9]{3}'
+      type: string
+      description: XD020A value of market place
+    OrderActivityType:
+      type: string
+      description: SELL - an order to sell <br/> BUY - an order to buy
+      enum:
+      - SELL
+      - BUY
+    Amount:
+      required:
+      - amount
+      - currency
+      type: object
+      properties:
+        amount:
+          type: number
+          format: double
+          example: 58.13
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+    SecurityOrderMessage:
+      type: object
+      properties:
+        text_de:
+          type: string
+          description: status message in German
+        text_en:
+          type: string
+          description: status message in English
+        code:
+          type: string
+          description: The response code
+        category:
+          type: string
+          description: Reason category
+          enum:
+          - INFO
+          - WARN
+          - ERROR
+    CashAccount:
+      required:
+      - currency
+      - id
+      type: object
+      properties:
+        currency:
+          $ref: '#/components/schemas/CurrencyCode'
+        id:
+          pattern: '[0-9]{12}'
+          type: string
+      description: The account used for settling an order transaction execution. <br/>The default account will be used if not specified in the order placement request
+    EstimatedExpense:
+      type: object
+      properties:
+        costComponent:
+          type: array
+          description: Cost components raw data
+          items:
+            $ref: '#/components/schemas/CostComponent'
+        reportToken:
+          type: string
+          description: Token to retrieve estimated expense report as pdf via endpoint 'post /estimatedExpenseReport'
+          format: uuid
+          example: ae9c6fb6-f0a1-4aa0-bc76-fe67718aa598
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
     SecurityRate_1:
       required:
       - currency
@@ -795,14 +898,6 @@ components:
           description: The date of the security rate in ISO 8601 format YYYY-MM-DD
           format: date
           example: '1970-10-20'
-    MarketPlaceId:
-      required:
-      - xd020a
-      type: object
-      properties:
-        xd020a:
-          $ref: '#/components/schemas/Xd020a'
-      description: You can leave the execution of the order to Deutsche Bank - in accordance with its execution principles (Best Execution)- or choose between various stock exchanges and fund companies. Depending on your selection, you can make further settings. Please note that the trading partners (exchange or fund company) charge different fees for trading.
     SubCostComponent:
       type: object
       properties:
@@ -842,106 +937,11 @@ components:
           - SPOT_RATE
           - CLOSING_RATE
       description: Order Add-Ons
-    EstimatedExpense:
-      type: object
-      properties:
-        costComponent:
-          type: array
-          description: Cost components raw data
-          items:
-            $ref: '#/components/schemas/CostComponent'
-        reportToken:
-          type: string
-          description: Token to retrieve estimated expense report as pdf via endpoint 'post /estimatedExpenseReport'
-          format: uuid
-          example: ae9c6fb6-f0a1-4aa0-bc76-fe67718aa598
-    OrderActivityType:
-      type: string
-      description: SELL - an order to sell <br/> BUY - an order to buy
-      enum:
-      - SELL
-      - BUY
-    SecurityId:
-      type: object
-      properties:
-        isin:
-          $ref: '#/components/schemas/ISIN'
-        wkn:
-          $ref: '#/components/schemas/WKN'
-      description: The related security id
-    OrderModificationPreviewResponse:
-      required:
-      - order
-      type: object
-      properties:
-        estimatedExpense:
-          $ref: '#/components/schemas/EstimatedExpense'
-        order:
-          $ref: '#/components/schemas/SecurityOrder'
-      description: A preview of the order modification and estimated expenses for the order execution
-    SecurityOrder:
-      type: object
-      properties:
-        orderIds:
-          $ref: '#/components/schemas/SecurityOrderIds'
-        orderParameter:
-          $ref: '#/components/schemas/SecurityOrderParameter'
-        orderStatus:
-          type: array
-          items:
-            $ref: '#/components/schemas/SecurityOrderStatus'
-      description: The security order including parameter, ids and status
-    SecurityOrderIds:
-      type: object
-      properties:
-        externalOrderReference:
-          maxLength: 16
-          type: string
-          description: External order reference
-        orderId:
-          type: string
-          description: Unique system order identifier
-        bulkOrderId:
-          type: string
-          description: Bulk order identifier
-      description: The security order identifiers
     WKN:
       pattern: '[A-Z0-9]{6}'
       type: string
       description: German securities identification code (Wertpapierkennnumer)
       example: '710000'
-    OrderModificationResponse:
-      required:
-      - order
-      type: object
-      properties:
-        order:
-          $ref: '#/components/schemas/SecurityOrder'
-      description: A summary of the order modification
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    Xd020a:
-      pattern: '[A-Z0-9]{3}'
-      type: string
-      description: XD020A value of market place
-    SecurityAccountId:
-      pattern: '[0-9]{12}'
-      type: string
-      description: Security Account ID
   securitySchemes:
     api_auth_code:
       type: oauth2

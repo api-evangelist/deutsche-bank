@@ -165,13 +165,6 @@ components:
       - APPLICATION_FULFILLED
       - POSTIDENT_CHOSEN
       - POSTIDENT_DOCUMENT_GENERATED
-    IBAN:
-      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
-      type: string
-      description: The IBAN of this account.
-    ProductApplicationForm:
-      type: string
-      description: The PDF document for the customer in base64
     AccountOpeningStatusResponse:
       required:
       - e2eProcessId
@@ -208,6 +201,13 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    ProductApplicationForm:
+      type: string
+      description: The PDF document for the customer in base64
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
   securitySchemes:
     api_client_credential:
       type: oauth2

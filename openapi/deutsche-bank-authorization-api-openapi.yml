@@ -130,6 +130,31 @@ paths:
     - url: https://simulator-api.db.com:443/gw/public/oneid/
 components:
   schemas:
+    AccessTokenError:
+      required:
+      - cause
+      type: object
+      properties:
+        description:
+          type: string
+          description: A textual description detailing the cause of the failure.
+        cause:
+          type: string
+          description: '* `grant_type_invalid` - Invalid value in property _grant_type_.
+
+            * `request_invalid` - Invalid request.
+
+            * `scope_invalid` - Invalid value in property _scope_.
+
+            * `unauthorized` - Invalid credentials.
+
+            '
+          enum:
+          - request_invalid
+          - grant_type_invalid
+          - scope_invalid
+          - unauthorized
+      description: The response object that is received after a failed authorization.
     AccessTokenRequest:
       required:
       - client_id
@@ -158,31 +183,6 @@ components:
           - ftx
       description: Perform the request to get an authorization token. Make sure to have URL-encoding applied to the parameter values by your HTTP-client or implementation.
       format: x-www-form-urlencoded
-    AccessTokenError:
-      required:
-      - cause
-      type: object
-      properties:
-        description:
-          type: string
-          description: A textual description detailing the cause of the failure.
-        cause:
-          type: string
-          description: '* `grant_type_invalid` - Invalid value in property _grant_type_.
-
-            * `request_invalid` - Invalid request.
-
-            * `scope_invalid` - Invalid value in property _scope_.
-
-            * `unauthorized` - Invalid credentials.
-
-            '
-          enum:
-          - request_invalid
-          - grant_type_invalid
-          - scope_invalid
-          - unauthorized
-      description: The response object that is received after a failed authorization.
     AccessTokenResponse:
       required:
       - access_token

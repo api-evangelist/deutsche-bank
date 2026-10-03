@@ -72,6 +72,20 @@ paths:
                 $ref: '#/components/schemas/BaseResponse'
 components:
   schemas:
+    BaseResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
     ErrorModel:
       required:
       - message
@@ -87,20 +101,6 @@ components:
           description: Describes the error.
           example: unexpected error
       description: Includes data returned in case of an error.
-    BaseResponse:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
-          type: string
-          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
-          example: '0'
-        message:
-          type: string
-          description: Success or error message, text for the response code.
-          example: Transaction approved.
   securitySchemes:
     bearerAuth:
       type: http

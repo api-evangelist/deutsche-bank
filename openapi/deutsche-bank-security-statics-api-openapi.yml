@@ -219,6 +219,53 @@ paths:
       x-summary-source: derived
 components:
   schemas:
+    SecurityMarketPlaceResponse:
+      type: object
+      properties:
+        marketPlaces:
+          type: array
+          description: List of market places for the given security
+          items:
+            $ref: '#/components/schemas/MarketPlace'
+        message:
+          $ref: '#/components/schemas/Message'
+    Xd020a:
+      pattern: '[A-Z0-9]{3}'
+      type: string
+      description: XD020A value of market place
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    MarketPlace:
+      required:
+      - name
+      - xd020a
+      type: object
+      properties:
+        bestExecution:
+          type: boolean
+          description: Market place in accordance with Deutsche Banks execution principles (Best Execution) for this security
+        name:
+          type: string
+          description: Name of the market place
+        tradeCurrency:
+          $ref: '#/components/schemas/CurrencyCode'
+        xd020a:
+          $ref: '#/components/schemas/Xd020a'
+      description: A summary of the order for the order execution
     Message:
       required:
       - code
@@ -238,58 +285,11 @@ components:
           - INFO
           - WARN
           - ERROR
-    MarketPlace:
-      required:
-      - name
-      - xd020a
-      type: object
-      properties:
-        bestExecution:
-          type: boolean
-          description: Market place in accordance with Deutsche Banks execution principles (Best Execution) for this security
-        name:
-          type: string
-          description: Name of the market place
-        tradeCurrency:
-          $ref: '#/components/schemas/CurrencyCode'
-        xd020a:
-          $ref: '#/components/schemas/Xd020a'
-      description: A summary of the order for the order execution
-    SecurityMarketPlaceResponse:
-      type: object
-      properties:
-        marketPlaces:
-          type: array
-          description: List of market places for the given security
-          items:
-            $ref: '#/components/schemas/MarketPlace'
-        message:
-          $ref: '#/components/schemas/Message'
     CurrencyCode:
       pattern: '[A-Z]{3}'
       type: string
       description: ISO 4217 Alpha 3 currency code.
       example: EUR
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    Xd020a:
-      pattern: '[A-Z0-9]{3}'
-      type: string
-      description: XD020A value of market place
   securitySchemes:
     api_auth_code:
       type: oauth2

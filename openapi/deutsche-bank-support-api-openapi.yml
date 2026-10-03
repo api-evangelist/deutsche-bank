@@ -290,11 +290,6 @@ components:
           items:
             $ref: '#/components/schemas/MarketPlace_1'
       description: A summary of the order for the order cancellation execution
-    CurrencyCode:
-      pattern: '[A-Z]{3}'
-      type: string
-      description: ISO 4217 Alpha 3 currency code.
-      example: EUR
     MarketPlace_1:
       required:
       - numberOfFixings
@@ -327,6 +322,11 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
   securitySchemes:
     api_auth_code:
       type: oauth2
