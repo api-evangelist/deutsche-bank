@@ -227,6 +227,13 @@ components:
           type: string
       additionalProperties: true
   responses:
+    Unauthorized:
+      description: Missing or invalid bearer token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example: {}
     InsufficientAuthenticationState:
       description: Auth level too low (step-up required)
       content:
@@ -236,13 +243,6 @@ components:
           example:
             title: Authentication for current session is insufficient to execute the request
             type: /insufficient-authentication-state
-    Unauthorized:
-      description: Missing or invalid bearer token
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-          example: {}
   securitySchemes:
     bearerAuth:
       type: http

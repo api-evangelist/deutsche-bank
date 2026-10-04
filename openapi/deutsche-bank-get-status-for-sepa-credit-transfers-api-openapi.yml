@@ -309,6 +309,16 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    TransactionStatus:
+      type: string
+      description: 'Transaction Status: Specifies the status of a transaction in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. ACSP - AcceptedSettlementInProcess. The payment has been accepted for execution and settlement is in progress. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution.'
+      example: ACTC
+      enum:
+      - RJCT
+      - RCVD
+      - ACTC
+      - ACSP
+      - CANC
     ErrorResponse:
       required:
       - code
@@ -332,16 +342,6 @@ components:
       properties:
         transactionStatus:
           $ref: '#/components/schemas/TransactionStatus'
-    TransactionStatus:
-      type: string
-      description: 'Transaction Status: Specifies the status of a transaction in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. ACSP - AcceptedSettlementInProcess. The payment has been accepted for execution and settlement is in progress. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution.'
-      example: ACTC
-      enum:
-      - RJCT
-      - RCVD
-      - ACTC
-      - ACSP
-      - CANC
   securitySchemes:
     api_auth_code:
       type: oauth2

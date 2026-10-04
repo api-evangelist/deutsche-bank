@@ -600,13 +600,15 @@ components:
         activeDevicesCount:
           type: integer
           description: Number of active devices for this method type.
-    ChallengeMethodType:
-      type: string
-      description: Challenge method
-      enum:
-      - MTAN
-      - PHOTOTAN
-      - PUSHTAN
+    ChallengeMethodsAndTypes:
+      required:
+      - methods
+      type: object
+      properties:
+        methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChallengeMethodItem'
     ChallengeRequest:
       required:
       - id
@@ -622,21 +624,37 @@ components:
           type: object
           properties: {}
           description: The sub-type of the response challenge. Depending on the value see swagger model ChallengeMethodMTAN or ChallengeMethodPHOTOTAN. This is actually a constrain of the swagger 2.0 spec.
-    ChallengeResult:
+    ChallengeRequestSwitchMethod:
+      required:
+      - method
       type: object
       properties:
-        challengeProofToken:
+        method:
+          $ref: '#/components/schemas/ChallengeMethodType'
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
           type: string
-          description: In case of a one-time/single transaction authorization it is valid once, for the current user, the provided request type and the current access_token only. The returned one-time/single transaction authorization should be treated as random string, with no structure and semantic. In case of a session transaction authorization it is time-based
-        status:
+          description: Description of the belonging error code.
+        messageId:
           type: string
-          description: Specifies the status
-          enum:
-          - PENDING
-          - EXPIRED
-          - REJECTED
-          - VALIDATED
-          - EIDP_ERROR
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    ChallengeResponse:
+      required:
+      - challengeResponse
+      type: object
+      properties:
+        challengeResponse:
+          type: string
+          description: 'The TAN token to the created challenge. '
     ChallengeStart:
       required:
       - method
@@ -671,6 +689,28 @@ components:
           enum:
           - de
           - en
+    ChallengeMethodType:
+      type: string
+      description: Challenge method
+      enum:
+      - MTAN
+      - PHOTOTAN
+      - PUSHTAN
+    ChallengeResult:
+      type: object
+      properties:
+        challengeProofToken:
+          type: string
+          description: In case of a one-time/single transaction authorization it is valid once, for the current user, the provided request type and the current access_token only. The returned one-time/single transaction authorization should be treated as random string, with no structure and semantic. In case of a session transaction authorization it is time-based
+        status:
+          type: string
+          description: Specifies the status
+          enum:
+          - PENDING
+          - EXPIRED
+          - REJECTED
+          - VALIDATED
+          - EIDP_ERROR
     ChallengeMethodItem:
       required:
       - method
@@ -692,46 +732,6 @@ components:
           - UNKNOWN
         metadata:
           $ref: '#/components/schemas/ChallengeMethodMetadata'
-    ChallengeRequestSwitchMethod:
-      required:
-      - method
-      type: object
-      properties:
-        method:
-          $ref: '#/components/schemas/ChallengeMethodType'
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    ChallengeMethodsAndTypes:
-      required:
-      - methods
-      type: object
-      properties:
-        methods:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChallengeMethodItem'
-    ChallengeResponse:
-      required:
-      - challengeResponse
-      type: object
-      properties:
-        challengeResponse:
-          type: string
-          description: 'The TAN token to the created challenge. '
   securitySchemes:
     api_auth_code:
       type: oauth2

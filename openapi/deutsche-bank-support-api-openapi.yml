@@ -275,37 +275,6 @@ components:
           description: Unit/percentage quotation of the security
           format: double
           example: 1.0
-    OrderQuotesResponse:
-      required:
-      - marketPlaceData
-      - securityRates
-      type: object
-      properties:
-        securityRates:
-          type: array
-          items:
-            $ref: '#/components/schemas/SecurityRate'
-        marketPlaceData:
-          type: array
-          items:
-            $ref: '#/components/schemas/MarketPlace_1'
-      description: A summary of the order for the order cancellation execution
-    MarketPlace_1:
-      required:
-      - numberOfFixings
-      - volume
-      type: object
-      properties:
-        volume:
-          type: number
-          description: Traded volume for the security on this market place
-          format: double
-          example: 2515281.0
-        numberOfFixings:
-          type: number
-          description: Number of price fixings for the security on this market place
-          format: double
-          example: 3078.0
     ErrorResponse:
       required:
       - code
@@ -322,11 +291,42 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    OrderQuotesResponse:
+      required:
+      - marketPlaceData
+      - securityRates
+      type: object
+      properties:
+        securityRates:
+          type: array
+          items:
+            $ref: '#/components/schemas/SecurityRate'
+        marketPlaceData:
+          type: array
+          items:
+            $ref: '#/components/schemas/MarketPlace_1'
+      description: A summary of the order for the order cancellation execution
     CurrencyCode:
       pattern: '[A-Z]{3}'
       type: string
       description: ISO 4217 Alpha 3 currency code.
       example: EUR
+    MarketPlace_1:
+      required:
+      - numberOfFixings
+      - volume
+      type: object
+      properties:
+        volume:
+          type: number
+          description: Traded volume for the security on this market place
+          format: double
+          example: 2515281.0
+        numberOfFixings:
+          type: number
+          description: Number of price fixings for the security on this market place
+          format: double
+          example: 3078.0
   securitySchemes:
     api_auth_code:
       type: oauth2

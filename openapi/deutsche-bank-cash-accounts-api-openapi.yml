@@ -227,42 +227,6 @@ paths:
         - read_brand
 components:
   schemas:
-    BrandResponse:
-      required:
-      - brand
-      type: object
-      properties:
-        brand:
-          type: string
-          description: Brand of the cash account
-          enum:
-          - UNDEFINED
-          - DEUTSCHE_BANK
-          - POSTBANK
-          - DSL_BANK
-          - FYRST
-          - NORISBANK
-          - DB_EUROPE
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    IBAN:
-      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
-      type: string
-      description: The IBAN of this account.
     CashAccount:
       required:
       - accountType
@@ -297,6 +261,42 @@ components:
           description: Date when the cash account was closed. Available only if your request contains the request parameter "status" with value "ALL". ISO 8601 format YYYY-MM-DD.
           format: date
       description: A cash account.
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
+    BrandResponse:
+      required:
+      - brand
+      type: object
+      properties:
+        brand:
+          type: string
+          description: Brand of the cash account
+          enum:
+          - UNDEFINED
+          - DEUTSCHE_BANK
+          - POSTBANK
+          - DSL_BANK
+          - FYRST
+          - NORISBANK
+          - DB_EUROPE
     CurrencyCode:
       pattern: '[A-Z]{3}'
       type: string

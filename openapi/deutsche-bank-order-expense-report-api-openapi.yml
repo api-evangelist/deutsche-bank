@@ -234,12 +234,6 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
-    EstimatedExpenseReportResponse:
-      type: object
-      properties:
-        estimatedExpenseReport:
-          type: string
-          description: The estimated expense report as Base64 encoded PDF document.
     EstimatedExpenseReportRequest:
       required:
       - token
@@ -248,6 +242,12 @@ components:
         token:
           type: string
       description: Estimated expense report request token
+    EstimatedExpenseReportResponse:
+      type: object
+      properties:
+        estimatedExpenseReport:
+          type: string
+          description: The estimated expense report as Base64 encoded PDF document.
   securitySchemes:
     api_auth_code:
       type: oauth2

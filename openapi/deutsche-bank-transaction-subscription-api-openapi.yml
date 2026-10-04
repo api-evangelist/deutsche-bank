@@ -585,30 +585,6 @@ paths:
       x-codegen-request-body-name: activation
 components:
   schemas:
-    SubscriptionPatch:
-      title: SubscriptionPatch
-      required:
-      - subscriptionDetails
-      type: object
-      properties:
-        subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
-    PagedResultSubscription:
-      title: PagedResultSubscription
-      required:
-      - items
-      - totalItems
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/Subscription'
-        totalItems:
-          minimum: 0
-          type: integer
-          description: Total number of items found for your request parameters over all pages of the pagination.
-          format: int32
     ErrorResponse:
       title: ErrorResponse
       required:
@@ -651,6 +627,50 @@ components:
           - one-time
           - recurring
       description: Subscription details
+    SubscriptionPatchSubscriptionDetails:
+      title: SubscriptionPatchSubscriptionDetails
+      required:
+      - expirationDate
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+      description: Subscription details
+    SubscriptionFilterCriteria:
+      title: SubscriptionFilterCriteria
+      required:
+      - iban
+      type: object
+      properties:
+        iban:
+          type: string
+          description: IBAN of the account to subscribe to.
+        incoming:
+          type: boolean
+          description: true, if events shall be filtered for incoming transactions, false if not.
+        maxAmount:
+          type: number
+          description: events will be filtered for a transactions amount, absolute values only.
+        minAmount:
+          type: number
+          description: events will be filtered for a transaction amount, absolute values only.
+        outgoing:
+          type: boolean
+          description: true, if events shall be filtered for outgoing transactions, false if not.
+      description: Filter criteria
+    Subscription:
+      title: Subscription
+      type: object
+      properties:
+        filterCriteria:
+          $ref: '#/components/schemas/SubscriptionFilterCriteria'
+        id:
+          type: string
+          description: ID of the resource
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionDetails'
     SubscriptionPost:
       title: SubscriptionPost
       type: object
@@ -659,6 +679,22 @@ components:
           $ref: '#/components/schemas/SubscriptionFilterCriteria'
         subscriptionDetails:
           $ref: '#/components/schemas/SubscriptionPostDetails'
+    PagedResultSubscription:
+      title: PagedResultSubscription
+      required:
+      - items
+      - totalItems
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subscription'
+        totalItems:
+          minimum: 0
+          type: integer
+          description: Total number of items found for your request parameters over all pages of the pagination.
+          format: int32
     ActivationDTO:
       title: ActivationDTO
       type: object
@@ -687,50 +723,14 @@ components:
           - one-time
           - recurring
       description: Subscription details
-    Subscription:
-      title: Subscription
+    SubscriptionPatch:
+      title: SubscriptionPatch
+      required:
+      - subscriptionDetails
       type: object
       properties:
-        filterCriteria:
-          $ref: '#/components/schemas/SubscriptionFilterCriteria'
-        id:
-          type: string
-          description: ID of the resource
         subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionDetails'
-    SubscriptionFilterCriteria:
-      title: SubscriptionFilterCriteria
-      required:
-      - iban
-      type: object
-      properties:
-        iban:
-          type: string
-          description: IBAN of the account to subscribe to.
-        incoming:
-          type: boolean
-          description: true, if events shall be filtered for incoming transactions, false if not.
-        maxAmount:
-          type: number
-          description: events will be filtered for a transactions amount, absolute values only.
-        minAmount:
-          type: number
-          description: events will be filtered for a transaction amount, absolute values only.
-        outgoing:
-          type: boolean
-          description: true, if events shall be filtered for outgoing transactions, false if not.
-      description: Filter criteria
-    SubscriptionPatchSubscriptionDetails:
-      title: SubscriptionPatchSubscriptionDetails
-      required:
-      - expirationDate
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-      description: Subscription details
+          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
   securitySchemes:
     api_auth_code:
       type: oauth2

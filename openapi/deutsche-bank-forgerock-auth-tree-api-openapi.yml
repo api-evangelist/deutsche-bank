@@ -87,18 +87,6 @@ components:
             type: object
             additionalProperties: true
       additionalProperties: true
-    ForgeRockStepRequest:
-      type: object
-      properties:
-        authId:
-          type: string
-        callbacks:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-      additionalProperties: true
-      description: Generic callback submission body for FRAuth.next
     ErrorResponse:
       type: object
       properties:
@@ -122,15 +110,27 @@ components:
           type: string
       additionalProperties: true
       description: Success shape may vary by SDK/AM config
+    ForgeRockStepRequest:
+      type: object
+      properties:
+        authId:
+          type: string
+        callbacks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+      description: Generic callback submission body for FRAuth.next
   responses:
-    ClientError:
-      description: 4xx client error
+    ServerError:
+      description: 5xx server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-    ServerError:
-      description: 5xx server error
+    ClientError:
+      description: 4xx client error
       content:
         application/json:
           schema:

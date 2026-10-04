@@ -158,22 +158,6 @@ paths:
         - create_processing_orders
 components:
   schemas:
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
     UploadDocumentResponse:
       required:
       - documentReferenceId
@@ -191,6 +175,22 @@ components:
           type: string
           description: URI carrying the orderId initially used
           example: http://localhost:8080/processingOrders/v1/da49efa2-478c-4b6b-8fdb-6ae822180bc9
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
   securitySchemes:
     api_client_credential:
       type: oauth2

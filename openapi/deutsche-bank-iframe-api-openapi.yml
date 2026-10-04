@@ -156,27 +156,15 @@ components:
           enum:
           - OBSERVED
           - NOT_OBSERVED
-    IFrameInitializeRequest:
-      required:
-      - amount_total
+    TDS20CommunicationData:
       type: object
       properties:
-        tds_20_data:
-          $ref: '#/components/schemas/TDS20Data'
-        amount_total:
-          $ref: '#/components/schemas/AmountCurrency'
-        processing_options:
-          type: array
-          description: Defines an additional processing option for iFrame interaction.
-          example:
-          - MOTO
-          items:
-            type: string
-            description: "Additional processing option for an iFrame interaction.\n\n* `MOTO`: A credit card token should be created for use in a MOTO payment transaction. \n          This skips the 3D-Secure process."
-            example: MOTO
-            enum:
-            - MOTO
-      description: Request data to initialize an iFrame interaction.
+        method_notification_url:
+          type: string
+          description: The URL to send the method notification to.
+        cres_notification_url:
+          type: string
+          description: The URL to send the CRes to.
     TDS20TransactionAttributes:
       type: object
       properties:
@@ -205,69 +193,28 @@ components:
           - ACCOUNT_FUNDING
           - QUASI_CASH
           - PREPAID_ACTIVATION
-    AmountCurrency:
-      required:
-      - amount
-      - currency
+    TDS20CustomerData:
       type: object
       properties:
-        amount:
-          type: integer
-          description: Minor currency value of an amount of money.
-          format: int64
-          example: 200
-        currency:
-          maxLength: 3
-          minLength: 3
-          pattern: '[A-Z]{3}'
+        billing_address:
+          $ref: '#/components/schemas/TDS20Address'
+        shipping_address:
+          $ref: '#/components/schemas/TDS20Address'
+        home_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        mobile_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        work_phone_number:
+          $ref: '#/components/schemas/TDS20PhoneNumber'
+        cardholder_account_info:
+          $ref: '#/components/schemas/TDS20CardHolderAccountInfo'
+        cardholder_email:
           type: string
-          description: ISO 4217 currency code, three uppercase letters.
-          example: EUR
-      description: An amount and a currency.
-    IFrameInitializeResponse:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
+        addresses_match:
           type: string
-          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
-          example: '0'
-        message:
-          type: string
-          description: Success or error message, text for the response code.
-          example: Transaction approved.
-        client_session:
-          maxLength: 255
-          minLength: 0
-          pattern: '[a-zA-Z0-9/+=_-]*'
-          type: string
-          description: The iFrame client session ID.
-          example: 8qOMTG3gdTwb8cjQtKW8fx
-        client_configuration:
-          maxLength: 2000
-          minLength: 0
-          pattern: '[a-zA-Z0-9/+=_-]*'
-          type: string
-          description: The iFrame client configuration.
-          example: eyJob3N0IjoiaHR0cDovL2hvc3Q6ODA4MCIsIm9wdGlvbnMiLi4u
-      description: Contains data to initialize an iFrame interaction with JavaScript.
-    ErrorModel:
-      required:
-      - message
-      - rc
-      type: object
-      properties:
-        rc:
-          type: string
-          description: Four digit response code.
-          example: '4001'
-        message:
-          type: string
-          description: Describes the error.
-          example: unexpected error
-      description: Includes data returned in case of an error.
+          enum:
+          - MATCHES
+          - DOES_NOT_MATCH
     TDS20Address:
       required:
       - city
@@ -399,28 +346,6 @@ components:
           description: Value of the User-Agent header sent by the client's browser.
           example: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101 Firefox/78.0
       description: Technical details of a client.
-    TDS20CustomerData:
-      type: object
-      properties:
-        billing_address:
-          $ref: '#/components/schemas/TDS20Address'
-        shipping_address:
-          $ref: '#/components/schemas/TDS20Address'
-        home_phone_number:
-          $ref: '#/components/schemas/TDS20PhoneNumber'
-        mobile_phone_number:
-          $ref: '#/components/schemas/TDS20PhoneNumber'
-        work_phone_number:
-          $ref: '#/components/schemas/TDS20PhoneNumber'
-        cardholder_account_info:
-          $ref: '#/components/schemas/TDS20CardHolderAccountInfo'
-        cardholder_email:
-          type: string
-        addresses_match:
-          type: string
-          enum:
-          - MATCHES
-          - DOES_NOT_MATCH
     TDS20Data:
       type: object
       properties:
@@ -445,6 +370,71 @@ components:
         transaction_attributes:
           $ref: '#/components/schemas/TDS20TransactionAttributes'
       description: 3-D Secure data. Activates 3-D Secure processing if values are set.
+    IFrameInitializeResponse:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Response code of the transaction. "0" in the case of a successful transaction. Other values signify errors.
+          example: '0'
+        message:
+          type: string
+          description: Success or error message, text for the response code.
+          example: Transaction approved.
+        client_session:
+          maxLength: 255
+          minLength: 0
+          pattern: '[a-zA-Z0-9/+=_-]*'
+          type: string
+          description: The iFrame client session ID.
+          example: 8qOMTG3gdTwb8cjQtKW8fx
+        client_configuration:
+          maxLength: 2000
+          minLength: 0
+          pattern: '[a-zA-Z0-9/+=_-]*'
+          type: string
+          description: The iFrame client configuration.
+          example: eyJob3N0IjoiaHR0cDovL2hvc3Q6ODA4MCIsIm9wdGlvbnMiLi4u
+      description: Contains data to initialize an iFrame interaction with JavaScript.
+    ErrorModel:
+      required:
+      - message
+      - rc
+      type: object
+      properties:
+        rc:
+          type: string
+          description: Four digit response code.
+          example: '4001'
+        message:
+          type: string
+          description: Describes the error.
+          example: unexpected error
+      description: Includes data returned in case of an error.
+    IFrameInitializeRequest:
+      required:
+      - amount_total
+      type: object
+      properties:
+        tds_20_data:
+          $ref: '#/components/schemas/TDS20Data'
+        amount_total:
+          $ref: '#/components/schemas/AmountCurrency'
+        processing_options:
+          type: array
+          description: Defines an additional processing option for iFrame interaction.
+          example:
+          - MOTO
+          items:
+            type: string
+            description: "Additional processing option for an iFrame interaction.\n\n* `MOTO`: A credit card token should be created for use in a MOTO payment transaction. \n          This skips the 3D-Secure process."
+            example: MOTO
+            enum:
+            - MOTO
+      description: Request data to initialize an iFrame interaction.
     TDS20PhoneNumber:
       type: object
       properties:
@@ -455,15 +445,25 @@ components:
           type: string
           description: The regional part of the phone number.
       description: Phone number with country code.
-    TDS20CommunicationData:
+    AmountCurrency:
+      required:
+      - amount
+      - currency
       type: object
       properties:
-        method_notification_url:
+        amount:
+          type: integer
+          description: Minor currency value of an amount of money.
+          format: int64
+          example: 200
+        currency:
+          maxLength: 3
+          minLength: 3
+          pattern: '[A-Z]{3}'
           type: string
-          description: The URL to send the method notification to.
-        cres_notification_url:
-          type: string
-          description: The URL to send the CRes to.
+          description: ISO 4217 currency code, three uppercase letters.
+          example: EUR
+      description: An amount and a currency.
   securitySchemes:
     bearerAuth:
       type: http

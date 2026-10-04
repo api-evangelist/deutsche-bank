@@ -134,30 +134,6 @@ paths:
           $ref: '#/components/responses/ServerError'
 components:
   schemas:
-    OAuthTokenResponse:
-      required:
-      - accessToken
-      type: object
-      properties:
-        accessToken:
-          type: string
-        refreshToken:
-          type: string
-        idToken:
-          type: string
-        token_type:
-          type: string
-          example: Bearer
-        expires_in:
-          type: integer
-          example: 3600
-        scope:
-          type: string
-          example: openid
-        acr:
-          type: string
-          example: '2'
-      additionalProperties: true
     ErrorResponse:
       type: object
       properties:
@@ -183,15 +159,39 @@ components:
         code_verifier:
           type: string
       additionalProperties: true
+    OAuthTokenResponse:
+      required:
+      - accessToken
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        idToken:
+          type: string
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+        scope:
+          type: string
+          example: openid
+        acr:
+          type: string
+          example: '2'
+      additionalProperties: true
   responses:
-    ClientError:
-      description: 4xx client error
+    ServerError:
+      description: 5xx server error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
-    ServerError:
-      description: 5xx server error
+    ClientError:
+      description: 4xx client error
       content:
         application/json:
           schema:

@@ -205,6 +205,17 @@ paths:
       x-operation-id-source: derived
 components:
   schemas:
+    TransactionStatus:
+      type: string
+      description: 'Transaction Status: Specifies the status of a transaction, in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. PDNG - Pending. The payment is undergoing further validations or waiting for processing. ACCP - AcceptedCustomerProfile. The payment instruction has been accepted after validations. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution. Current-dated SCT instant transactions cannot be cancelled. For SCT instant single, the possible statuses are: RCVD, ACTC, PDNG, ACCP, RJCT, CANC. The typical flow for current-dated SCT instant single transactions is RCVD -> PDNG -> ACCP (with RJCT status possible at any step), while for future-dated SCT instant single transactions the flow is RCVD -> ACTC -> (after execution) PDNG -> ACCP (with RJCT status possible at any step and CANC in case of cancellation of a payment before being executed). For SCT instant bulk the possible statuses are: RCVD, ACTC, RJCT, CANC.'
+      example: ACTC
+      enum:
+      - RCVD
+      - ACTC
+      - PDNG
+      - ACCP
+      - RJCT
+      - CANC
     ErrorResponse:
       required:
       - code
@@ -228,17 +239,6 @@ components:
       properties:
         transactionStatus:
           $ref: '#/components/schemas/TransactionStatus'
-    TransactionStatus:
-      type: string
-      description: 'Transaction Status: Specifies the status of a transaction, in a coded form. RCVD - Received. The payment instruction has been successfully received. This is only a technical receipt. Further validation is still required. ACTC - AcceptedTechnicalValidation. The payment instruction has passed all necessary technical validations. PDNG - Pending. The payment is undergoing further validations or waiting for processing. ACCP - AcceptedCustomerProfile. The payment instruction has been accepted after validations. RJCT - Rejected. The payment instruction has been rejected following negative validation results. CANC – Cancelled. The payment initiation has been cancelled before execution. Current-dated SCT instant transactions cannot be cancelled. For SCT instant single, the possible statuses are: RCVD, ACTC, PDNG, ACCP, RJCT, CANC. The typical flow for current-dated SCT instant single transactions is RCVD -> PDNG -> ACCP (with RJCT status possible at any step), while for future-dated SCT instant single transactions the flow is RCVD -> ACTC -> (after execution) PDNG -> ACCP (with RJCT status possible at any step and CANC in case of cancellation of a payment before being executed). For SCT instant bulk the possible statuses are: RCVD, ACTC, RJCT, CANC.'
-      example: ACTC
-      enum:
-      - RCVD
-      - ACTC
-      - PDNG
-      - ACCP
-      - RJCT
-      - CANC
   securitySchemes:
     api_auth_code:
       type: oauth2

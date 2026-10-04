@@ -103,6 +103,25 @@ paths:
       deprecated: false
 components:
   schemas:
+    ApiGroupVersionPath:
+      title: ApiGroupVersionPath
+      type: object
+      properties:
+        path:
+          type: string
+        version:
+          type: string
+    ApiDefinitions:
+      title: ApiDefinitions
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiDefinition'
+        totalItems:
+          type: number
+          description: total number of API definitions
     ApiDefinition:
       title: ApiDefinition
       type: object
@@ -131,17 +150,6 @@ components:
           type: string
         tryItOut:
           type: boolean
-    ApiDefinitions:
-      title: ApiDefinitions
-      type: object
-      properties:
-        items:
-          type: array
-          items:
-            $ref: '#/components/schemas/ApiDefinition'
-        totalItems:
-          type: number
-          description: total number of API definitions
     ApiGroup:
       title: ApiGroup
       type: object
@@ -154,12 +162,4 @@ components:
           description: The path object in the swagger definition.
           items:
             $ref: '#/components/schemas/ApiGroupVersionPath'
-    ApiGroupVersionPath:
-      title: ApiGroupVersionPath
-      type: object
-      properties:
-        path:
-          type: string
-        version:
-          type: string
 x-original-swagger-version: '2.0'
