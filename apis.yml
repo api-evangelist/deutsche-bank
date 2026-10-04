@@ -1434,6 +1434,9 @@ apis:
   - type: Documentation
     url: https://developer.db.com/products/payment-acceptance
 common:
+- type: CapabilityMap
+  url: capabilities/deutsche-bank-capability-edges.yml
+  name: Deutsche Bank Business Capability Map
 - type: DeveloperPortal
   name: Deutsche Bank Developer Portal
   url: https://developer.db.com/

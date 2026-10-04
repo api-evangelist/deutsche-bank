@@ -1,0 +1,50 @@
+slug: deutsche-bank
+provider: Deutsche Bank
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: Investments Order Subscription
+  spec_file: deutsche-bank-investments-order-subscription-api-openapi.yml
+  capability_id: BC-4270.80
+  capability_id_l1: BC-4270
+  capability_name: Webhook & Event Subscription Management
+  confidence: 0.72
+  evidence: '''dbAPI subscription service. Provides an API to manage subscriptions of certains events
+    like transaction creation.'' with ''Creates an investment order event subscription'' / ''Deletes an
+    Investments Order Subscription'''
+  reason: Despite 'Investments Order' in the tag, the operations manage the lifecycle (create/list/patch/delete/activate)
+    of event subscriptions so that consumers receive order events — i.e. outbound event/webhook subscription
+    management on a developer platform, not securities trading itself. Confidence moderated because the
+    event domain is business-specific and the schema set (InvestmentSubscription) could also be read as
+    a product entitlement.
+- tag: Authorization
+  spec_file: deutsche-bank-authorization-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.7
+  evidence: POST /token  getToken  Get token; GET /ciam/entitlements/oneids/{oneIdId}/contexts/{contextId}/business-transactions  Fetch
+    entitlements for a OneID/context
+  reason: Operations issue OAuth access tokens and resolve CIAM entitlements/privileges per identity \u2014
+    identity and access management. Partly technical auth plumbing, hence moderate confidence.
+- tag: swaggers
+  spec_file: deutsche-bank-swaggers-api-openapi.yml
+  capability_id: BC-4270
+  capability_id_l1: BC-4270
+  capability_name: Developer Platform & API Ecosystem Management
+  confidence: 0.7
+  evidence: swagger/API definition service ... Returns all known swagger definitions / Returns a swagger
+    definition
+  reason: This surface publishes and serves the bank's own OpenAPI contracts to external developers, i.e.
+    developer-platform/API-ecosystem stewardship. Evidence does not distinguish between public API specification
+    lifecycle and developer-portal documentation, so only the L1 is asserted.
