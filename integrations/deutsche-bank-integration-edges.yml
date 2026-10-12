@@ -1,0 +1,16 @@
+generated: '2026-10-12'
+method: none
+source:
+- https://zapier.com/apps/deutsche-bank/integrations
+- https://n8n.io/integrations/deutsche-bank/
+- https://composio.dev/toolkits/deutsche-bank
+- https://monid.ai/tools/deutsche-bank
+checked:
+- https://composio.dev/toolkits/deutsche-bank
+- https://monid.ai/tools/deutsche-bank
+- https://n8n.io/integrations/deutsche-bank/
+- https://zapier.com/apps/deutsche-bank/integrations
+summary: null
+marketplace_apps: []
+edges: []
+templates: []
