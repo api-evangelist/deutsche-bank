@@ -1,5 +1,5 @@
 generated: '2026-10-12'
-method: none
+method: searched
 source:
 - https://zapier.com/apps/deutsche-bank/integrations
 - https://n8n.io/integrations/deutsche-bank/
@@ -9,8 +9,26 @@ checked:
 - https://composio.dev/toolkits/deutsche-bank
 - https://monid.ai/tools/deutsche-bank
 - https://n8n.io/integrations/deutsche-bank/
+- https://www.openbanking.org.uk/regulated-providers/deutsche-bank-aktiengesellschaft/
 - https://zapier.com/apps/deutsche-bank/integrations
 summary: null
 marketplace_apps: []
-edges: []
+edges:
+- partner_name: UK Open Banking
+  partner: null
+  type: contract
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.openbanking.org.uk/regulated-providers/deutsche-bank-aktiengesellschaft/
+  contract_reference:
+    register: UK Open Banking regulated providers (OBL directory)
+    spec_file: null
+    role: Third Party Providers
+    registered_name: Deutsche Bank AG
+    register_id: 6803
+    matched_domain: db.com
+    api_families: null
+    detected_by: sweep-standard-registers.py
+    detected: '2026-10-12'
 templates: []
