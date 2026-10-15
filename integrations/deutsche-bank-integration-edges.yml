@@ -9,6 +9,7 @@ checked:
 - https://composio.dev/toolkits/deutsche-bank
 - https://monid.ai/tools/deutsche-bank
 - https://n8n.io/integrations/deutsche-bank/
+- https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv
 - https://www.openbanking.org.uk/regulated-providers/deutsche-bank-aktiengesellschaft/
 - https://zapier.com/apps/deutsche-bank/integrations
 summary: null
@@ -31,4 +32,77 @@ edges:
     api_families: null
     detected_by: sweep-standard-registers.py
     detected: '2026-10-14'
+- partner_name: ISO 10383 (MIC)
+  partner: null
+  type: register
+  channel: standard-directory
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv
+  source: mic
+  category: registered trading venues and market segments
+  contract_reference:
+    register: ISO 10383 Market Identifier Codes (ISO 20022 registration authority)
+    spec_file: null
+    standard: ISO 10383
+    role: venue operator
+    matched_domain: db.com
+    matched_by: domain:db.com
+    categories:
+    - ATSS
+    - NSPD
+    - OTHR
+    operating_mics:
+    - DBAB
+    - DBHK
+    - DBLX
+    - DBOX
+    - DHLX
+    mics:
+    - mic: DBAB
+      operating_mic: DBAB
+      segment: OPRT
+      market: DEUTSCHE BANK SECURITIES INC.
+      category: NSPD
+      legal_name: ''
+      country: US
+    - mic: DBLX
+      operating_mic: DBLX
+      segment: OPRT
+      market: DEUTSCHE BANK LUXEMBOURG S.A.
+      category: NSPD
+      legal_name: ''
+      country: LU
+    - mic: DHLX
+      operating_mic: DHLX
+      segment: OPRT
+      market: DEUTSCHE HOLDINGS (LUXEMBOURG) S.A R.L.
+      category: NSPD
+      legal_name: ''
+      country: LU
+    - mic: DBHK
+      operating_mic: DBHK
+      segment: OPRT
+      market: DEUTSCHE BANK HONG KONG ATS
+      category: ATSS
+      legal_name: ''
+      country: HK
+    - mic: DBOX
+      operating_mic: DBOX
+      segment: OPRT
+      market: DEUTSCHE BANK OFF EXCHANGE TRADING
+      category: OTHR
+      legal_name: DEUTSCHE BANK AG
+      country: DE
+    - mic: DBAO
+      operating_mic: DBOX
+      segment: SGMT
+      market: DEUTSCHE BANK AUTOBAHN OFF VENUE FX PLATFORM
+      category: OTHR
+      legal_name: DEUTSCHE BANK AG
+      country: DE
+    detected_by: sweep-capital-markets.py
+    detected: '2026-10-15'
+  detected_by: sweep-capital-markets.py
+  first_seen: '2026-10-15'
 templates: []
