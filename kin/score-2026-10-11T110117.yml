@@ -1,34 +1,31 @@
-# Kin Score artifact — deutsche-bank — 2026-09-07T213054
+# Kin Score artifact — deutsche-bank — 2026-10-11T110117
 # The API Evangelist rating (https://github.com/api-evangelist/kin-score). Generated; do not edit.
 ---
 kin_score:
   slug: deutsche-bank
-  schema_version: 0.20.0
-  scored_at: '2026-09-07'
-  run_ts: 2026-09-07T213054
-  composite: 51.8
+  schema_version: 0.23.0
+  scored_at: '2026-10-11'
+  run_ts: 2026-10-11T110117
+  composite: 49.7
   band: developing
   facets:
-    discoverability: 75.9
-    contract_quality: 56.2
-    governance: 4.5
+    discoverability: 78.6
+    contract_quality: 59.6
+    contract_governance: 4.5
     operational_transparency: 36.8
     developer_ergonomics: 37.5
-    commercial_clarity: 50.0
-    contract_governance: 4.5
     access_clarity: 50.0
   agent_readiness:
-    score: 39.4
-    band: agent-ready
-    band_gated_from: agent-native
+    score: 47.2
+    band: agent-native
     dimensions:
       spec_presence: true
       agentic_access: false
-      reversibility_documented: false
+      reversibility_documented: documented
       mcp_server: false
       auth_clarity: served
-      idempotency: documented
-      error_semantics: documented
+      idempotency: verified
+      error_semantics: verified
       openapi_examples: verified
       rate_limit_signal: documented
       event_surface_described: derived
@@ -45,14 +42,14 @@ kin_score:
     applies: true
     regime: Banking & Open Finance
     regime_id: banking_open_finance
-    score: 84.8
+    score: 52.8
     matched_via: tags
   provenance:
     mcp: derived
     skills: derived
     conformance: derived
     contracts:
-      total: 36
+      total: 50
       derived: 0
       coverage: 0.0
-      callable: 11.8
+      callable: 26.5
