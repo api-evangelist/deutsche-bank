@@ -143,53 +143,6 @@ paths:
         - rent_analysis
 components:
   schemas:
-    AnalysedTransaction:
-      required:
-      - amount
-      - bookingDate
-      - counterPartyName
-      - originIban
-      type: object
-      properties:
-        bookingDate:
-          type: string
-          description: Booking date. In the format YYYY-MM-DD.
-          format: date
-        originIban:
-          $ref: '#/components/schemas/IBAN'
-        amount:
-          type: number
-          description: Amount of the transaction (EUR only). Always positive value for these outgoing payments! (note this is opposite sign of Simulation, where positive amount means incoming payment, so customer received money.)
-          format: double
-        paymentReference:
-          maxLength: 140
-          type: string
-          description: Payment reference.
-        counterPartyName:
-          maxLength: 70
-          type: string
-          description: Name of the counter party.
-      description: Backend response containing a list of 20 transactions, each represents a rent/income payment.
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
-    IBAN:
-      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
-      type: string
-      description: The IBAN of this account.
     RentResponse:
       type: object
       properties:
@@ -226,6 +179,53 @@ components:
           type: string
           description: Reason category
       description: Backend response in case of certificate can't be determined
+    AnalysedTransaction:
+      required:
+      - amount
+      - bookingDate
+      - counterPartyName
+      - originIban
+      type: object
+      properties:
+        bookingDate:
+          type: string
+          description: Booking date. In the format YYYY-MM-DD.
+          format: date
+        originIban:
+          $ref: '#/components/schemas/IBAN'
+        amount:
+          type: number
+          description: Amount of the transaction (EUR only). Always positive value for these outgoing payments! (note this is opposite sign of Simulation, where positive amount means incoming payment, so customer received money.)
+          format: double
+        paymentReference:
+          maxLength: 140
+          type: string
+          description: Payment reference.
+        counterPartyName:
+          maxLength: 70
+          type: string
+          description: Name of the counter party.
+      description: Backend response containing a list of 20 transactions, each represents a rent/income payment.
+    IBAN:
+      pattern: '[A-Z]{2}[0-9]{2}[A-Z0-9]{1,30}'
+      type: string
+      description: The IBAN of this account.
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
   securitySchemes:
     api_auth_code:
       type: oauth2

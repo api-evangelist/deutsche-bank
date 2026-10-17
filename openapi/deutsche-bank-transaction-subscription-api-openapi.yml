@@ -585,24 +585,58 @@ paths:
       x-codegen-request-body-name: activation
 components:
   schemas:
-    ErrorResponse:
-      title: ErrorResponse
+    SubscriptionPostDetails:
+      title: SubscriptionPostDetails
       required:
-      - code
-      - message
+      - notificationURL
+      - subscriptionType
       type: object
       properties:
-        code:
-          type: integer
-          description: The error code
-          format: int32
-        message:
+        expirationDate:
           type: string
-          description: Description of the belonging error code.
-        messageId:
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+        notificationURL:
           type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
+          description: The URL the notification will be passed towards.
+          format: url
+        subscriptionType:
+          type: string
+          description: Type of subscription?
+          enum:
+          - one-time
+          - recurring
+      description: Subscription details
+    SubscriptionPost:
+      title: SubscriptionPost
+      type: object
+      properties:
+        filterCriteria:
+          $ref: '#/components/schemas/SubscriptionFilterCriteria'
+        subscriptionDetails:
+          $ref: '#/components/schemas/SubscriptionPostDetails'
+    SubscriptionFilterCriteria:
+      title: SubscriptionFilterCriteria
+      required:
+      - iban
+      type: object
+      properties:
+        iban:
+          type: string
+          description: IBAN of the account to subscribe to.
+        incoming:
+          type: boolean
+          description: true, if events shall be filtered for incoming transactions, false if not.
+        maxAmount:
+          type: number
+          description: events will be filtered for a transactions amount, absolute values only.
+        minAmount:
+          type: number
+          description: events will be filtered for a transaction amount, absolute values only.
+        outgoing:
+          type: boolean
+          description: true, if events shall be filtered for outgoing transactions, false if not.
+      description: Filter criteria
     SubscriptionDetails:
       title: SubscriptionDetails
       required:
@@ -627,39 +661,6 @@ components:
           - one-time
           - recurring
       description: Subscription details
-    SubscriptionPatchSubscriptionDetails:
-      title: SubscriptionPatchSubscriptionDetails
-      required:
-      - expirationDate
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-      description: Subscription details
-    SubscriptionFilterCriteria:
-      title: SubscriptionFilterCriteria
-      required:
-      - iban
-      type: object
-      properties:
-        iban:
-          type: string
-          description: IBAN of the account to subscribe to.
-        incoming:
-          type: boolean
-          description: true, if events shall be filtered for incoming transactions, false if not.
-        maxAmount:
-          type: number
-          description: events will be filtered for a transactions amount, absolute values only.
-        minAmount:
-          type: number
-          description: events will be filtered for a transaction amount, absolute values only.
-        outgoing:
-          type: boolean
-          description: true, if events shall be filtered for outgoing transactions, false if not.
-      description: Filter criteria
     Subscription:
       title: Subscription
       type: object
@@ -671,14 +672,49 @@ components:
           description: ID of the resource
         subscriptionDetails:
           $ref: '#/components/schemas/SubscriptionDetails'
-    SubscriptionPost:
-      title: SubscriptionPost
+    SubscriptionPatch:
+      title: SubscriptionPatch
+      required:
+      - subscriptionDetails
       type: object
       properties:
-        filterCriteria:
-          $ref: '#/components/schemas/SubscriptionFilterCriteria'
         subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionPostDetails'
+          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
+    SubscriptionPatchSubscriptionDetails:
+      title: SubscriptionPatchSubscriptionDetails
+      required:
+      - expirationDate
+      type: object
+      properties:
+        expirationDate:
+          type: string
+          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
+          format: date
+      description: Subscription details
+    ActivationDTO:
+      title: ActivationDTO
+      type: object
+      properties:
+        activationCode:
+          type: string
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+          format: int32
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
     PagedResultSubscription:
       title: PagedResultSubscription
       required:
@@ -695,42 +731,6 @@ components:
           type: integer
           description: Total number of items found for your request parameters over all pages of the pagination.
           format: int32
-    ActivationDTO:
-      title: ActivationDTO
-      type: object
-      properties:
-        activationCode:
-          type: string
-    SubscriptionPostDetails:
-      title: SubscriptionPostDetails
-      required:
-      - notificationURL
-      - subscriptionType
-      type: object
-      properties:
-        expirationDate:
-          type: string
-          description: 'The date, when a subscription expires. Format: YYYY-MM-DD'
-          format: date
-        notificationURL:
-          type: string
-          description: The URL the notification will be passed towards.
-          format: url
-        subscriptionType:
-          type: string
-          description: Type of subscription?
-          enum:
-          - one-time
-          - recurring
-      description: Subscription details
-    SubscriptionPatch:
-      title: SubscriptionPatch
-      required:
-      - subscriptionDetails
-      type: object
-      properties:
-        subscriptionDetails:
-          $ref: '#/components/schemas/SubscriptionPatchSubscriptionDetails'
   securitySchemes:
     api_auth_code:
       type: oauth2

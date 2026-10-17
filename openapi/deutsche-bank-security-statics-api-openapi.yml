@@ -219,22 +219,6 @@ paths:
       x-summary-source: derived
 components:
   schemas:
-    ErrorResponse:
-      required:
-      - code
-      - message
-      type: object
-      properties:
-        code:
-          type: integer
-          description: The error code
-        message:
-          type: string
-          description: Description of the belonging error code.
-        messageId:
-          type: string
-          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
-      description: Default error response message
     Xd020a:
       pattern: '[A-Z0-9]{3}'
       type: string
@@ -249,11 +233,6 @@ components:
             $ref: '#/components/schemas/MarketPlace'
         message:
           $ref: '#/components/schemas/Message'
-    CurrencyCode:
-      pattern: '[A-Z]{3}'
-      type: string
-      description: ISO 4217 Alpha 3 currency code.
-      example: EUR
     MarketPlace:
       required:
       - name
@@ -271,6 +250,11 @@ components:
         xd020a:
           $ref: '#/components/schemas/Xd020a'
       description: A summary of the order for the order execution
+    CurrencyCode:
+      pattern: '[A-Z]{3}'
+      type: string
+      description: ISO 4217 Alpha 3 currency code.
+      example: EUR
     Message:
       required:
       - code
@@ -290,6 +274,22 @@ components:
           - INFO
           - WARN
           - ERROR
+    ErrorResponse:
+      required:
+      - code
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: Description of the belonging error code.
+        messageId:
+          type: string
+          description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
+      description: Default error response message
   securitySchemes:
     api_auth_code:
       type: oauth2

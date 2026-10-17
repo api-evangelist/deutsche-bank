@@ -155,34 +155,6 @@ components:
           - scope_invalid
           - unauthorized
       description: The response object that is received after a failed authorization.
-    AccessTokenRequest:
-      required:
-      - client_id
-      - client_secret
-      - grant_type
-      - scope
-      type: object
-      properties:
-        grant_type:
-          type: string
-          description: The grant type of the request. Use fixed value `client_credentials`.
-          enum:
-          - client_credentials
-        client_id:
-          type: string
-          description: The client-id; part of the signature input.
-          example: client_id_value
-        client_secret:
-          type: string
-          description: The calculated client secret. Consult the documentation for implementation details.
-          example: V1:VoKCzVc+Cy0wmwpaqo/98KQheTjFvXL8w0xsfwZG68M=
-        scope:
-          type: string
-          description: The application scope of the request. Use fixed value `ftx`.
-          enum:
-          - ftx
-      description: Perform the request to get an authorization token. Make sure to have URL-encoding applied to the parameter values by your HTTP-client or implementation.
-      format: x-www-form-urlencoded
     AccessTokenResponse:
       required:
       - access_token
@@ -216,6 +188,34 @@ components:
           enum:
           - ftx
       description: The response object that is received after a successful authorization.
+    AccessTokenRequest:
+      required:
+      - client_id
+      - client_secret
+      - grant_type
+      - scope
+      type: object
+      properties:
+        grant_type:
+          type: string
+          description: The grant type of the request. Use fixed value `client_credentials`.
+          enum:
+          - client_credentials
+        client_id:
+          type: string
+          description: The client-id; part of the signature input.
+          example: client_id_value
+        client_secret:
+          type: string
+          description: The calculated client secret. Consult the documentation for implementation details.
+          example: V1:VoKCzVc+Cy0wmwpaqo/98KQheTjFvXL8w0xsfwZG68M=
+        scope:
+          type: string
+          description: The application scope of the request. Use fixed value `ftx`.
+          enum:
+          - ftx
+      description: Perform the request to get an authorization token. Make sure to have URL-encoding applied to the parameter values by your HTTP-client or implementation.
+      format: x-www-form-urlencoded
     ErrorResponse:
       type: object
       properties:

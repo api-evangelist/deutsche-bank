@@ -166,15 +166,6 @@ components:
         documentReferenceId:
           type: string
           description: ID referencing the uploaded document, to be used in ???/orders request.
-    ProcessingOrderEntryResponse:
-      required:
-      - createdResource
-      type: object
-      properties:
-        createdResource:
-          type: string
-          description: URI carrying the orderId initially used
-          example: http://localhost:8080/processingOrders/v1/da49efa2-478c-4b6b-8fdb-6ae822180bc9
     ErrorResponse:
       required:
       - code
@@ -191,6 +182,15 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
+    ProcessingOrderEntryResponse:
+      required:
+      - createdResource
+      type: object
+      properties:
+        createdResource:
+          type: string
+          description: URI carrying the orderId initially used
+          example: http://localhost:8080/processingOrders/v1/da49efa2-478c-4b6b-8fdb-6ae822180bc9
   securitySchemes:
     api_client_credential:
       type: oauth2

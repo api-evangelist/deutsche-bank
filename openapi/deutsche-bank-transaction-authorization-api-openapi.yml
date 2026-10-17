@@ -591,15 +591,27 @@ paths:
       x-codegen-request-body-name: switchMethod
 components:
   schemas:
-    ChallengeMethodMetadata:
+    ChallengeMethodItem:
+      required:
+      - method
+      - status
       type: object
       properties:
-        mobilePhoneNumber:
+        method:
+          $ref: '#/components/schemas/ChallengeMethodType'
+        status:
           type: string
-          description: The telephone number the short message is being sent to
-        activeDevicesCount:
-          type: integer
-          description: Number of active devices for this method type.
+          description: Challenge method status
+          enum:
+          - ACTIVE
+          - INACTIVE
+          - DEACTIVATED
+          - DEVICE_STATUS_ACTIVATING
+          - PERMANENTLY_LOCKED
+          - TEMPORARILY_LOCKED
+          - UNKNOWN
+        metadata:
+          $ref: '#/components/schemas/ChallengeMethodMetadata'
     ChallengeMethodsAndTypes:
       required:
       - methods
@@ -609,6 +621,15 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ChallengeMethodItem'
+    ChallengeMethodMetadata:
+      type: object
+      properties:
+        mobilePhoneNumber:
+          type: string
+          description: The telephone number the short message is being sent to
+        activeDevicesCount:
+          type: integer
+          description: Number of active devices for this method type.
     ChallengeRequest:
       required:
       - id
@@ -624,6 +645,29 @@ components:
           type: object
           properties: {}
           description: The sub-type of the response challenge. Depending on the value see swagger model ChallengeMethodMTAN or ChallengeMethodPHOTOTAN. This is actually a constrain of the swagger 2.0 spec.
+    ChallengeResponse:
+      required:
+      - challengeResponse
+      type: object
+      properties:
+        challengeResponse:
+          type: string
+          description: 'The TAN token to the created challenge. '
+    ChallengeResult:
+      type: object
+      properties:
+        challengeProofToken:
+          type: string
+          description: In case of a one-time/single transaction authorization it is valid once, for the current user, the provided request type and the current access_token only. The returned one-time/single transaction authorization should be treated as random string, with no structure and semantic. In case of a session transaction authorization it is time-based
+        status:
+          type: string
+          description: Specifies the status
+          enum:
+          - PENDING
+          - EXPIRED
+          - REJECTED
+          - VALIDATED
+          - EIDP_ERROR
     ChallengeRequestSwitchMethod:
       required:
       - method
@@ -631,6 +675,13 @@ components:
       properties:
         method:
           $ref: '#/components/schemas/ChallengeMethodType'
+    ChallengeMethodType:
+      type: string
+      description: Challenge method
+      enum:
+      - MTAN
+      - PHOTOTAN
+      - PUSHTAN
     ErrorResponse:
       required:
       - code
@@ -647,14 +698,6 @@ components:
           type: string
           description: dbAPI internal message-id (unique identifier) that allow reference to each of your API calls.
       description: Default error response message
-    ChallengeResponse:
-      required:
-      - challengeResponse
-      type: object
-      properties:
-        challengeResponse:
-          type: string
-          description: 'The TAN token to the created challenge. '
     ChallengeStart:
       required:
       - method
@@ -689,49 +732,6 @@ components:
           enum:
           - de
           - en
-    ChallengeMethodType:
-      type: string
-      description: Challenge method
-      enum:
-      - MTAN
-      - PHOTOTAN
-      - PUSHTAN
-    ChallengeResult:
-      type: object
-      properties:
-        challengeProofToken:
-          type: string
-          description: In case of a one-time/single transaction authorization it is valid once, for the current user, the provided request type and the current access_token only. The returned one-time/single transaction authorization should be treated as random string, with no structure and semantic. In case of a session transaction authorization it is time-based
-        status:
-          type: string
-          description: Specifies the status
-          enum:
-          - PENDING
-          - EXPIRED
-          - REJECTED
-          - VALIDATED
-          - EIDP_ERROR
-    ChallengeMethodItem:
-      required:
-      - method
-      - status
-      type: object
-      properties:
-        method:
-          $ref: '#/components/schemas/ChallengeMethodType'
-        status:
-          type: string
-          description: Challenge method status
-          enum:
-          - ACTIVE
-          - INACTIVE
-          - DEACTIVATED
-          - DEVICE_STATUS_ACTIVATING
-          - PERMANENTLY_LOCKED
-          - TEMPORARILY_LOCKED
-          - UNKNOWN
-        metadata:
-          $ref: '#/components/schemas/ChallengeMethodMetadata'
   securitySchemes:
     api_auth_code:
       type: oauth2

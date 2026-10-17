@@ -71,6 +71,31 @@ paths:
           $ref: '#/components/responses/ServerError'
 components:
   schemas:
+    ForgeRockStepRequest:
+      type: object
+      properties:
+        authId:
+          type: string
+        callbacks:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+      additionalProperties: true
+      description: Generic callback submission body for FRAuth.next
+    ForgeRockLoginSuccess:
+      type: object
+      properties:
+        tokenId:
+          type: string
+        successUrl:
+          type: string
+        code:
+          type: string
+        state:
+          type: string
+      additionalProperties: true
+      description: Success shape may vary by SDK/AM config
     ForgeRockStepResponse:
       required:
       - authId
@@ -97,31 +122,6 @@ components:
         message:
           type: string
       additionalProperties: true
-    ForgeRockLoginSuccess:
-      type: object
-      properties:
-        tokenId:
-          type: string
-        successUrl:
-          type: string
-        code:
-          type: string
-        state:
-          type: string
-      additionalProperties: true
-      description: Success shape may vary by SDK/AM config
-    ForgeRockStepRequest:
-      type: object
-      properties:
-        authId:
-          type: string
-        callbacks:
-          type: array
-          items:
-            type: object
-            additionalProperties: true
-      additionalProperties: true
-      description: Generic callback submission body for FRAuth.next
   responses:
     ServerError:
       description: 5xx server error

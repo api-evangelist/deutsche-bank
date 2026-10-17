@@ -103,6 +103,18 @@ paths:
       deprecated: false
 components:
   schemas:
+    ApiGroup:
+      title: ApiGroup
+      type: object
+      properties:
+        name:
+          type: string
+          description: The group name. I.e. "Reference Data.addresses"
+        paths:
+          type: array
+          description: The path object in the swagger definition.
+          items:
+            $ref: '#/components/schemas/ApiGroupVersionPath'
     ApiGroupVersionPath:
       title: ApiGroupVersionPath
       type: object
@@ -150,16 +162,4 @@ components:
           type: string
         tryItOut:
           type: boolean
-    ApiGroup:
-      title: ApiGroup
-      type: object
-      properties:
-        name:
-          type: string
-          description: The group name. I.e. "Reference Data.addresses"
-        paths:
-          type: array
-          description: The path object in the swagger definition.
-          items:
-            $ref: '#/components/schemas/ApiGroupVersionPath'
 x-original-swagger-version: '2.0'
