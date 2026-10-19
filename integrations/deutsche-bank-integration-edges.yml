@@ -7,10 +7,14 @@ source:
 - https://monid.ai/tools/deutsche-bank
 checked:
 - https://composio.dev/toolkits/deutsche-bank
+- https://eservices.mas.gov.sg/fid
 - https://monid.ai/tools/deutsche-bank
 - https://n8n.io/integrations/deutsche-bank/
 - https://reports.adviserinfo.sec.gov/reports/CompilationReports/IA_FIRM_SEC_Feed_10_17_2026.xml.gz
+- https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
+- https://www.bnm.gov.my/list-of-regulatees
 - https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv
+- https://www.ojk.go.id/id/kanal/iknb/data-dan-statistik/direktori/fintech/Default.aspx
 - https://www.openbanking.org.uk/regulated-providers/deutsche-bank-aktiengesellschaft/
 - https://www.wealthbox.com/wp-json/wp/v2/integrations?per_page=100&page=1
 - https://zapier.com/apps/deutsche-bank/integrations
@@ -137,5 +141,32 @@ edges:
     detected_by: sweep-asset-management.py
     detected: '2026-10-18'
   detected_by: sweep-asset-management.py
+  first_seen: '2026-10-18'
+- partner_name: MAS Financial Institutions Directory
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://eservices.mas.gov.sg/fid
+  category: open finance (Singapore)
+  contract_reference:
+    register: MAS Financial Institutions Directory
+    spec_file: null
+    standard: MAS licensing (Banking Act / Payment Services Act, Singapore)
+    role: licensed-participant
+    registrations:
+    - registered_name: DEUTSCHE BANK AKTIENGESELLSCHAFT
+      licences:
+      - Wholesale Bank
+      matched_domain: db.com
+      matched_by: domain
+      evidence: https://eservices.mas.gov.sg/fid/institution/detail/3070-DEUTSCHE-BANK-AKTIENGESELLSCHAFT
+      register_id: 3070-DEUTSCHE-BANK-AKTIENGESELLSCHAFT
+    signal_note: 'participation only: a regulator licence; no API conformance is published by this register'
+    detected_by: sweep-gulf-asean-open-finance.py
+    detected: '2026-10-18'
+  detected_by: sweep-gulf-asean-open-finance.py
   first_seen: '2026-10-18'
 templates: []
