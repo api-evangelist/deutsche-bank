@@ -23,6 +23,37 @@
     detected: '2026-10-14'
   status: not-a-workflow
   arazzo: null
+- slug: deutsche-bank-sec-investment-adviser-registration
+  label: SEC (investment adviser registration)
+  partner_name: SEC (investment adviser registration)
+  category: Investment adviser
+  type: contract
+  channel: regulator-register
+  evidence: https://adviserinfo.sec.gov/firm/summary/2525
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: SEC Investment Adviser Public Disclosure (IAPD compilation feed, Form ADV Part 1A)
+    spec_file: null
+    standard: Investment Advisers Act of 1940 (SEC Form ADV)
+    role: sec-registered-investment-adviser
+    registered_name: DEUTSCHE BANK SECURITIES INC.
+    business_name: null
+    register_id: CRD 2525
+    sec_file_number: 801-9638
+    registration_status: APPROVED
+    registered_since: '1973-11-12'
+    main_office: NEW YORK, NY, United States
+    matched_domain: db.com
+    matched_by: domain
+    identity_source: registrant's own Form ADV Item 1.I website address (no lookup)
+    custody_of_client_assets: false
+    signal_note: 'participation only: SEC registration is not a certification; firm type, custody and office are
+      context, never counted; regulatory AUM is not recorded (breadth is not credit)'
+    detected_by: sweep-asset-management.py
+    detected: '2026-10-18'
+  status: not-a-workflow
+  arazzo: null
 - slug: deutsche-bank-iso-10383-mic
   label: ISO 10383 (MIC)
   partner_name: ISO 10383 (MIC)
@@ -93,38 +124,36 @@
       legal_name: DEUTSCHE BANK AG
       country: DE
     detected_by: sweep-capital-markets.py
-    detected: '2026-10-15'
+    detected: '2026-10-19'
   status: not-a-workflow
   arazzo: null
-- slug: deutsche-bank-sec-investment-adviser-registration
-  label: SEC (investment adviser registration)
-  partner_name: SEC (investment adviser registration)
-  category: Investment adviser
-  type: contract
+- slug: deutsche-bank-bank-indonesia-payment-system-licence-register
+  label: Bank Indonesia payment-system licence register
+  partner_name: Bank Indonesia payment-system licence register
+  category: open finance / payments (Indonesia)
+  type: register
   channel: regulator-register
-  evidence: https://adviserinfo.sec.gov/firm/summary/2525
+  evidence: https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
   source: edge
   relationship: standard-participant
   contract_reference:
-    register: SEC Investment Adviser Public Disclosure (IAPD compilation feed, Form ADV Part 1A)
+    register: Bank Indonesia payment-system licence register
     spec_file: null
-    standard: Investment Advisers Act of 1940 (SEC Form ADV)
-    role: sec-registered-investment-adviser
-    registered_name: DEUTSCHE BANK SECURITIES INC.
-    business_name: null
-    register_id: CRD 2525
-    sec_file_number: 801-9638
-    registration_status: APPROVED
-    registered_since: '1973-11-12'
-    main_office: NEW YORK, NY, United States
-    matched_domain: db.com
-    matched_by: domain
-    identity_source: registrant's own Form ADV Item 1.I website address (no lookup)
-    custody_of_client_assets: false
-    signal_note: 'participation only: SEC registration is not a certification; firm type, custody and office are
-      context, never counted; regulatory AUM is not recorded (breadth is not credit)'
-    detected_by: sweep-asset-management.py
-    detected: '2026-10-18'
+    standard: Bank Indonesia payment-system licensing (PBI 22/23/2020; SNAP applies to licensees)
+    role: licensed-participant
+    registrations:
+    - registered_name: Deutsche Bank
+      licences:
+      - BI-FAST Member
+      matched_domain: null
+      matched_by: register-name
+      evidence: https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
+    signal_note: 'participation only: a regulator licence; no API conformance is published by this register'
+    detected_by: sweep-gulf-asean-open-finance.py
+    detected: '2026-10-20'
+    identity_source: register-name
+    identity_note: register gave only the name; exact normalised match to the repo's apis.yml name, one repo, Wikidata
+      P856 not contradicting (Kin 2026-10-20 decision 2)
   status: not-a-workflow
   arazzo: null
 - slug: deutsche-bank-mas-financial-institutions-directory

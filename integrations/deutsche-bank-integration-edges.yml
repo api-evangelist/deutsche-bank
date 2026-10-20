@@ -11,6 +11,7 @@ checked:
 - https://monid.ai/tools/deutsche-bank
 - https://n8n.io/integrations/deutsche-bank/
 - https://reports.adviserinfo.sec.gov/reports/CompilationReports/IA_FIRM_SEC_Feed_10_17_2026.xml.gz
+- https://reports.adviserinfo.sec.gov/reports/CompilationReports/IA_FIRM_SEC_Feed_10_19_2026.xml.gz
 - https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
 - https://www.bnm.gov.my/list-of-regulatees
 - https://www.iso20022.org/sites/default/files/ISO10383_MIC/ISO10383_MIC.csv
@@ -38,6 +39,37 @@ edges:
     api_families: null
     detected_by: sweep-standard-registers.py
     detected: '2026-10-14'
+- partner_name: SEC (investment adviser registration)
+  partner: null
+  partner_match: register
+  type: contract
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://adviserinfo.sec.gov/firm/summary/2525
+  category: Investment adviser
+  contract_reference:
+    register: SEC Investment Adviser Public Disclosure (IAPD compilation feed, Form ADV Part 1A)
+    spec_file: null
+    standard: Investment Advisers Act of 1940 (SEC Form ADV)
+    role: sec-registered-investment-adviser
+    registered_name: DEUTSCHE BANK SECURITIES INC.
+    business_name: null
+    register_id: CRD 2525
+    sec_file_number: 801-9638
+    registration_status: APPROVED
+    registered_since: '1973-11-12'
+    main_office: NEW YORK, NY, United States
+    matched_domain: db.com
+    matched_by: domain
+    identity_source: registrant's own Form ADV Item 1.I website address (no lookup)
+    custody_of_client_assets: false
+    signal_note: 'participation only: SEC registration is not a certification; firm type, custody and office are
+      context, never counted; regulatory AUM is not recorded (breadth is not credit)'
+    detected_by: sweep-asset-management.py
+    detected: '2026-10-18'
+  detected_by: sweep-asset-management.py
+  first_seen: '2026-10-18'
 - partner_name: ISO 10383 (MIC)
   partner: null
   type: register
@@ -108,40 +140,38 @@ edges:
       legal_name: DEUTSCHE BANK AG
       country: DE
     detected_by: sweep-capital-markets.py
-    detected: '2026-10-15'
+    detected: '2026-10-19'
   detected_by: sweep-capital-markets.py
-  first_seen: '2026-10-15'
-- partner_name: SEC (investment adviser registration)
+  first_seen: '2026-10-19'
+- partner_name: Bank Indonesia payment-system licence register
   partner: null
-  partner_match: register
-  type: contract
+  partner_match: register-name
+  type: register
   channel: regulator-register
   relationship: standard-participant
   direction: partner-built
-  evidence: https://adviserinfo.sec.gov/firm/summary/2525
-  category: Investment adviser
+  evidence: https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
+  category: open finance / payments (Indonesia)
   contract_reference:
-    register: SEC Investment Adviser Public Disclosure (IAPD compilation feed, Form ADV Part 1A)
+    register: Bank Indonesia payment-system licence register
     spec_file: null
-    standard: Investment Advisers Act of 1940 (SEC Form ADV)
-    role: sec-registered-investment-adviser
-    registered_name: DEUTSCHE BANK SECURITIES INC.
-    business_name: null
-    register_id: CRD 2525
-    sec_file_number: 801-9638
-    registration_status: APPROVED
-    registered_since: '1973-11-12'
-    main_office: NEW YORK, NY, United States
-    matched_domain: db.com
-    matched_by: domain
-    identity_source: registrant's own Form ADV Item 1.I website address (no lookup)
-    custody_of_client_assets: false
-    signal_note: 'participation only: SEC registration is not a certification; firm type, custody and office are
-      context, never counted; regulatory AUM is not recorded (breadth is not credit)'
-    detected_by: sweep-asset-management.py
-    detected: '2026-10-18'
-  detected_by: sweep-asset-management.py
-  first_seen: '2026-10-18'
+    standard: Bank Indonesia payment-system licensing (PBI 22/23/2020; SNAP applies to licensees)
+    role: licensed-participant
+    registrations:
+    - registered_name: Deutsche Bank
+      licences:
+      - BI-FAST Member
+      matched_domain: null
+      matched_by: register-name
+      evidence: https://www.bi.go.id/id/layanan/informasi-perizinan/sistem-pembayaran/default.aspx
+    signal_note: 'participation only: a regulator licence; no API conformance is published by this register'
+    detected_by: sweep-gulf-asean-open-finance.py
+    detected: '2026-10-20'
+    identity_source: register-name
+    identity_note: register gave only the name; exact normalised match to the repo's apis.yml name, one repo, Wikidata
+      P856 not contradicting (Kin 2026-10-20 decision 2)
+  detected_by: sweep-gulf-asean-open-finance.py
+  first_seen: '2026-10-20'
 - partner_name: MAS Financial Institutions Directory
   partner: null
   partner_match: register
