@@ -22,6 +22,8 @@ checked:
 - https://portal.mvp.bafin.de/database/InstInfo/
 - https://www.dnb.nl/en/public-register/
 - https://www.finma.ch/en/finma-public/authorised-institutions-individuals-and-products/
+- https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/listes-blanches
+- https://www.regafi.fr/
 summary: null
 marketplace_apps: []
 edges:
@@ -236,4 +238,39 @@ edges:
     identity_source: wikidata P856 (LEI P1278 or name; labelled provenance step; Kin 2026-10-15 decision 1)
   detected_by: sweep-dach-financial-registers.py
   first_seen: '2026-10-21'
+- partner_name: REGAFI (ACPR / Banque de France register of authorised financial firms)
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://www.regafi.fr/
+  category: French financial supervisory authorisation (ACPR, REGAFI)
+  contract_reference:
+    register: REGAFI (ACPR / Banque de France register of authorised financial firms)
+    spec_file: null
+    standard: null
+    role: passported-into-france
+    registrations:
+    - registered_name: Deutsche Bank AG
+      role: passported-into-france
+      licences:
+      - Établissement de Crédit
+      register_country: DE
+      matched_domain: db.com
+      matched_by: domain
+      register_id: '14996'
+      lei: 7LTWFZYICNSX8D621K86
+      passports:
+      - Libre prestation de services
+      home_authority: Bundesanstalt für Finanzdienstleistungsaufsicht (Federal Financial Supervisory Authority)
+      identity: wikidata Q66048 (LEI P1278) P856 https://www.db.com
+    signal_note: 'participation only: a supervisory authorisation / passport notification; no API conformance is
+      published by this register'
+    detected_by: sweep-france-regafi-acpr.py
+    detected: '2026-10-22'
+    identity_source: wikidata P856 (LEI P1278 or name; labelled provenance step; Kin 2026-10-15 decision 1)
+  detected_by: sweep-france-regafi-acpr.py
+  first_seen: '2026-10-22'
 templates: []
