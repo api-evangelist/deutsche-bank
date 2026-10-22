@@ -312,3 +312,47 @@
     detected: '2026-10-22'
   status: not-a-workflow
   arazzo: null
+- slug: deutsche-bank-sebi-registered-intermediaries-securities-and-exchange-board-of-india
+  label: SEBI registered intermediaries (Securities and Exchange Board of India)
+  partner_name: SEBI registered intermediaries (Securities and Exchange Board of India)
+  category: India SEBI registered intermediary (custodian, depository-participant-cdsl, depository-participant-nsdl)
+  type: register
+  channel: regulator-register
+  evidence: https://www.sebi.gov.in/sebiweb/other/OtherAction.do?doRecognisedFpi=yes&intmId=27
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: SEBI registered intermediaries (Securities and Exchange Board of India)
+    spec_file: null
+    standard: null
+    role: sebi-intermediary
+    intermediary_types:
+    - custodian
+    - depository-participant-cdsl
+    - depository-participant-nsdl
+    registrations:
+    - registered_name: Deutsche Bank AG
+      intermediary_types:
+      - depository-participant-cdsl
+      - depository-participant-nsdl
+      - custodian
+      registrations:
+      - type: depository-participant-cdsl
+        registration_no: IN-DP-642-2021
+        validity: Oct 06, 2021 - Perpetual
+      - type: depository-participant-nsdl
+        registration_no: IN-DP-642-2021
+        validity: Oct 06, 2021 - Perpetual
+      - type: custodian
+        registration_no: '3'
+      register_country: IN
+      matched_domain: db.com
+      matched_by: domain
+      identity: SEBI register e-mail domain
+    register_date: '2026-10-21'
+    signal_note: 'participation only: a SEBI registration as a capital-markets intermediary; the register publishes
+      no API conformance'
+    detected_by: sweep-india-rbi-sebi-registers.py
+    detected: '2026-10-22'
+  status: not-a-workflow
+  arazzo: null
