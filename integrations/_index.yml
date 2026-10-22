@@ -183,3 +183,37 @@
     detected: '2026-10-18'
   status: not-a-workflow
   arazzo: null
+- slug: deutsche-bank-bafin-company-database-supervised-institutions-germany
+  label: BaFin company database (supervised institutions, Germany)
+  partner_name: BaFin company database (supervised institutions, Germany)
+  category: German financial supervisory licence (BaFin)
+  type: register
+  channel: regulator-register
+  evidence: https://portal.mvp.bafin.de/database/InstInfo/
+  source: edge
+  relationship: standard-participant
+  contract_reference:
+    register: BaFin company database (supervised institutions, Germany)
+    spec_file: null
+    standard: null
+    role: licensed-participant
+    registrations:
+    - registered_name: DEUTSCHE BANK AKTIENGESELLSCHAFT
+      licences:
+      - CRR-Kreditinstitut
+      - Kreditinstitut
+      - Kryptowertedienstleister
+      - SSM-Institut
+      register_country: DE
+      matched_domain: db.com
+      matched_by: domain
+      register_id: BaFin-ID 10100003
+      lei: 7LTWFZYICNSX8D621K86
+      identity: wikidata Q66048 (LEI P1278) P856 https://www.db.com
+    signal_note: 'participation only: a supervisory licence / authorisation; no API conformance is published by
+      this register'
+    detected_by: sweep-dach-financial-registers.py
+    detected: '2026-10-21'
+    identity_source: wikidata P856 (LEI P1278 or name; labelled provenance step; Kin 2026-10-15 decision 1)
+  status: not-a-workflow
+  arazzo: null

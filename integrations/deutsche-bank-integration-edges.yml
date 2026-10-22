@@ -19,6 +19,9 @@ checked:
 - https://www.openbanking.org.uk/regulated-providers/deutsche-bank-aktiengesellschaft/
 - https://www.wealthbox.com/wp-json/wp/v2/integrations?per_page=100&page=1
 - https://zapier.com/apps/deutsche-bank/integrations
+- https://portal.mvp.bafin.de/database/InstInfo/
+- https://www.dnb.nl/en/public-register/
+- https://www.finma.ch/en/finma-public/authorised-institutions-individuals-and-products/
 summary: null
 marketplace_apps: []
 edges:
@@ -199,4 +202,38 @@ edges:
     detected: '2026-10-18'
   detected_by: sweep-gulf-asean-open-finance.py
   first_seen: '2026-10-18'
+- partner_name: BaFin company database (supervised institutions, Germany)
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://portal.mvp.bafin.de/database/InstInfo/
+  category: German financial supervisory licence (BaFin)
+  contract_reference:
+    register: BaFin company database (supervised institutions, Germany)
+    spec_file: null
+    standard: null
+    role: licensed-participant
+    registrations:
+    - registered_name: DEUTSCHE BANK AKTIENGESELLSCHAFT
+      licences:
+      - CRR-Kreditinstitut
+      - Kreditinstitut
+      - Kryptowertedienstleister
+      - SSM-Institut
+      register_country: DE
+      matched_domain: db.com
+      matched_by: domain
+      register_id: BaFin-ID 10100003
+      lei: 7LTWFZYICNSX8D621K86
+      identity: wikidata Q66048 (LEI P1278) P856 https://www.db.com
+    signal_note: 'participation only: a supervisory licence / authorisation; no API conformance is published by
+      this register'
+    detected_by: sweep-dach-financial-registers.py
+    detected: '2026-10-21'
+    identity_source: wikidata P856 (LEI P1278 or name; labelled provenance step; Kin 2026-10-15 decision 1)
+  detected_by: sweep-dach-financial-registers.py
+  first_seen: '2026-10-21'
 templates: []
