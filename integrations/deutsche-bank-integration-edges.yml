@@ -24,6 +24,10 @@ checked:
 - https://www.finma.ch/en/finma-public/authorised-institutions-individuals-and-products/
 - https://www.amf-france.org/fr/espace-epargnants/proteger-son-epargne/listes-blanches
 - https://www.regafi.fr/
+- https://apps.sfc.hk/publicregWeb/searchByRa
+- https://vpr.hkma.gov.hk/eng/regulatory-resources/registers/register-of-ais-and-lros/
+- https://www.hkma.gov.hk/eng/regulatory-resources/registers/register-of-svf-licensees/
+- https://www.sfc.hk/en/Regulatory-functions/Intermediaries/Licensing/Register-of-licensed-persons-and-registered-institutions
 summary: null
 marketplace_apps: []
 edges:
@@ -272,5 +276,65 @@ edges:
     detected: '2026-10-22'
     identity_source: wikidata P856 (LEI P1278 or name; labelled provenance step; Kin 2026-10-15 decision 1)
   detected_by: sweep-france-regafi-acpr.py
+  first_seen: '2026-10-22'
+- partner_name: HKMA Register of Authorized Institutions
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://vpr.hkma.gov.hk/eng/regulatory-resources/registers/register-of-ais-and-lros/
+  category: banking (Hong Kong)
+  contract_reference:
+    register: HKMA Register of Authorized Institutions
+    spec_file: null
+    standard: HKMA authorization (Banking Ordinance, Cap. 155), Hong Kong
+    role: licensed-participant
+    registrations:
+    - registered_name: DEUTSCHE BANK AKTIENGESELLSCHAFT
+      licences:
+      - Licensed Bank (Banking Ordinance, Cap. 155)
+      matched_domain: db.com
+      matched_by: domain
+      evidence: https://www.hkma.gov.hk/media/eng/doc/key-functions/banking-stability/banking-policy-and-supervision/addr.xls
+      incorporated: GERMANY
+    signal_note: 'participation only: a regulator licence / registration; no API conformance is published by this
+      register'
+    detected_by: sweep-hong-kong-sfc-licensed.py
+    detected: '2026-10-22'
+  detected_by: sweep-hong-kong-sfc-licensed.py
+  first_seen: '2026-10-22'
+- partner_name: SFC Public Register of Licensed Persons and Registered Institutions
+  partner: null
+  partner_match: register
+  type: register
+  channel: regulator-register
+  relationship: standard-participant
+  direction: partner-built
+  evidence: https://apps.sfc.hk/publicregWeb/searchByRa
+  category: securities / virtual assets (Hong Kong)
+  contract_reference:
+    register: SFC Public Register of Licensed Persons and Registered Institutions
+    spec_file: null
+    standard: SFC licensing (Securities and Futures Ordinance, Cap. 571; AMLO Cap. 615 for VATPs), Hong Kong
+    role: licensed-participant
+    registrations:
+    - registered_name: Deutsche Bank Aktiengesellschaft
+      licences:
+      - Type 1 dealing in securities
+      - Type 4 advising on securities
+      - Type 6 advising on corporate finance
+      - Type 9 asset management
+      matched_domain: db.com
+      matched_by: domain
+      evidence: https://apps.sfc.hk/publicregWeb/ri/AAK077/addresses
+      kind: registered institution
+      register_id: AAK077
+    signal_note: 'participation only: a regulator licence / registration; no API conformance is published by this
+      register'
+    detected_by: sweep-hong-kong-sfc-licensed.py
+    detected: '2026-10-22'
+  detected_by: sweep-hong-kong-sfc-licensed.py
   first_seen: '2026-10-22'
 templates: []
